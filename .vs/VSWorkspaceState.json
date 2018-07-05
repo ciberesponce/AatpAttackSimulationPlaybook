@@ -2,8 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\Artifacts",
-    "\\Artifacts\\windows-hydrateusers"
+    "\\Artifacts\\windows-hydrateadminpc",
+    "\\Artifacts\\windows-hydratecontosodc1",
+    "\\Artifacts\\windows-hydrateusers",
+    "\\Artifacts\\windows-hydratevictimpc"
   ],
-  "SelectedNode": "\\Artifacts\\windows-hydrateusers\\Artifactfile.json",
+  "SelectedNode": "\\Artifacts\\windows-hydratecontosodc1\\Artifactfile.json",
   "PreviewInSolutionExplorer": false
 }
