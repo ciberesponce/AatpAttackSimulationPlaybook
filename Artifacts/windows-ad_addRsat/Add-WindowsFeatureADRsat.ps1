@@ -1,0 +1,1 @@
+Add-WindowsFeature RSAT-AD-AdminCenter
