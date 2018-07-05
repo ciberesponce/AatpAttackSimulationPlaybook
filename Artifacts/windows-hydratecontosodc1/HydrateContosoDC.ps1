@@ -1,6 +1,6 @@
 ﻿$ErrorActionPreference = "Stop"
 
-// turn on network discovery
+// Make Server discoverable on network
 Get-NetFirewallRule -DisplayGroup 'Network Discovery'|Set-NetFirewallRule -Profile 'Private, Domain' `
     -Enabled true -PassThru|select Name,DisplayName,Enabled,Profile
 
