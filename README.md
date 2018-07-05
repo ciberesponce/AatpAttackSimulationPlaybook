@@ -1,5 +1,5 @@
 # Introduction 
-Used by Microsoft C+AI team to train and educate their customers and Partners on techniques used by red team and determined human adversaries.  This leverages Azure DevTest Labs, which enables the reuse of post-deployment VM hydration through "Artifacts" and "Formulas".
+Used by Microsoft C+AI team to train and educate their customers and Partners on techniques used by red team and determined human adversaries.  This leverages [Azure DevTest Labs](https://aka.ms/dtl), which enables the reuse of post-deployment VM hydration through "Artifacts" and "Formulas".
 
 # Getting Started
 TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
