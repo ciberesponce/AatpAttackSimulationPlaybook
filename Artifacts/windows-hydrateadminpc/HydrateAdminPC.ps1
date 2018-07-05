@@ -1,5 +1,8 @@
 ﻿$ErrorActionPreference = "Stop"
 
+# disable real-time AV scans
+Set-MpPreference -DisableRealtimeMonitoring $true
+
 # Do fix for Azure DevTest Lab DNS (point to ContosoDC so we can domain join)
 # set DNS to ContosoDC IP
 # get contosoDC IP
