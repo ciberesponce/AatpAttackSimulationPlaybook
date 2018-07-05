@@ -1,0 +1,15 @@
+﻿{
+    "$schema": "https://raw.githubusercontent.com/Azure/azure-devtestlab/master/schemas/2016-11-28/dtlArtifacts.json",
+    "title": "Install RSAT-ADCenter",
+    "publisher": "Microsoft - Aharri",
+    "description": "Installs RSAT tools for AD Center; useful features to manage AD",
+    "tags": [
+        "Windows",
+        "SA Playbook"
+    ],
+    "iconUri": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Atom_editor_logo.svg/1118px-Atom_editor_logo.svg.png",
+    "targetOsType": "Windows",
+    "runCommand": {
+        "commandToExecute": "[concat('powershell.exe -ExecutionPolicy bypass \"& ./Add-WindowsFeatureADRsat.ps1')]"
+    }
+}
