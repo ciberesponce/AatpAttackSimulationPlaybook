@@ -49,3 +49,6 @@ try{
 catch{
 	Write-Error "Unable to remove Domain Admins from Local Admin Group"
 }
+
+# disable UAC
+Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Value "0" 
