@@ -24,4 +24,4 @@ Want to contribute? Ideally this is community driven and we'd love your particip
 *TODO*:
 * Join our GitHub
 * Make commits!
-* Email the author at [aharri @ microsoft.com](mailto:aharri@microsoft.com)
+* Email the maintainer at [aharri at microsoft.com](mailto:aharri@microsoft.com)
