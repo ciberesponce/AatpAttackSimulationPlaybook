@@ -18,10 +18,10 @@ Have any questions? DTL specific questions should be directed to the DTL team vi
 
 For product specifc playbook questions (i.e. [Azure ATP Suspicious Activity Playbook](https://aka.ms/aatpsaplaybook)), those should be directed to the respective authors of those documents or on the Docs site where they are hosted.
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+# Want to contribute?
+Want to contribute? Ideally this is community driven and we'd love your participation and contributions.  Here's how:
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://www.visualstudio.com/en-us/docs/git/create-a-readme). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+*TODO*:
+* Join our GitHub
+* Make commits!
+* Email the author at [aharri @ microsoft.com](mailto:aharri@microsoft.com)
