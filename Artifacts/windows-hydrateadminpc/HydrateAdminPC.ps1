@@ -1,12 +1,15 @@
-﻿$ErrorActionPreference = "Stop"
+﻿# THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
+$ErrorActionPreference = "Stop"
 
 # disable real-time AV scans
+# THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
 Set-MpPreference -DisableRealtimeMonitoring $true
 
-# Do fix for Azure DevTest Lab DNS (point to ContosoDC so we can domain join)
+# Do fix for Azure DevTest Lab DNS (point to ContosoDC)
 # set DNS to ContosoDC IP
 # get contosoDC IP
-$contosoDcIp = (Resolve-DnsName "ContosoDC").IPAddress
+try { $contosoDcIp = (Resolve-DnsName "ContosoDC").IPAddress }
+catch{ Write-Error "Unable to find ContosoDC; make sure its in network before executing this artifact" }
 # get current DNS
 $currentDns = (Get-DnsClientServerAddress).ServerAddresses
 # add contosodc
@@ -19,8 +22,31 @@ Set-DnsClientServerAddress -InterfaceAlias "Ethernet 2" -ServerAddresses $curren
 Get-NetFirewallRule -DisplayGroup 'Network Discovery'|Set-NetFirewallRule -Profile 'Private, Domain' `
     -Enabled true -PassThru|select Name,DisplayName,Enabled,Profile
 
-# Add Helpdesk to Local Admin Group
-# TODO
+# Domain join computer
+try{
+	$domain = "contoso.azure"
+	$user = "contoso\nuckc"
+	$nuckCPass = "NinjaCat123" | ConvertTo-SecureString -AsPlainText -Force
+	$cred = New-Object System.Management.Automation.PSCredential($user, $nuckCPass)
 
-# Remove Domain Admins from Local Admin Group
-# TODO
+	Add-Computer -DomainName $domain -Credential $cred
+}
+catch{
+	Write-Error "Unable to add JeffV to Local Admin Group"
+}
+
+# Add Helpdesk to local admin group
+try{
+	Add-LocalGroupMember -Group "Administrators" -Member "Contoso\Helpdesk"
+}
+catch{
+	Write-Error "Unable to add Helpdesk to the Local Admin Group"
+}
+
+# Remove Domain Admins from local admin group
+try{
+	Remove-LocalGroupMember -Group "Administrators" -Member "Domain Admins"
+}
+catch{
+	Write-Error "Unable to remove Domain Admins from Local Admin Group"
+}

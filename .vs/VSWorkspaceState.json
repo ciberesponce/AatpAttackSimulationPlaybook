@@ -2,11 +2,12 @@
   "ExpandedNodes": [
     "",
     "\\Artifacts",
+    "\\Artifacts\\windows-ad_addRsat",
     "\\Artifacts\\windows-hydrateadminpc",
     "\\Artifacts\\windows-hydratecontosodc1",
     "\\Artifacts\\windows-hydrateusers",
     "\\Artifacts\\windows-hydratevictimpc"
   ],
-  "SelectedNode": "\\Artifacts\\windows-hydratecontosodc1\\Artifactfile.json",
+  "SelectedNode": "\\Artifacts\\windows-hydrateadminpc\\HydrateAdminPC.ps1",
   "PreviewInSolutionExplorer": false
 }
