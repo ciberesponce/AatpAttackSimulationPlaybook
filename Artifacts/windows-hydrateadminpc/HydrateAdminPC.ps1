@@ -48,3 +48,6 @@ try{
 catch{
 	Write-Error "Unable to remove Domain Admins from Local Admin Group"
 }
+
+# hide Server Manager at logon
+New-ItemProperty -Path HKCU:\Software\Microsoft\ServerManager -Name DoNotOpenServerManagerAtLogon -PropertyType DWORD -Value "0x1" –Force
