@@ -5,7 +5,7 @@ Leveraging [Azure DevTest Lab (DTL)](https://aka.ms/dtl), Microsoft C+AI Securit
 
 There are limitations of what we can technically and legally provide and automate on our customers behalf.  For example, we will still require our customers to download the open-source red-team tools (i.e. [Mimikatz](https://github.com/gentilkiwi/mimikatz), [PowerShell Empire](https://github.com/EmpireProject/Empire)).  Instructions for that should appear in the product specifc suspicious activity playbooks.
 
-![IMPORTANT]
+![Note]
 Remember, these DTL artifacts should only be used for *non-production* resources.  Microsoft has *absolutely no liability* in the use of these artifacts; the hacker and red-team tools are not from Microsoft nor do we ever recommend running VMs with antivirus turned off!
 
 # Getting Started
