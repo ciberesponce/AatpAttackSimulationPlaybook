@@ -52,3 +52,5 @@ catch{
 
 # disable UAC
 Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Value "0" 
+
+Restart-Computer -Force
