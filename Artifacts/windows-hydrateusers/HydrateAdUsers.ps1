@@ -1,6 +1,4 @@
-﻿$ErrorActionPreference = "Stop"
-
-# create secure strings; required for New-ADUser next
+﻿# create secure strings; required for New-ADUser next
 $nuckCSecurePass = ConvertTo-SecureString -String 'NinjaCat123' -AsPlainText -Force
 $ronHdSecurePass = ConvertTo-SecureString -String 'FightingTiger$' -AsPlainText -Force
 $jeffvSecurePass = ConvertTo-SecureString -String 'Password$fun' -AsPlainText -Force

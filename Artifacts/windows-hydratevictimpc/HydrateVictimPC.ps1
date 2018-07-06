@@ -1,5 +1,4 @@
 ﻿# THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
-$ErrorActionPreference = "Stop"
 
 # disable real-time AV scans
 # THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
@@ -19,8 +18,7 @@ $currentDns += $contosoDcIp
 Set-DnsClientServerAddress -InterfaceAlias "Ethernet 2" -ServerAddresses $currentDns
 
 # Turn on network discovery
-Get-NetFirewallRule -DisplayGroup 'Network Discovery'|Set-NetFirewallRule -Profile 'Private, Domain' `
-    -Enabled true -PassThru|select Name,DisplayName,Enabled,Profile
+Get-NetFirewallRule -DisplayGroup 'Network Discovery'|Set-NetFirewallRule -Profile 'Private, Domain' -Enabled true
 
 # Domain join computer
 try{
