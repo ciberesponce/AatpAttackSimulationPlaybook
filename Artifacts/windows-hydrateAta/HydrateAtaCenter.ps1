@@ -1,10 +1,4 @@
-﻿# THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
-
-# disable real-time AV scans
-# THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
-Set-MpPreference -DisableRealtimeMonitoring $true
-
-# Do fix for Azure DevTest Lab DNS (point to ContosoDC)
+﻿# Do fix for Azure DevTest Lab DNS (point to ContosoDC)
 # set DNS to ContosoDC IP
 # get contosoDC IP
 try { $contosoDcIp = (Resolve-DnsName "ContosoDC").IPAddress }
@@ -17,29 +11,16 @@ $currentDns += $contosoDcIp
 # make change to DNS with all DNS servers now
 Set-DnsClientServerAddress -InterfaceAlias "Ethernet 2" -ServerAddresses $currentDns
 
-# Turn on network discovery
+# turn on network discovery
 Get-NetFirewallRule -DisplayGroup 'Network Discovery'|Set-NetFirewallRule -Profile 'Private, Domain' -Enabled true
 
-# Domain join computer
-try{
-	$domain = "contoso.azure"
-	$user = "contoso\nuckc"
-	$nuckCPass = "NinjaCat123" | ConvertTo-SecureString -AsPlainText -Force
-	$cred = New-Object System.Management.Automation.PSCredential($user, $nuckCPass)
 
-	Add-Computer -DomainName $domain -Credential $cred
-}
-catch{
-	Write-Error "Unable to add JeffV to Local Admin Group"
-}
-
-# Add JeffV and Helpdesk to local admin group
+# Add Helpdesk to local admin group
 try{
-	Add-LocalGroupMember -Group "Administrators" -Member "Contoso\JeffV"
 	Add-LocalGroupMember -Group "Administrators" -Member "Contoso\Helpdesk"
 }
 catch{
-	Write-Error "Unable to add JeffV to Local Admin Group"
+	Write-Error "Unable to add Helpdesk to the Local Admin Group"
 }
 
 # Remove Domain Admins from local admin group
@@ -50,15 +31,9 @@ catch{
 	Write-Error "Unable to remove Domain Admins from Local Admin Group"
 }
 
-# disable UAC
-Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Value "0" 
-
 # hide Server Manager at logon
 New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\ServerManager -Name DoNotOpenServerManagerAtLogon -PropertyType DWORD -Value "0x1" -Force
 New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\ServerManager\Oobe -Name DoNotOpenInitialConfigurationTasksAtLogon -PropertyType DWORD -Value "0x1" -Force
 
-
 # audit remote SAM
 New-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Control\Lsa -Name RestrictRemoteSamAuditOnlyMode -PropertyType DWORD -Value "0x1" -Force
-
-Restart-Computer -Force

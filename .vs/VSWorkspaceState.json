@@ -7,6 +7,6 @@
     "\\Artifacts\\windows-hydrateusers",
     "\\Artifacts\\windows-hydratevictimpc"
   ],
-  "SelectedNode": "\\Artifacts\\windows-hydratevictimpc\\HydrateVictimPC.ps1",
+  "SelectedNode": "\\Artifacts\\windows-hydrateusers\\HydrateAdUsers.ps1",
   "PreviewInSolutionExplorer": false
 }

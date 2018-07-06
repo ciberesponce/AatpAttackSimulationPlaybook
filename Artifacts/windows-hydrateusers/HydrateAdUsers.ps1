@@ -19,6 +19,10 @@ try{
 
 	# Create AATP Service (or ATA one)
 	New-ADUser -Name AatpService -DisplayName "Azure ATP/ATA Service" -PasswordNeverExpires $true -AccountPassword $AATPService -Enabled $true
+	# this account is used for LDAP purposes; will need to use this password when setting up Azure ATP/ATA
+	#
+	# Note also this account is added to the others Local Admin Group
+	# This could of  
 }
 catch {
 	Write-Error "Unable to hydrate AD. Check to see if users (RonHD, NuckC, JeffV) exist already. Or if the Helpdesk SG exists"
