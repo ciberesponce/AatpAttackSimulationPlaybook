@@ -4,13 +4,7 @@ Set-MpPreference -DisableRealtimeMonitoring $true
 # Make Server discoverable on network
 Get-NetFirewallRule -DisplayGroup 'Network Discovery'|Set-NetFirewallRule -Profile 'Private, Domain' -Enabled true
 
-try {
-	Add-WindowsFeature RSAT-AD-AdminCenter
-}
-catch {
-	Write-Error "Unable to add RSAT-AD-AdminCenter Feature"
-	exit -1
-}
+Add-WindowsFeature RSAT-AD-AdminCenter
 
 # hide Server Manager at logon
 New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\ServerManager -Name DoNotOpenServerManagerAtLogon -PropertyType DWORD -Value "0x1" -Force
