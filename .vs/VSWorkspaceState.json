@@ -3,10 +3,11 @@
     "",
     "\\Artifacts",
     "\\Artifacts\\windows-hydrateadminpc",
+    "\\Artifacts\\windows-hydrateAta",
     "\\Artifacts\\windows-hydratecontosodc1",
     "\\Artifacts\\windows-hydrateusers",
     "\\Artifacts\\windows-hydratevictimpc"
   ],
-  "SelectedNode": "\\Artifacts\\windows-hydrateusers\\HydrateAdUsers.ps1",
+  "SelectedNode": "\\Artifacts\\windows-hydrateadminpc\\HydrateAdminPC.ps1",
   "PreviewInSolutionExplorer": false
 }

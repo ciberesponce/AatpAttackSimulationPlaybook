@@ -20,6 +20,3 @@ New-ADUser -Name JeffV -DisplayName "Jeff Victim" -PasswordNeverExpires $true -A
 # Create AATP Service (or ATA one)
 New-ADUser -Name AatpService -DisplayName "Azure ATP/ATA Service" -PasswordNeverExpires $true -AccountPassword $AATPService -Enabled $true
 # this account is used for LDAP purposes; will need to use this password when setting up Azure ATP/ATA
-#
-# Note also this account is added to the others Local Admin Group
-# This could of  
