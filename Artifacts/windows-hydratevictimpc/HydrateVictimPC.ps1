@@ -1,6 +1,8 @@
-﻿$ErrorActionPreference = "Stop"
+﻿# THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
+$ErrorActionPreference = "Stop"
 
 # disable real-time AV scans
+# THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
 Set-MpPreference -DisableRealtimeMonitoring $true
 
 # Do fix for Azure DevTest Lab DNS (point to ContosoDC)
@@ -22,12 +24,3 @@ Get-NetFirewallRule -DisplayGroup 'Network Discovery'|Set-NetFirewallRule -Profi
 
 # Add Helpdesk to Local Admin Group
 # TODO
-
-# Hacker tools to c:\tools
-$client = New-Object System.Net.WebClient
-try {
-	$client.DownloadFile("https://github.com/gentilkiwi/mimikatz/releases/download/2.1.1-20180616/mimikatz_trunk.zip", "c:\tools")
-}
-catch {
-	Write-Error "Unable to download mimikatz to c:\tools"
-}
