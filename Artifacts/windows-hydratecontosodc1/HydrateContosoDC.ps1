@@ -7,4 +7,10 @@ Set-MpPreference -DisableRealtimeMonitoring $true
 Get-NetFirewallRule -DisplayGroup 'Network Discovery'|Set-NetFirewallRule -Profile 'Private, Domain' `
     -Enabled true -PassThru|select Name,DisplayName,Enabled,Profile
 
-Add-WindowsFeature RSAT-AD-AdminCenter -restart
+try {
+	Add-WindowsFeature RSAT-AD-AdminCenter
+}
+catch {
+	Write-Error "Unable to add RSAT-AD-AdminCenter Feature"
+	exit -1
+}
