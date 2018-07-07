@@ -7,15 +7,20 @@ Set-MpPreference -DisableRealtimeMonitoring $true
 # Do fix for Azure DevTest Lab DNS (point to ContosoDC)
 # set DNS to ContosoDC IP
 # get contosoDC IP
-$contosoDcIp = (Resolve-DnsName "ContosoDC").IPAddress
+try{
+$contosoDcIp = (Resolve-DnsName "ContosoDC").IPAddress 
 
 # get current DNS
 $currentDns = (Get-DnsClientServerAddress).ServerAddresses
 # add contosodc
 $currentDns += $contosoDcIp
-
-# make change to DNS with all DNS servers now
+    # make change to DNS with all DNS servers 
 Set-DnsClientServerAddress -InterfaceAlias "Ethernet 2" -ServerAddresses $currentDns
+    Write-Host "Added ContosoDC to DNS"
+    }
+    catch {
+        Write-Error "Unable to add ContosoDC to DNS" -ErrorAction Stop
+    }
 
 # turn on network discovery
 Get-NetFirewallRule -DisplayGroup 'Network Discovery'|Set-NetFirewallRule -Profile 'Private, Domain' -Enabled true
