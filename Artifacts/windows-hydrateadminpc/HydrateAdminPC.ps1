@@ -56,6 +56,14 @@ catch {
 	Write-Error "Unable to add Helpdesk to Admin Group" -ErrorAction Stop
 }
 
+try {
+	Add-LocalGroupMember -Group "Remote Desktop Users" -Member "Contoso\NuckC"
+	Write-Host "Added NuckC to Remote Desktop Users"
+}
+catch {
+	Write-Error "Unable to add NuckC to Remote Desktop Users group"
+}
+
 
 # hide Server Manager at logon and IE Secure Mode
 try{
