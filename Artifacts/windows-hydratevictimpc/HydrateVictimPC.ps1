@@ -99,5 +99,21 @@ catch {
 	Write-Error "Unable to change Remote SAM settings (needed for lateral movement graph)" -ErrorAction Continue
 }
 
+# add scheduled task for RonHD cmd.exe (expose creds--simulate logon/scheduled task/etc)
+try {
+	$action = New-ScheduledTaskAction -Execute 'cmd.exe'
+	$trigger = New-ScheduledTaskTrigger -AtLogOn
+	$runAs = 'Contoso\RonHD'
+	$ronHHDPass = 'FightingTiger$'
+	Register-ScheduledTask -TaskName "RonHD Cmd.exe - AATP SA Playbook" -Trigger $trigger -User $runAs -Password $ronHHDPass -Action $action
+
+	Write-Host "Created ScheduledTask on VictimPC to run cmd.exe as RonHD (simulate ScheduledTask/logon)"
+
+}
+catch {
+	Write-Error "Unable to create Scheduled Task on VictimPC! Need to simulate RonHD exposing creds to machine." -ErrorAction Continue
+}
+
+
 # restart machine due to UAC change
 Restart-Computer -Force
