@@ -18,8 +18,9 @@ catch {
 
 # Turn on network discovery
 try{
-	Get-NetFirewallRule -DisplayGroup 'Network Discovery'|Set-NetFirewallRule -Profile 'Private, Domain' -Enabled true
-	Write-Host "Put VictimPC in Network Discovery Mode"
+	Get-NetFirewallRule -DisplayGroup 'Network Discovery' | Set-NetFirewallRule -Profile 'Private, Domain' -Enabled true
+	Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing' | Set-NetFirewallRule -Profile 'Private, Domain' -Enabled true
+	Write-Host "Put VictimPC in Network Discovery and File and Printer Sharing Mode"
 }
 catch {
 	Write-Error "Unable to put VictimPC in Network Discovery Mode" -ErrorAction Continue

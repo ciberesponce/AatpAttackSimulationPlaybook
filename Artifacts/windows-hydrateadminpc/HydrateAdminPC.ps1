@@ -1,4 +1,6 @@
-﻿# THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
+﻿Import-Module PSScheduledJob
+
+# THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
 
 # disable real-time AV scans
 # THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
@@ -24,8 +26,9 @@ catch {
 
 # Turn on network discovery
 try{
-	Get-NetFirewallRule -DisplayGroup 'Network Discovery'|Set-NetFirewallRule -Profile 'Private, Domain' -Enabled true
-	Write-Host "Put VictimPC in Network Discovery Mode"
+	Get-NetFirewallRule -DisplayGroup 'Network Discovery' | Set-NetFirewallRule -Profile 'Private, Domain' -Enabled true
+	Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing' | Set-NetFirewallRule -Profile 'Private, Domain' -Enabled true
+	Write-Host "Put VictimPC in Network Discovery and File and Printer Sharing Mode"
 }
 catch {
 	Write-Error "Unable to put VictimPC in Network Discovery Mode" -ErrorAction Continue
@@ -99,16 +102,18 @@ catch {
 
 # add scheduled task to simulate NuckC activity
 try {
-	$action = New-ScheduledTaskAction -Execute 'cmd.exe'
-	$args = 'dir \\contosodc\c$' # dir c$ of contosodc
-	$trigger = New-ScheduledTaskTrigger -
-	$runAs = 'Contoso\NuckC'
-	$ronHHDPass = 'NinjaCat123'
-	Register-ScheduledTask -TaskName "RonHD Cmd.exe - AATP SA Playbook" -Trigger $trigger -User $runAs -Password $ronHHDPass -Action $action
+$powershellScriptBlock = { while($true){ Invoke-Expression "dir \\contosodc\c$";  Start-Sleep -Seconds 60 } }
+	$trigger = New-JobTrigger -AtLogOn
 
-	Write-Host "Created ScheduledTask on VictimPC to run cmd.exe as RonHD (simulate ScheduledTask/logon)"
+	$runAs = 'Contoso\NuckC'
+	$nuckCSecPass = 'NinjaCat123' | ConvertTo-SecureString -AsPlainText -Force
+	$cred = New-Object System.Management.Automation.PSCredential($runAs,$nuckCSecPass)
+
+	Register-ScheduledJob -Name "Dir ContosoDC as RonHD -- Mimick DA activity" -ScriptBlock $powershellScriptBlock -Trigger $trigger -Credential $cred
+	
+	Write-Host "Created Scheduled Job to simulate dir \\contosodc\c$ as NuckC on AdminPC (simulate domain admin activity)"
 
 }
 catch {
-	Write-Error "Unable to create Scheduled Task on VictimPC! Need to simulate RonHD exposing creds to machine." -ErrorAction Continue
+	Write-Error "Unable to create Scheduled Job on AdminPC! Need to simulate NuckC activity other way." -ErrorAction Continue
 }
