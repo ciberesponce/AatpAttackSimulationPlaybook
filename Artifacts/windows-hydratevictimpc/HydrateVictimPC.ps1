@@ -58,10 +58,12 @@ catch {
 	Write-Error "Unable to add JeffV and Helpdesk to Admin Group" -ErrorAction Stop
 }
 
-# disable UAC
+# disable UAC/LUA (User Access Control/Limited User Account)
 try{
 	Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Value "0x0" -Force
-	Write-Host "Disabled UAC"
+	Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -Value "0x0"
+
+	Write-Host "Disabled User Access Control/Limited User Account"
 }
 catch {
 	Write-Error "Unable to disable UAC" -ErrorAction Continue

@@ -96,3 +96,19 @@ try {
 catch {
 	Write-Error "Unable to change Remote SAM settings (needed for lateral movement graph)" -ErrorAction Continue
 }
+
+# add scheduled task to simulate NuckC activity
+try {
+	$action = New-ScheduledTaskAction -Execute 'cmd.exe'
+	$args = 'dir \\contosodc\c$' # dir c$ of contosodc
+	$trigger = New-ScheduledTaskTrigger -
+	$runAs = 'Contoso\NuckC'
+	$ronHHDPass = 'NinjaCat123'
+	Register-ScheduledTask -TaskName "RonHD Cmd.exe - AATP SA Playbook" -Trigger $trigger -User $runAs -Password $ronHHDPass -Action $action
+
+	Write-Host "Created ScheduledTask on VictimPC to run cmd.exe as RonHD (simulate ScheduledTask/logon)"
+
+}
+catch {
+	Write-Error "Unable to create Scheduled Task on VictimPC! Need to simulate RonHD exposing creds to machine." -ErrorAction Continue
+}
