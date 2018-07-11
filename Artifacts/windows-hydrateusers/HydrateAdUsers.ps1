@@ -11,9 +11,9 @@ New-ADUser -Name NuckC -DisplayName "Nuck Chorris" -PasswordNeverExpires $true -
 Add-ADGroupMember -Identity "Domain Admins" -Members NuckC
 	Write-Host "Added NuckC"
 	}
-	catch {
-		Write-Error "Unable to add NuckC" -ErrorAction Continue
-	}
+catch {
+	Write-Error "Unable to add NuckC" -ErrorAction Continue
+}
 
 # Create RonHD, Create Helpdesk SG, Add RonHD to Helpdesk
 try {
@@ -22,25 +22,25 @@ New-ADGroup -Name Helpdesk -GroupScope Global -GroupCategory Security
 Add-ADGroupMember -Identity "Helpdesk" -Members "RonHD"
 	Write-Host "Added Helpdesk and RonHD"
 	}
-	catch {
-		Write-Error "Unable to add Helpdesk or RonHD" -ErrorAction Continue
-	}
+catch {
+	Write-Error "Unable to add Helpdesk or RonHD" -ErrorAction Continue
+}
 
 # Create JeffV
 try{
 New-ADUser -Name JeffV -DisplayName "Jeff Victim" -PasswordNeverExpires $true -AccountPassword $jeffvSecurePass -Enabled $true
 	Write-Host "Added JeffV"
 	}
-	catch {
-		Write-Error "Unable to add JeffV" -ErrorAction Continue
-	}
+catch {
+	Write-Error "Unable to add JeffV" -ErrorAction Continue
+}
 
 # Create AATP Service (or ATA one)
 try {
 New-ADUser -Name AatpService -DisplayName "Azure ATP/ATA Service" -PasswordNeverExpires $true -AccountPassword $AATPService -Enabled $true
 	Write-Host "Added AatpService"
 	}
-	catch {
-		Write-Error "Unable to add AatpService" -ErrorAction Continue
-	}
+catch {
+	Write-Error "Unable to add AatpService" -ErrorAction Continue
+}
 # this account is used for LDAP purposes; will need to use this password when setting up Azure ATP/ATA
