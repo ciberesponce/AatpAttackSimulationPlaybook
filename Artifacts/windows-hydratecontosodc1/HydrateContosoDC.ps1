@@ -40,7 +40,7 @@ try{
 }
 catch {
 	Write-Error "Unable to disable IE Enhanced Security or Server Manager at startup" -ErrorAction Continue
-}
+
 
 # audit remote SAM
 try {
