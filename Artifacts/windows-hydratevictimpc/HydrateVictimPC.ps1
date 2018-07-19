@@ -118,8 +118,8 @@ catch {
 }
 
 # add firewall rule to allow ftp (useful for other stuff)
-Set-NetFirewallRule -Enabled True -Name "FTP" -Direction Inbound -Action Allow -Program "%SystemRoot%\System32\ftp.exe" -Protocol tcp
-Set-NetFirewallRule -Enabled True -Name "FTP" -Direction Inbound -Action Allow -Program "%SystemRoot%\System32\ftp.exe" -Protocol udp
+New-NetFirewallRule -Enabled True -Name "FTP" -Direction Inbound -Action Allow -Program "%SystemRoot%\System32\ftp.exe" -Protocol tcp -DisplayName "FTP TCP Allow"
+New-NetFirewallRule -Enabled True -Name "FTP" -Direction Inbound -Action Allow -Program "%SystemRoot%\System32\ftp.exe" -Protocol udp -DisplayName "FTP UDP Allow"
 
 # restart machine due to UAC change
 Restart-Computer -Force
