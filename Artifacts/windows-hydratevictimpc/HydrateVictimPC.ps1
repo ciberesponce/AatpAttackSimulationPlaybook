@@ -117,6 +117,9 @@ catch {
 	Write-Error "Unable to create Scheduled Task on VictimPC! Need to simulate RonHD exposing creds to machine." -ErrorAction Continue
 }
 
+# add firewall rule to allow ftp (useful for other stuff)
+Set-NetFirewallRule -Enabled True -Name "FTP" -Direction Inbound -Action Allow -Program "%SystemRoot%\System32\ftp.exe" -Protocol tcp
+Set-NetFirewallRule -Enabled True -Name "FTP" -Direction Inbound -Action Allow -Program "%SystemRoot%\System32\ftp.exe" -Protocol udp
 
 # restart machine due to UAC change
 Restart-Computer -Force
