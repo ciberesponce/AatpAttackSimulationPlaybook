@@ -3,7 +3,8 @@
 # disable real-time AV scans
 # THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
 Set-MpPreference -DisableRealtimeMonitoring $true
-Add-MpPreference -ExclusionPath "c:\tools"
+# added incase AV comes back on; whitelist our folder of hack tools
+Add-MpPreference -ExclusionPath "C:\Tools"
 
 # Do fix for Azure DevTest Lab DNS (point to ContosoDC)
 # set DNS to ContosoDC IP
