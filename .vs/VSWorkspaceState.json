@@ -8,6 +8,6 @@
     "\\Artifacts\\windows-hydrateusers",
     "\\Artifacts\\windows-hydratevictimpc"
   ],
-  "SelectedNode": "\\Artifacts\\windows-hydrateadminpc\\HydrateAdminPC.ps1",
+  "SelectedNode": "\\Artifacts\\windows-hydratecontosodc1\\HydrateContosoDC.ps1",
   "PreviewInSolutionExplorer": false
 }
