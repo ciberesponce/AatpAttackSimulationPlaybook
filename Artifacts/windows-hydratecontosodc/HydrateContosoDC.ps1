@@ -78,4 +78,4 @@ catch {
 	Write-Output '[!] Unable to change Remote SAM settings (needed for lateral movement graph)'
 }
 
-Write-Output 'Finished ContosoDC (system) hydration script; must reboot for changes...'
+Write-Output 'Finished ContosoDC1 (system) hydration script; must reboot for changes...'

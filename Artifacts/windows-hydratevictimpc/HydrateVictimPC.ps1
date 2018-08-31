@@ -1,6 +1,4 @@
-﻿$ErrorActionPreference = 'Continue'
-
-# THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
+﻿# THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
 
 # disable real-time AV scans
 # THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
@@ -12,7 +10,7 @@ Add-MpPreference -ExclusionPath "C:\Tools"
 # set DNS to ContosoDC IP
 # get contosoDC IP
 try{
-	$contosoDcIp = (Resolve-DnsName "ContosoDC").IPAddress 
+	$contosoDcIp = (Resolve-DnsName "ContosoDC1").IPAddress 
 
 	# get current DNS
 	$currentDns = (Get-DnsClientServerAddress).ServerAddresses
@@ -20,10 +18,10 @@ try{
 	$currentDns += $contosoDcIp
 	# make change to DNS with all DNS servers 
 	Set-DnsClientServerAddress -InterfaceAlias "Ethernet 2" -ServerAddresses $currentDns
-	Write-Host "[+] Added ContosoDC to DNS"
+	Write-Host "[+] Added ContosoDC1 to DNS"
 }
 catch {
-	Write-Error "[!] Unable to add ContosoDC to DNS" -ErrorAction Stop
+	Write-Error "[!] Unable to add ContosoDC1 to DNS" -ErrorAction Stop
 }
 
 # Turn on network discovery

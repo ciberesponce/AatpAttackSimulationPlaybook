@@ -1,6 +1,4 @@
-﻿$ErrorActionPreference = 'Continue'
-
-Import-Module PSScheduledJob
+﻿Import-Module PSScheduledJob
 
 # THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
 
@@ -12,7 +10,7 @@ Set-MpPreference -DisableRealtimeMonitoring $true
 # set DNS to ContosoDC IP
 # get contosoDC IP
 try{
-	$contosoDcIp = (Resolve-DnsName "ContosoDC").IPAddress 
+	$contosoDcIp = (Resolve-DnsName "ContosoDC1").IPAddress
 
 	# get current DNS
 	$currentDns = (Get-DnsClientServerAddress).ServerAddresses
@@ -20,10 +18,10 @@ try{
 	$currentDns += $contosoDcIp
 	# make change to DNS with all DNS servers 
 	Set-DnsClientServerAddress -InterfaceAlias "Ethernet 2" -ServerAddresses $currentDns
-	Write-Output "[+] Added ContosoDC to DNS"
+	Write-Output "[+] Added ContosoDC1 to DNS"
 }
 catch {
-	Write-Error "[!] Unable to add ContosoDC to DNS" -ErrorAction Stop
+	Write-Error "[!] Unable to add ContosoDC1 to DNS" -ErrorAction Stop
 }
 
 # Turn on network discovery
@@ -44,10 +42,10 @@ try {
 	$cred = New-Object System.Management.Automation.PSCredential($user, $nuckCPass)
 
 	Add-Computer -DomainName $domain -Credential $cred
-	Write-Output "[+] Machine added to Contoso"
+	Write-Output "[+] AdminPC added to Contoso"
 }
 catch {
-	Write-Error "[!] Unable to add machine to Contoso domain" -ErrorAction Stop
+	Write-Error "[!] Unable to add AdminPC to Contoso domain" -ErrorAction Stop
 }
 
 # Add JeffV and Helpdesk to Local Admin Group
@@ -104,14 +102,14 @@ catch {
 
 # add scheduled task to simulate NuckC activity
 try {
-	$powershellScriptBlock = { while($true){ Invoke-Expression "dir \\contosodc\c$";  Start-Sleep -Seconds 60 } } # infinitly loop, traversing c$ of contosodc
+	$powershellScriptBlock = { while($true){ Invoke-Expression "dir \\contosodc1\c$";  Start-Sleep -Seconds 60 } } # infinitly loop, traversing c$ of contosodc
 	$trigger = New-JobTrigger -AtStartup
 
 	$runAsUser = 'Contoso\NuckC'
 	$nuckCSecPass = 'NinjaCat123' | ConvertTo-SecureString -AsPlainText -Force
 	$cred = New-Object System.Management.Automation.PSCredential($runAsUser,$nuckCSecPass)
 
-	Register-ScheduledJob -Name "Dir ContosoDC as RonHD -- Mimick DA activity" -ScriptBlock $powershellScriptBlock -Trigger $trigger -Credential $cred
+	Register-ScheduledJob -Name "Dir ContosoDC1 as RonHD -- Mimick DA activity" -ScriptBlock $powershellScriptBlock -Trigger $trigger -Credential $cred
 	
 	Write-Output "[+] Created Scheduled Job to simulate dir \\contosodc\c$ as NuckC on AdminPC (simulate domain admin activity)"
 
