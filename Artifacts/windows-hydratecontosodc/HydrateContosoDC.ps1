@@ -1,23 +1,50 @@
 ﻿# disable real-time AV scans
 Set-MpPreference -DisableRealtimeMonitoring $true
+Write-Output "[+] Disabled real time AV detections"
 
 # Turn on network discovery
 try{
 	Get-NetFirewallRule -DisplayGroup 'Network Discovery' | Set-NetFirewallRule -Profile 'Private, Domain, Public' -Enabled true
 	Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing' | Set-NetFirewallRule -Profile 'Private, Domain, Public' -Enabled true
-	Write-Host "Put VictimPC in Network Discovery and File and Printer Sharing Mode"
+	Write-Output "[+] Put VictimPC in Network Discovery and File and Printer Sharing Mode"
 }
 catch {
-	Write-Error "Unable to put VictimPC in Network Discovery Mode" -ErrorAction Continue
+	Write-Output "[!] Unable to put VictimPC in Network Discovery Mode"
 }
 
 try{
 	Add-WindowsFeature RSAT-AD-AdminCenter
-	Write-Host "Added RSAT AD AdminCenter"
+	Write-Output "[+] Added RSAT AD AdminCenter"
 }
 catch{
-	Write-Error "Unable to add RSAT AD Admin Center. Add it manually if needed" -ErrorAction Continue
+	Write-Output "[!] Unable to add RSAT AD Admin Center. Add it manually if needed"
 }
+
+# install AD
+try {
+	Install-WindowsFeature AD-Domain-Services -IncludeManagementTools # Add ADDS feature; "IncludeManagementTools gives us the PowerShell capabilities later" 
+	Write-Output '[+] Installed install AD DS and Management Tools'
+}
+catch {
+	Write-Output '[!] Unable to install AD DS--make sure this gets installed before moving on!'
+}
+
+# Configure AD
+try {
+	$NetBiosName = "CONTOSO"
+	$DomainName = "Contoso.Azure"
+	$SafeModeAdminPass = "Password123!@#"
+	Import-Module ADDSDeployment # Import libraries for ADDS
+	Install-ADDSForest -CreateDnsDelegation:$false -DatabasePath 'C:\Windows\NTDS' -DomainMode 'Win2012R2' -DomainName $DomainName `
+		-DomainNetbiosName $NetBiosName -ForestMode “Win2012R2” -InstallDns:$true -LogPath 'C:\Windows\NTDS' -SysvolPath 'C:\Windows\SYSVOL' `
+		-SafeModeAdministratorPassword (convertto-securestring $SafeModeAdminPass -asplaintext -force) -NoRebootOnCompletion:$true -Force
+	Write-Output '[+] ADDS Configured.'
+	Write-Output "[ ] Domain Name: $DomainName `n[ ] NetBios Name: $NetBiosName"
+}
+catch {
+	Write-Output '[!] Unable to configure AD. Make sure this is configured before moving on!'
+}
+
 
 # hide Server Manager at logon and IE Secure Mode
 try{
@@ -36,17 +63,19 @@ try{
 	If (Test-Path “HKCU:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}”) {
 		Remove-Item -Path “HKCU:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}”
 	}
-	Write-Host "Disabled Server Manager and IE Enhanced Security"
+	Write-Output '[+] Disabled Server Manager and IE Enhanced Security'
 }
 catch {
-	Write-Error "Unable to disable IE Enhanced Security or Server Manager at startup" -ErrorAction Continue
-
+	Write-Output "[!] Unable to disable IE Enhanced Security or Server Manager at startup"
+}
 
 # audit remote SAM
 try {
 	New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -Name 'RestrictRemoteSamAuditOnlyMode' -PropertyType DWORD -Value "0x1" -Force
-	Write-Host "put remote SAM settings in Audit mode"
+	Write-Output '[+] Put remote SAM settings in Audit mode'
 }
 catch {
-	Write-Error "Unable to change Remote SAM settings (needed for lateral movement graph)" -ErrorAction Continue
+	Write-Output '[!] Unable to change Remote SAM settings (needed for lateral movement graph)'
 }
+
+Write-Output 'Finished ContosoDC (system) hydration script; must reboot for changes...'

@@ -1,4 +1,6 @@
-﻿Import-Module PSScheduledJob
+﻿$ErrorActionPreference = 'Continue'
+
+Import-Module PSScheduledJob
 
 # THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
 
@@ -18,20 +20,20 @@ try{
 	$currentDns += $contosoDcIp
 	# make change to DNS with all DNS servers 
 	Set-DnsClientServerAddress -InterfaceAlias "Ethernet 2" -ServerAddresses $currentDns
-	Write-Host "Added ContosoDC to DNS"
+	Write-Output "[+] Added ContosoDC to DNS"
 }
 catch {
-	Write-Error "Unable to add ContosoDC to DNS" -ErrorAction Stop
+	Write-Error "[!] Unable to add ContosoDC to DNS" -ErrorAction Stop
 }
 
 # Turn on network discovery
 try{
 	Get-NetFirewallRule -DisplayGroup 'Network Discovery' | Set-NetFirewallRule -Profile 'Private, Domain, Public' -Enabled true
 	Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing' | Set-NetFirewallRule -Profile 'Private, Domain, Public' -Enabled true
-	Write-Host "Put VictimPC in Network Discovery and File and Printer Sharing Mode"
+	Write-Output "[+] Put AdminPC in Network Discovery and File and Printer Sharing Mode"
 }
 catch {
-	Write-Error "Unable to put VictimPC in Network Discovery Mode" -ErrorAction Continue
+	Write-Error "[!] Unable to put AdminPC in Network Discovery Mode" -ErrorAction Continue
 }
 
 # Domain join computer
@@ -42,10 +44,10 @@ try {
 	$cred = New-Object System.Management.Automation.PSCredential($user, $nuckCPass)
 
 	Add-Computer -DomainName $domain -Credential $cred
-	Write-Host "Machine added to Contoso"
+	Write-Output "[+] Machine added to Contoso"
 }
 catch {
-	Write-Error "Unable to add machine to Contoso domain" -ErrorAction Stop
+	Write-Error "[!] Unable to add machine to Contoso domain" -ErrorAction Stop
 }
 
 # Add JeffV and Helpdesk to Local Admin Group
@@ -53,18 +55,18 @@ try {
 	Add-LocalGroupMember -Group "Administrators" -Member "Contoso\Helpdesk"
 
 	Remove-LocalGroupMember -Group "Administrators" -Member "Domain Admins"
-	Write-Host "Added Helpdesk to Admins Group. Removed Domain Admins :)"
+	Write-Output "[+] Added Helpdesk to Admins Group. Removed Domain Admins :)"
 }
 catch {
-	Write-Error "Unable to add Helpdesk to Admin Group" -ErrorAction Stop
+	Write-Error "[!] Unable to add Helpdesk to Admin Group" -ErrorAction Stop
 }
 
 try {
 	Add-LocalGroupMember -Group "Remote Desktop Users" -Member "Contoso\NuckC"
-	Write-Host "Added NuckC to Remote Desktop Users"
+	Write-Output "[+] Added NuckC to Remote Desktop Users"
 }
 catch {
-	Write-Error "Unable to add NuckC to Remote Desktop Users group"
+	Write-Error "[!] Unable to add NuckC to Remote Desktop Users group"
 }
 
 
@@ -85,35 +87,35 @@ try{
 	If (Test-Path “HKCU:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}”) {
 		Remove-Item -Path “HKCU:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}”
 	}
-	Write-Host "Disabled Server Manager and IE Enhanced Security"
+	Write-Output "[+] Disabled Server Manager and IE Enhanced Security"
 }
 catch {
-	Write-Error "Unable to disable IE Enhanced Security or Server Manager at startup" -ErrorAction Continue
+	Write-Error "[!] Unable to disable IE Enhanced Security or Server Manager at startup" -ErrorAction Continue
 }
 
 # audit remote SAM
 try {
 	New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -Name 'RestrictRemoteSamAuditOnlyMode' -PropertyType DWORD -Value "0x1" -Force
-	Write-Host "put remote SAM settings in Audit mode"
+	Write-Output "[+] Put remote SAM settings in Audit mode"
 }
 catch {
-	Write-Error "Unable to change Remote SAM settings (needed for lateral movement graph)" -ErrorAction Continue
+	Write-Error "[!] Unable to change Remote SAM settings (needed for lateral movement graph)" -ErrorAction Continue
 }
 
 # add scheduled task to simulate NuckC activity
 try {
-$powershellScriptBlock = { while($true){ Invoke-Expression "dir \\contosodc\c$";  Start-Sleep -Seconds 60 } }
-	$trigger = New-JobTrigger -AtLogOn
+	$powershellScriptBlock = { while($true){ Invoke-Expression "dir \\contosodc\c$";  Start-Sleep -Seconds 60 } } # infinitly loop, traversing c$ of contosodc
+	$trigger = New-JobTrigger -AtStartup
 
-	$runAs = 'Contoso\NuckC'
+	$runAsUser = 'Contoso\NuckC'
 	$nuckCSecPass = 'NinjaCat123' | ConvertTo-SecureString -AsPlainText -Force
-	$cred = New-Object System.Management.Automation.PSCredential($runAs,$nuckCSecPass)
+	$cred = New-Object System.Management.Automation.PSCredential($runAsUser,$nuckCSecPass)
 
 	Register-ScheduledJob -Name "Dir ContosoDC as RonHD -- Mimick DA activity" -ScriptBlock $powershellScriptBlock -Trigger $trigger -Credential $cred
 	
-	Write-Host "Created Scheduled Job to simulate dir \\contosodc\c$ as NuckC on AdminPC (simulate domain admin activity)"
+	Write-Output "[+] Created Scheduled Job to simulate dir \\contosodc\c$ as NuckC on AdminPC (simulate domain admin activity)"
 
 }
 catch {
-	Write-Error "Unable to create Scheduled Job on AdminPC! Need to simulate NuckC activity other way." -ErrorAction Continue
+	Write-Error "[-] Unable to create Scheduled Job on AdminPC! Need to simulate NuckC activity other way." -ErrorAction Continue
 }

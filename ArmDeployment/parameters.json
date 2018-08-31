@@ -1,0 +1,60 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_Kali_name": {
+            "value": null
+        },
+        "virtualMachines_AdminPC_name": {
+            "value": null
+        },
+        "virtualMachines_VictimPC_name": {
+            "value": null
+        },
+        "networkInterfaces_kali753_name": {
+            "value": null
+        },
+        "publicIPAddresses_Kali_ip_name": {
+            "value": null
+        },
+        "virtualMachines_ContosoDC1_name": {
+            "value": null
+        },
+        "networkInterfaces_adminpc539_name": {
+            "value": null
+        },
+        "publicIPAddresses_AdminPC_ip_name": {
+            "value": null
+        },
+        "networkInterfaces_victimpc573_name": {
+            "value": null
+        },
+        "publicIPAddresses_VictimPC_ip_name": {
+            "value": null
+        },
+        "networkInterfaces_contosodc1313_name": {
+            "value": null
+        },
+        "publicIPAddresses_ContosoDC1_ip_name": {
+            "value": null
+        },
+        "virtualNetworks_SecCxp_Ninja_AATP_vnet_name": {
+            "value": null
+        },
+        "networkSecurityGroups_SecCxp_Ninja_AATP_nsg_name": {
+            "value": null
+        },
+        "virtualMachines_AdminPC_id": {
+            "value": null
+        },
+        "virtualMachines_ContosoDC1_id": {
+            "value": null
+        },
+        "virtualMachines_Kali_id": {
+            "value": null
+        },
+        "virtualMachines_VictimPC_id": {
+            "value": null
+        }
+    }
+}
