@@ -1,4 +1,6 @@
-﻿Import-Module PSScheduledJob
+﻿## GIVE RONHD LOGON AS BATCH TO DO SCHEDULEDJOB
+
+Import-Module PSScheduledJob
 
 # THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
 
@@ -48,10 +50,9 @@ catch {
 	Write-Error "[!] Unable to add AdminPC to Contoso domain" -ErrorAction Stop
 }
 
-# Add JeffV and Helpdesk to Local Admin Group
+# Add Helpdesk to Local Admin Group
 try {
 	Add-LocalGroupMember -Group "Administrators" -Member "Contoso\Helpdesk"
-
 	Remove-LocalGroupMember -Group "Administrators" -Member "Domain Admins"
 	Write-Output "[+] Added Helpdesk to Admins Group. Removed Domain Admins :)"
 }
@@ -59,8 +60,10 @@ catch {
 	Write-Error "[!] Unable to add Helpdesk to Admin Group" -ErrorAction Stop
 }
 
+# needed for Azure and Hyper-V since user is removed from admin group
 try {
 	Add-LocalGroupMember -Group "Remote Desktop Users" -Member "Contoso\NuckC"
+	Add-LocalGroupMember -Group "Backup Operators" -Member "Contoso\NuckC" # used to automate traffic as ScheduledJob; gives him "Logon as Batch" privileges required for Scheduled Jobs
 	Write-Output "[+] Added NuckC to Remote Desktop Users"
 }
 catch {
@@ -100,20 +103,50 @@ catch {
 	Write-Error "[!] Unable to change Remote SAM settings (needed for lateral movement graph)" -ErrorAction Continue
 }
 
-# add scheduled task to simulate NuckC activity
 try {
-	$powershellScriptBlock = { while($true){ Invoke-Expression "dir \\contosodc1\c$";  Start-Sleep -Seconds 60 } } # infinitly loop, traversing c$ of contosodc
-	$trigger = New-JobTrigger -AtStartup
-
-	$runAsUser = 'Contoso\NuckC'
-	$nuckCSecPass = 'NinjaCat123' | ConvertTo-SecureString -AsPlainText -Force
-	$cred = New-Object System.Management.Automation.PSCredential($runAsUser,$nuckCSecPass)
-
-	Register-ScheduledJob -Name "Dir ContosoDC1 as RonHD -- Mimick DA activity" -ScriptBlock $powershellScriptBlock -Trigger $trigger -Credential $cred
-	
-	Write-Output "[+] Created Scheduled Job to simulate dir \\contosodc\c$ as NuckC on AdminPC (simulate domain admin activity)"
-
+	Set-ExecutionPolicy -Scope LocalMachine -ExecutionPolicy Bypass
+	Write-Output "[+] Set execution policy to allow Ps1 across machine"
 }
 catch {
-	Write-Error "[-] Unable to create Scheduled Job on AdminPC! Need to simulate NuckC activity other way." -ErrorAction Continue
+	Write-Output "[!] Unable to change execution policy for AdminPC"
+}
+
+# add scheduled task to simulate NuckC activity
+# Requires NuckC to have "logon as batch" privileges on the system since he is now removed from
+try {
+	$scriptblock = [scriptblock]{
+		$powershellScriptBlock = [scriptblock]{ while($true){ Get-Date; Get-ChildItem \\contosodc\c$; exit(0) } }# infinitly loop, traversing c$ of contosodc
+		$runAsUser = 'Contoso\NuckC'
+		$nuckCSecPass = 'NinjaCat123' | ConvertTo-SecureString -AsPlainText -Force
+		$cred = New-Object System.Management.Automation.PSCredential($runAsUser,$nuckCSecPass)
+	
+		while ($true)
+		{
+			$j = Start-Job -ScriptBlock $powershellScriptBlock -Credential $cred
+			$r = $j | Wait-Job | Receive-Job
+	
+			$r | fl
+			
+			Start-Sleep -Seconds 60
+		}
+	}
+	try{
+		$filepath = "c:\Users\NuckC\Desktop\dircontosodc.ps1"
+		$scriptblock | Out-File $filepath -Force
+		Write-Output "[+] Created ps1 file in $filepath for scheduled task purposes"
+	}
+	catch {
+		Write-Output "[!] Unable to create PS1 on AdminPC. Can't replicate NuckC--must do this manually!!!"
+	}
+	
+
+	$action = New-ScheduledTaskAction "Powershell.exe" -Argument $filepath
+	$trigger = New-ScheduledTaskTrigger -AtLogOn -User 'Contoso\NuckC'
+	$runAs = 'Contoso\NuckC'
+	$nuckCSecPass = 'NinjaCat123'
+
+	Register-ScheduledTask -TaskName "Dir ContosoDC as NuckC" -Trigger $trigger -User $runAs -Password $nuckCSecPass -Action $action
+}
+catch {
+	Write-Error "[!] Unable to create Scheduled Task on AdminPC! Need to simulate NuckC activity other way." -ErrorAction Continue
 }
