@@ -1,5 +1,6 @@
 ﻿# disable real-time AV scans
 Set-MpPreference -DisableRealtimeMonitoring $true
+New-ItemProperty -Path “HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender” -Name DisableAntiSpyware -Value 1 -PropertyType DWORD -Force
 Write-Output "[+] Disabled real time AV detections"
 
 # Turn on network discovery

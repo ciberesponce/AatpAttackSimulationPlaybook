@@ -7,7 +7,7 @@ Import-Module PSScheduledJob
 # disable real-time AV scans
 # THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
 Set-MpPreference -DisableRealtimeMonitoring $true
-
+New-ItemProperty -Path “HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender” -Name DisableAntiSpyware -Value 1 -PropertyType DWORD -Force
 # Do fix for Azure DevTest Lab DNS (point to ContosoDC)
 # set DNS to ContosoDC IP
 # get contosoDC IP
