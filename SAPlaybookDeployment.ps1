@@ -1,8 +1,9 @@
-Import-Module AzureRM
+Write-Host "[*] Setting up environment" -ForegroundColor Yellow
+Import-Module AzureRM -Force
 Import-Module .\ArmDeployment\Deployment.psm1 -Force
 
 # Modidify this!
-$RESOURCEGROUPNAME = '<myResourceGroupName>'
+$RESOURCEGROUPNAME = 'test-aatp-deployment'
 
 # these should not change...
 $VictimPCVmName = "VictimPC" # as identified in template.json
@@ -10,6 +11,7 @@ $AdminPCVmName = "AdminPC" # as identified in template.json
 $ContosoDcVmName = "ContosoDC1" # as identified in template.json
 
 $deploymentName = ""
+Write-Host "[+] Environment setup" -ForegroundColor Green
 
 
 # logon to your Azure Subscription
