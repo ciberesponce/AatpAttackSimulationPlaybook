@@ -125,7 +125,7 @@ catch {
 # Requires SamiraA to have "logon as batch" privileges on the system since he is now removed from
 try {
 	$scriptblock = [scriptblock]{
-		$powershellScriptBlock = [scriptblock]{ while($true){ Get-Date; Get-ChildItem \\contosodc\c$; exit(0) } }# infinitly loop, traversing c$ of contosodc
+		$powershellScriptBlock = [scriptblock]{ while($true){ Get-Date; Get-ChildItem '\\contosodc\c$'; exit(0) } }# infinitly loop, traversing c$ of contosodc
 		$runAsUser = 'Contoso\SamiraA'
 		$SamiraASecPass = 'NinjaCat123' | ConvertTo-SecureString -AsPlainText -Force
 		$cred = New-Object System.Management.Automation.PSCredential($runAsUser,$SamiraASecPass)
