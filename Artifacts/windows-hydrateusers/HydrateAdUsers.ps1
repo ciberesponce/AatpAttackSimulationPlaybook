@@ -1,20 +1,22 @@
-﻿Import-Module ADDSDeployment
+﻿Write-Output "[!] Starting AD Hydration scripts"
+
+Import-Module ADDSDeployment
 
 # create secure strings; required for New-ADUser function
-$nuckCSecurePass = ConvertTo-SecureString -String 'NinjaCat123' -AsPlainText -Force
+$samiraAbbasiPass = ConvertTo-SecureString -String 'NinjaCat123' -AsPlainText -Force
 $ronHdSecurePass = ConvertTo-SecureString -String 'FightingTiger$' -AsPlainText -Force
-$jeffvSecurePass = ConvertTo-SecureString -String 'Password$fun' -AsPlainText -Force
+$jeffLeathermanPass = ConvertTo-SecureString -String 'Password$fun' -AsPlainText -Force
 $AATPService = ConvertTo-SecureString -String 'Password123!@#' -AsPlainText -Force
 
 
-# Create NuckC, add to Domain Admins
+# Create SamiraA, add to Domain Admins
 try {
-	New-ADUser -Name 'NuckC' -DisplayName "Nuck Chorris" -PasswordNeverExpires $true -AccountPassword $nuckCSecurePass -Enabled $true
-	Add-ADGroupMember -Identity "Domain Admins" -Members NuckC
-	Write-Output "[+] Added NuckC to AD"
+	New-ADUser -Name 'SamiraA' -DisplayName "Samira Abbasi" -PasswordNeverExpires $true -AccountPassword $samiraAbbasiPass -Enabled $true
+	Add-ADGroupMember -Identity "Domain Admins" -Members SamiraA
+	Write-Output "[+] Added SamiraA to AD"
 }
 catch {
-	Write-Output "[!] Unable to add NuckC"
+	Write-Output "[-] Unable to add SamiraA"
 }
 
 # Create RonHD, Create Helpdesk SG, Add RonHD to Helpdesk
@@ -25,16 +27,16 @@ try {
 	Write-Output "[+] Added Helpdesk and RonHD"
 }
 catch {
-	Write-Error "[!] Unable to add Helpdesk or RonHD"
+	Write-Output "[-] Unable to add Helpdesk or RonHD" -ErrorAction SilentlyContinue
 }
 
-# Create JeffV
+# Create JeffL
 try{
-	New-ADUser -Name 'JeffV' -DisplayName "Jeff Victim" -PasswordNeverExpires $true -AccountPassword $jeffvSecurePass -Enabled $true
-	Write-Host "[+] Added JeffV"
+	New-ADUser -Name 'JeffL' -DisplayName "Jeff Leatherman" -PasswordNeverExpires $true -AccountPassword $jeffLeathermanPass -Enabled $true
+	Write-Host "[+] Added JeffL"
 }
 catch {
-	Write-Error "[!] Unable to add JeffV"
+	Write-Output "[-] Unable to add JeffL" -ErrorAction SilentlyContinue
 }
 
 # Create AATP Service (or ATA one)
@@ -43,7 +45,7 @@ try {
 	Write-Host "[+] Added AatpService (AatpService)"
 }
 catch {
-	Write-Error "[!] Unable to add AatpService"
+	Write-Output "[-] Unable to add AatpService" -ErrorAction SilentlyContinue
 }
 
-Write-Output "Finished AD hydration script"
+Write-Output "[+++] Finished AD hydration script"

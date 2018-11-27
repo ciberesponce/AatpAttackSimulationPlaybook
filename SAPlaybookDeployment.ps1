@@ -1,5 +1,10 @@
-Write-Host "[*] Setting up environment" -ForegroundColor Yellow
-Import-Module AzureRM -Force
+Write-Host "[!] Setting up environment" -ForegroundColor Yellow
+try {
+    Import-Module AzureRM -Force
+}
+catch {
+    Write-Host "[-] Unable to load AzureRM. Ensure AzureRM is properly installed as a modeul (Install-Module AzureRM)" -ForegroundColor Red -ErrorAction Stop
+}
 Import-Module .\ArmDeployment\Deployment.psm1 -Force
 
 # Modidify this!
@@ -9,34 +14,35 @@ $RESOURCEGROUPNAME = 'test-aatp-deployment'
 $VictimPCVmName = "VictimPC" # as identified in template.json
 $AdminPCVmName = "AdminPC" # as identified in template.json
 $ContosoDcVmName = "ContosoDC1" # as identified in template.json
-
-$deploymentName = ""
+#$deploymentName = ""
 Write-Host "[+] Environment setup" -ForegroundColor Green
 
 
 # logon to your Azure Subscription
 try {
-    Write-Host "[*] Connecting to your Azure Account" -ForegroundColor Yellow
+    Write-Host "[!] Connecting to your Azure Account" -ForegroundColor Yellow
     Connect-AzureRmAccount
     Write-Host "[+] Successfully logged in to Azure" -ForegroundColor Green
 }
 catch {
-    Write-Error "[-] Unable to connect to AzureRmAccount. Make sure PowerShell has proper libraries"
-    Write-Error "[-] Make sure AzureRM module is installed (Install-Module -Name AzureRM)" -ErrorAction Stop
+    Write-Host "[-] Unable to connect to AzureRmAccount. Make sure PowerShell has proper libraries" -ForegroundColor Red 
+    Write-Host "[-] Make sure AzureRM module is installed (Install-Module -Name AzureRM)" -ErrorAction Stop -ForegroundColor Red
 }
+
 try {
-    Write-Host "[*] Enumerating all Azure Subscriptions you have access to" -ForegroundColor Yellow
+    Write-Host "[!] Enumerating all Azure Subscriptions you have access to" -ForegroundColor Yellow
     Get-AzureRmSubscription | Select-Object 'Name','State','TenantId','SubscriptionId' | Format-Table
     Write-Host "[!] From the subscriptions above, which SubscriptionId would you like to install this in?" -ForegroundColor Yellow
     [guid]$subscriptionId = Read-Host -Prompt 'Copy SubscriptionId GUID here'
     Write-Host "[+] Successfully selected subscription: $subscriptionId" -ForegroundColor Green
 }
 catch {
-    Write-Error "[-] Try again.  Make sure the SubscriptionId is a GUID value" -ErrorAction Stop
+    Write-Error "[-] Try again.  Make sure the SubscriptionId is a GUID value; without quotes" -ErrorAction Stop
 }
 
+
 # deploy VMs/VNet to ResourceGroupName
-Test-AzureRm -ResourceGroupName $RESOURCEGROUPNAME -TemplateFile ".\ArmDeployment\template.json"
+Test-AzureRmResourceGroupDeployment -ResourceGroupName $RESOURCEGROUPNAME -TemplateFile ".\ArmDeployment\template.json"
 Deploy-SuspiciousActivityPlaybookResourceGroup -subscriptionId $subscriptionId -resourceGroupName $RESOURCEGROUPNAME 
 
 ###################
@@ -52,8 +58,22 @@ Invoke-AzureRmVMRunCommand -ResourceGroupName $RESOURCEGROUPNAME -Name $ContosoD
     -ScriptPath ".\Artifacts\windows-hydratecontosodc\HydrateContosoDC.ps1"
 
 Write-Host "[*] Restarting ContosoDC1 now that it has ADDS feature installed" -ForegroundColor Cyan
-Restart-AzureRmVM -resourceGroupName $RESOURCEGROUPNAME -Name $ContosoDcVmName
+$DcRestartJob = Restart-AzureRmVM -resourceGroupName $RESOURCEGROUPNAME -Name $ContosoDcVmName -AsJob
 Write-Host "[+] ContosoDC1 restarted" -ForegroundColor Green
 Write-Host "[*] Hydrading DC with users now" -ForegroundColor Cyan
 Write-Host "[+] DC Hydration Complete" -ForegroundColor Green
+#endregion
+
+#region VictimPC
+Invoke-AzureRmVMRunCommand -ResourceGroupName $RESOURCEGROUPNAME -Name $VictimPCVmName -CommandId 'RunPowerShellScript' `
+    -ScriptPath ".\Artifacts\windows-hydratevictimpc\HydrateVictimPC.ps1"
+Write-Host "[!] Restarting VictimPC"
+$VictimPcJob = Restart-AzureRmVM -ResourceGroupName $RESOURCEGROUPNAME -Name $VictimPCVmName -AsJob
+#endregion
+
+#region AdminPC
+Invoke-AzureRmVMRunCommand -ResourceGroupName $RESOURCEGROUPNAME -Name -CommandId 'RunPowerShellScript' `
+    -ScriptPath ".\Artifacts\windows-hydrateadminpc\HydrateAdminPC.ps1"
+Write-Host "[!] Restarting AdminPC"
+$AdminPcJob = Restart-AzureRmVM -ResourceGroupName $RESOURCEGROUPNAME -Name $VictimPCVmName -AsJob
 #endregion

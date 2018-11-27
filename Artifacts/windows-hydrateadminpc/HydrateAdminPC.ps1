@@ -1,13 +1,22 @@
-﻿## GIVE RONHD LOGON AS BATCH TO DO SCHEDULEDJOB
+﻿Write-Output "[!] Starting hydration process for AdminPC"
 
+## GIVE RONHD LOGON AS BATCH TO DO SCHEDULEDJOB
 Import-Module PSScheduledJob
 
 # THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
 
 # disable real-time AV scans
 # THIS SHOULD NOT BE EXECUTED ON PRODUCTION RESOURCES!!!
-Set-MpPreference -DisableRealtimeMonitoring $true
-New-ItemProperty -Path “HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender” -Name DisableAntiSpyware -Value 1 -PropertyType DWORD -Force
+try {
+	Set-MpPreference -DisableRealtimeMonitoring $true
+	New-ItemProperty -Path “HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender” -Name DisableAntiSpyware -Value 1 -PropertyType DWORD -Force -ErrorAction SilentlyContinue
+	# added incase AV comes back on; whitelist our folder of hack tools
+	Add-MpPreference -ExclusionPath "C:\Tools"
+	Write-Output "[+] Successfully turned off Windows Defender on AdminPC; this is purely for purposes to focus on AATP and not Windows Defender or Windows Defender ATP (WDATP)/Azure Security Center (ASC)"
+}
+catch {
+	Write-Output "[-] Unable to turn off Windows Defender. Make sure this is disabled as this lab purposefully doesn't show how to evade AV nor does it focus on client-side Enterprise Detection and Response (EDR)."
+}
 # Do fix for Azure DevTest Lab DNS (point to ContosoDC)
 # set DNS to ContosoDC IP
 # get contosoDC IP
@@ -20,10 +29,11 @@ try{
 	$currentDns += $contosoDcIp
 	# make change to DNS with all DNS servers 
 	Set-DnsClientServerAddress -InterfaceAlias "Ethernet 2" -ServerAddresses $currentDns
+	Clear-DnsClientCache
 	Write-Output "[+] Added ContosoDC1 to DNS"
 }
 catch {
-	Write-Error "[!] Unable to add ContosoDC1 to DNS" -ErrorAction Stop
+	Write-Output "[-] Unable to add ContosoDC1 to DNS" -ErrorAction Stop
 }
 
 # Turn on network discovery
@@ -33,21 +43,21 @@ try{
 	Write-Output "[+] Put AdminPC in Network Discovery and File and Printer Sharing Mode"
 }
 catch {
-	Write-Error "[!] Unable to put AdminPC in Network Discovery Mode" -ErrorAction Continue
+	Write-Output "[-] Unable to put AdminPC in Network Discovery Mode" -ErrorAction Continue
 }
 
 # Domain join computer
 try {
 	$domain = "contoso.azure"
-	$user = "contoso\nuckc"
-	$nuckCPass = "NinjaCat123" | ConvertTo-SecureString -AsPlainText -Force
-	$cred = New-Object System.Management.Automation.PSCredential($user, $nuckCPass)
+	$user = "contoso\samiraa"
+	$SamiraAPass = "NinjaCat123" | ConvertTo-SecureString -AsPlainText -Force
+	$cred = New-Object System.Management.Automation.PSCredential($user, $SamiraAPass)
 
 	Add-Computer -DomainName $domain -Credential $cred
 	Write-Output "[+] AdminPC added to Contoso"
 }
 catch {
-	Write-Error "[!] Unable to add AdminPC to Contoso domain" -ErrorAction Stop
+	Write-Output "[-] Unable to add AdminPC to Contoso domain" -ErrorAction Stop
 }
 
 # Add Helpdesk to Local Admin Group
@@ -57,17 +67,17 @@ try {
 	Write-Output "[+] Added Helpdesk to Admins Group. Removed Domain Admins :)"
 }
 catch {
-	Write-Error "[!] Unable to add Helpdesk to Admin Group" -ErrorAction Stop
+	Write-Output "[-] Unable to add Helpdesk to Admin Group" -ErrorAction Stop
 }
 
 # needed for Azure and Hyper-V since user is removed from admin group
 try {
-	Add-LocalGroupMember -Group "Remote Desktop Users" -Member "Contoso\NuckC"
-	Add-LocalGroupMember -Group "Backup Operators" -Member "Contoso\NuckC" # used to automate traffic as ScheduledJob; gives him "Logon as Batch" privileges required for Scheduled Jobs
-	Write-Output "[+] Added NuckC to Remote Desktop Users"
+	Add-LocalGroupMember -Group "Remote Desktop Users" -Member "Contoso\SamiraA"
+	Add-LocalGroupMember -Group "Backup Operators" -Member "Contoso\SamiraA" # used to automate traffic as ScheduledJob; gives him "Logon as Batch" privileges required for Scheduled Jobs
+	Write-Output "[+] Added SamiraA to Remote Desktop Users"
 }
 catch {
-	Write-Error "[!] Unable to add NuckC to Remote Desktop Users group"
+	Write-Output "[-] Unable to add SamiraA to Remote Desktop Users group"
 }
 
 
@@ -91,7 +101,7 @@ try{
 	Write-Output "[+] Disabled Server Manager and IE Enhanced Security"
 }
 catch {
-	Write-Error "[!] Unable to disable IE Enhanced Security or Server Manager at startup" -ErrorAction Continue
+	Write-Output "[-] Unable to disable IE Enhanced Security or Server Manager at startup" -ErrorAction Continue
 }
 
 # audit remote SAM
@@ -100,25 +110,25 @@ try {
 	Write-Output "[+] Put remote SAM settings in Audit mode"
 }
 catch {
-	Write-Error "[!] Unable to change Remote SAM settings (needed for lateral movement graph)" -ErrorAction Continue
+	Write-Output "[-] Unable to change Remote SAM settings (needed for lateral movement graph)" -ErrorAction Continue
 }
 
 try {
-	Set-ExecutionPolicy -Scope LocalMachine -ExecutionPolicy Bypass
+	Set-ExecutionPolicy -Scope LocalMachine -ExecutionPolicy Bypass -Force
 	Write-Output "[+] Set execution policy to allow Ps1 across machine"
 }
 catch {
-	Write-Output "[!] Unable to change execution policy for AdminPC"
+	Write-Output "[-] Unable to change execution policy for AdminPC"
 }
 
-# add scheduled task to simulate NuckC activity
-# Requires NuckC to have "logon as batch" privileges on the system since he is now removed from
+# add scheduled task to simulate SamiraA activity
+# Requires SamiraA to have "logon as batch" privileges on the system since he is now removed from
 try {
 	$scriptblock = [scriptblock]{
 		$powershellScriptBlock = [scriptblock]{ while($true){ Get-Date; Get-ChildItem \\contosodc\c$; exit(0) } }# infinitly loop, traversing c$ of contosodc
-		$runAsUser = 'Contoso\NuckC'
-		$nuckCSecPass = 'NinjaCat123' | ConvertTo-SecureString -AsPlainText -Force
-		$cred = New-Object System.Management.Automation.PSCredential($runAsUser,$nuckCSecPass)
+		$runAsUser = 'Contoso\SamiraA'
+		$SamiraASecPass = 'NinjaCat123' | ConvertTo-SecureString -AsPlainText -Force
+		$cred = New-Object System.Management.Automation.PSCredential($runAsUser,$SamiraASecPass)
 	
 		while ($true)
 		{
@@ -131,22 +141,23 @@ try {
 		}
 	}
 	try{
-		$filepath = "c:\Users\NuckC\Desktop\dircontosodc.ps1"
+		$filepath = "c:\Users\SamiraA\Desktop\dircontosodc.ps1"
 		$scriptblock | Out-File $filepath -Force
 		Write-Output "[+] Created ps1 file in $filepath for scheduled task purposes"
 	}
 	catch {
-		Write-Output "[!] Unable to create PS1 on AdminPC. Can't replicate NuckC--must do this manually!!!"
+		Write-Output "[-] Unable to create PS1 on AdminPC. Can't replicate SamiraA--must do this manually!!!"
 	}
 	
 
 	$action = New-ScheduledTaskAction "Powershell.exe" -Argument $filepath
-	$trigger = New-ScheduledTaskTrigger -AtLogOn -User 'Contoso\NuckC'
-	$runAs = 'Contoso\NuckC'
-	$nuckCSecPass = 'NinjaCat123'
+	$trigger = New-ScheduledTaskTrigger -AtLogOn -User 'Contoso\SamiraA'
+	$runAs = 'Contoso\SamiraA'
+	$SamiraASecPass = 'NinjaCat123'
 
-	Register-ScheduledTask -TaskName "Dir ContosoDC as NuckC" -Trigger $trigger -User $runAs -Password $nuckCSecPass -Action $action
+	Register-ScheduledTask -TaskName "Dir ContosoDC as SamiraA" -Trigger $trigger -User $runAs -Password $SamiraASecPass -Action $action
 }
 catch {
-	Write-Error "[!] Unable to create Scheduled Task on AdminPC! Need to simulate NuckC activity other way." -ErrorAction Continue
+	Write-Output "[-] Unable to create Scheduled Task on AdminPC! Need to simulate SamiraA activity other way." -ErrorAction Continue
 }
+Write-Output "[+++] Finished hydrating AdminPC"
