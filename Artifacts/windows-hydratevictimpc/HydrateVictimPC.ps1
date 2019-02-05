@@ -129,6 +129,15 @@ catch {
 	Write-Output "[-] Unable to create Scheduled Task on VictimPC! Need to simulate RonHD exposing creds to machine." -ErrorAction Continue
 }
 
+#TODO
+# add an exposed SMB Share
+try{
+	
+}
+catch {
+	Write-Output "[-] Unable to modify C$ SMB ACLs. Make sure you add JeffL manually to this to the ACL and the SMB Share itself (need both)" -ErrorAction Continue
+}
+
 # add firewall rule to allow ftp (useful for other stuff)
 New-NetFirewallRule -Enabled True -Name "FTP TCP" -Direction Inbound -Action Allow -Program "%SystemRoot%\System32\ftp.exe" -Protocol tcp -DisplayName "FTP TCP Allow"
 New-NetFirewallRule -Enabled True -Name "FTP UDP" -Direction Inbound -Action Allow -Program "%SystemRoot%\System32\ftp.exe" -Protocol udp -DisplayName "FTP UDP Allow"

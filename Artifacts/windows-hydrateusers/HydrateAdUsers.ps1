@@ -11,7 +11,7 @@ $AATPService = ConvertTo-SecureString -String 'Password123!@#' -AsPlainText -For
 
 # Create SamiraA, add to Domain Admins
 try {
-	New-ADUser -Name 'SamiraA' -DisplayName "Samira Abbasi" -PasswordNeverExpires $true -AccountPassword $samiraAbbasiPass -Enabled $true
+	New-ADUser -Name 'SamiraA' -DisplayName "Samira Abbasi" -PasswordNeverExpires $true -AccountPassword $samiraAbbasiPass -Enabled $true -AccountExpirationDate 0
 	Add-ADGroupMember -Identity "Domain Admins" -Members SamiraA
 	Write-Output "[+] Added SamiraA to AD"
 }
@@ -21,7 +21,7 @@ catch {
 
 # Create RonHD, Create Helpdesk SG, Add RonHD to Helpdesk
 try {
-	New-ADUser -Name 'RonHD' -DisplayName "Ron Helpdesk" -PasswordNeverExpires $true -AccountPassword $ronHdSecurePass -Enabled $true
+	New-ADUser -Name 'RonHD' -DisplayName "Ron Helpdesk" -PasswordNeverExpires $true -AccountPassword $ronHdSecurePass -Enabled $true -AccountExpirationDate 0
 	New-ADGroup -Name Helpdesk -GroupScope Global -GroupCategory Security 
 	Add-ADGroupMember -Identity "Helpdesk" -Members "RonHD" 
 	Write-Output "[+] Added Helpdesk and RonHD"
@@ -32,7 +32,7 @@ catch {
 
 # Create JeffL
 try{
-	New-ADUser -Name 'JeffL' -DisplayName "Jeff Leatherman" -PasswordNeverExpires $true -AccountPassword $jeffLeathermanPass -Enabled $true
+	New-ADUser -Name 'JeffL' -DisplayName "Jeff Leatherman" -PasswordNeverExpires $true -AccountPassword $jeffLeathermanPass -Enabled $true -AccountExpirationDate 0
 	Write-Host "[+] Added JeffL"
 }
 catch {
@@ -41,7 +41,7 @@ catch {
 
 # Create AATP Service (or ATA one)
 try {
-	New-ADUser -Name 'AatpService' -DisplayName "Azure ATP/ATA Service" -PasswordNeverExpires $true -AccountPassword $AATPService -Enabled $true
+	New-ADUser -Name 'AatpService' -DisplayName "Azure ATP/ATA Service" -PasswordNeverExpires $true -AccountPassword $AATPService -Enabled $true -AccountExpirationDate 0
 	Write-Host "[+] Added AatpService (AatpService)"
 }
 catch {
