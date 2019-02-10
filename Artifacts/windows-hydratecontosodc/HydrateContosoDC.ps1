@@ -87,3 +87,5 @@ catch {
 }
 
 Write-Output '[+++] Finished ContosoDC1 (system) hydration script; must reboot for changes...'
+Write-Output '[ ] If you want to show Hybrid use-cases, Install AAD Connect'
+Write-Output '[ ] For more information: https://docs.microsoft.com/en-us/azure/active-directory/hybrid/tutorial-password-hash-sync#download-and-install-azure-ad-connect'
