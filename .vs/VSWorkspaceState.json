@@ -1,13 +1,8 @@
 {
   "ExpandedNodes": [
     "",
-    "\\Artifacts",
-    "\\Artifacts\\windows-hydrateadminpc",
-    "\\Artifacts\\windows-hydrateAta",
-    "\\Artifacts\\windows-hydratecontosodc1",
-    "\\Artifacts\\windows-hydrateusers",
-    "\\Artifacts\\windows-hydratevictimpc"
+    "\\ArmTemplate"
   ],
-  "SelectedNode": "\\Artifacts\\windows-hydratevictimpc\\HydrateVictimPC.ps1",
+  "SelectedNode": "\\ArmTemplate\\CreateVmTemplate.json",
   "PreviewInSolutionExplorer": false
 }
