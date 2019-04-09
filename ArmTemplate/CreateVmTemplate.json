@@ -14,7 +14,12 @@
     }
   },
   "variables": {
-    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks','AatpAttackSimulation-Vnet')]",
+    "vNetName": "AatpAttackSimulationPlaybook-vNet",
+    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'AatpAttackSimulationStroage')]",
+    "DcNicName": "ContosoDcNic",
+    "DcName": "ContosoDc",
+    "DcDisk": "ContosoDcDisk",
+    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('vNetName'))]",
     "subnetRef": "[concat(variables('vnetId'),'/subnets/OnlySubnet')]"
   },
   "resources": [
@@ -37,7 +42,7 @@
     {
       "apiVersion": "2017-09-01",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "AatpAttackSimulationIpAddress",
+      "name": "[variables('vNetName')]",
       "location": "[resourceGroup().location]",
       "properties": {
         "publicIPAllocationMethod": "Dynamic"
@@ -46,11 +51,11 @@
     {
       "apiVersion": "2017-09-01",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "AatpNic",
+      "name": "[variables('DcNicName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses/', 'AatpAttackSimulationIpAddress')]",
-        "[resourceId('Microsoft.Network/virtualNetworks/', 'AatpAttackSimulation-Vnet')]"
+        "[resourceId('Microsoft.Network/virtualNetworks/', variables('vNetName'))]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -73,15 +78,15 @@
     {
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2018-10-01",
-      "name": "ContosoDc",
+      "name": "[variables('DcName')]",
       "location": "[resourceGroup().location]",
-      "dependsOn": [ "[resourceId('Microsoft.Network/networkInterfaces/', 'AatpNic')]" ],
+      "dependsOn": [ "[resourceId('Microsoft.Network/networkInterfaces/', variables('DcNicName'))]"],
       "properties":{
         "hardwareProfile": {
           "vmSize": "Standard_A2_v2"
         },
         "osProfile": {
-          "computerName": "ContosoDC",
+          "computerName": "[variables('DcName')]",
           "adminUsername": "[parameters('builtinAdministratorAccount')]",
           "adminPassword": "[parameters('builtinAdministratorPassword')]"
         },
@@ -93,7 +98,7 @@
             "version": "latest"
           },
           "osDisk":{
-            "name": "ContosoDcDisk",
+            "name": "[variables('DcDisk')]",
             "caching": "ReadWrite",
             "createOption": "FromImage"
           }
@@ -101,9 +106,14 @@
         "networkProfile":{
           "networkInterfaces":[
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'AatpNic')]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('DcNicName'))]"
             }
           ]
+        },
+        "diagnosticsProfile":{
+          "bootDiagnostics":{
+            "enabled": false
+          }
         }
       }
     }
