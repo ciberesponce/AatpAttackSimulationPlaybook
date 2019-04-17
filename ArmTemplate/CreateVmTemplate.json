@@ -14,39 +14,55 @@
     }
   },
   "variables": {
-    "vNetName": "AatpAttackSimulationPlaybook-vNet",
-    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'AatpAttackSimulationStroage')]",
+    "vNetName": "AatpSaPlaybook-vNet",
+    "vNetSubnetName": "Subnet",
+    "vSubnetRefId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNetName'), variables('vNetSubnetName'))]",
+    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'stor')]",
     "DcNicName": "ContosoDcNic",
+    "DcPrivateIpAddress": "10.0.24.4",
+    "DcPublicIpAddressName": "DcPublicIpAddress",
     "DcName": "ContosoDc",
-    "DcDisk": "ContosoDcDisk",
-    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('vNetName'))]",
-    "subnetRef": "[concat(variables('vnetId'),'/subnets/OnlySubnet')]"
+    "DcDisk": "ContosoDcDisk"
   },
   "resources": [
     {
       "apiVersion": "2017-09-01",
       "type": "Microsoft.Network/virtualNetworks",
-      "name": "AatpAttackSimulation-Vnet",
+      "name": "[variables('vNetName')]",
       "location": "[resourceGroup().location]",
       "properties": {
         "addressSpace": { "addressPrefixes": [ "10.0.24.0/24" ] },
-        "dhcpOptions": { "dnsServers": [ "10.0.24.4" ] },
+        "dhcpOptions": { "dnsServers": [ "[variables('DcPrivateIpAddress')]" ] },
         "subnets": [
           {
-            "name": "OnlySubnet",
+            "name": "[variables('vNetSubnetName')]",
             "properties": { "addressPrefix": "10.0.24.0/24" }
           }
         ]
       }
     },
     {
-      "apiVersion": "2017-09-01",
+      "apiVersion": "2018-12-01",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('vNetName')]",
+      "name": "[variables('DcPublicIpAddressName')]",
       "location": "[resourceGroup().location]",
+      "sku": {
+        "name":"Basic"
+      },
       "properties": {
         "publicIPAllocationMethod": "Dynamic"
       }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2018-02-01",
+      "name": "[variables('storageAccountName')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {}
     },
     {
       "apiVersion": "2017-09-01",
@@ -54,21 +70,21 @@
       "name": "[variables('DcNicName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses/', 'AatpAttackSimulationIpAddress')]",
+        "[resourceId('Microsoft.Network/publicIPAddresses/', variables('DcPublicIpAddressName'))]",
         "[resourceId('Microsoft.Network/virtualNetworks/', variables('vNetName'))]"
       ],
       "properties": {
         "ipConfigurations": [
           {
-            "name": "AatpIpconfig",
+            "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "10.0.24.4",
+              "privateIPAddress": "[variables('DcPrivateIpAddress')]",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAdresses', 'AatpAttackSimulationIpAddress')]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', variables('DcPublicIpAddressName'))]"
               },
               "subnet": {
-                "id": "[variables('subnetRef')]"
+                "id": "[variables('vSubnetRefId')]"
               }
             }
           }
@@ -80,7 +96,10 @@
       "apiVersion": "2018-10-01",
       "name": "[variables('DcName')]",
       "location": "[resourceGroup().location]",
-      "dependsOn": [ "[resourceId('Microsoft.Network/networkInterfaces/', variables('DcNicName'))]"],
+      "dependsOn": [ 
+        "[resourceId('Microsoft.Network/networkInterfaces/', variables('DcNicName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
+      ],
       "properties":{
         "hardwareProfile": {
           "vmSize": "Standard_A2_v2"
