@@ -21,7 +21,7 @@
     "DcNicName": "ContosoDcNic",
     "DcPrivateIpAddress": "10.0.24.4",
     "DcPublicIpAddressName": "DcPublicIpAddress",
-    "DcName": "ContosoDc",
+    "DcVmName": "ContosoDc",
     "DcDisk": "ContosoDcDisk"
   },
   "resources": [
@@ -94,7 +94,7 @@
     {
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2018-10-01",
-      "name": "[variables('DcName')]",
+      "name": "[variables('DcVmName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [ 
         "[resourceId('Microsoft.Network/networkInterfaces/', variables('DcNicName'))]",
@@ -105,7 +105,7 @@
           "vmSize": "Standard_A2_v2"
         },
         "osProfile": {
-          "computerName": "[variables('DcName')]",
+          "computerName": "[variables('DcVmName')]",
           "adminUsername": "[parameters('builtinAdministratorAccount')]",
           "adminPassword": "[parameters('builtinAdministratorPassword')]"
         },
@@ -134,7 +134,30 @@
             "enabled": false
           }
         }
-      }
+      },
+      "resources": [
+        {
+          "type": "extensions",
+          "apiVersion": "2018-10-01",
+          "name": "DcCustomScript",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', variables('DcVmName'))]"
+          ],
+          "properties":{
+            "publisher": "Microsoft.Compute",
+            "type": "CustomScriptExtension",
+            "autoUpgradeMinorVersion": true,
+            "typeHandlerVersion": "1.7",
+            "settings": {
+              "fileUris": [
+              "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/Artifacts/windows-hydratecontosodc/HydrateContosoDC.ps1"
+              ],
+              "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File HydrateContosoDC.ps1"
+            }
+          }
+        }
+      ]
     }
   ]
 }

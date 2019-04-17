@@ -1,1 +1,0 @@
-$storageName = "st$(Get-Random)"
