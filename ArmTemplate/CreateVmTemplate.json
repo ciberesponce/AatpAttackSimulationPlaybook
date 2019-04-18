@@ -5,7 +5,7 @@
     "builtinAdministratorAccount": {
       "type": "string",
       "defaultValue": "ContosoAdmin",
-      "metadata": { "description": "Builtin Administrator account's name for the Virtual Machines. This is not a domain account." }
+      "metadata": { "description": "Builtin\\Administrator account's name for the Virtual Machines. This is not a domain account." }
     },
     "builtinAdministratorPassword": {
       "type": "string",
