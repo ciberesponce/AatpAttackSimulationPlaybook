@@ -157,7 +157,7 @@
               "fileUris": [
               "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/Artifacts/windows-hydratecontosodc/HydrateContosoDC.ps1"
               ],
-              "commandToExecute": "[concat('powershell.exe -NonInteractive -ExecutionPolicy bypass -File HydrateContosoDC.ps1 ', parameters('UserPrincipalName'))]"
+              "commandToExecute": "[concat('powershell.exe -NonInteractive -ExecutionPolicy bypass -File HydrateDc.ps1 ', parameters('UserPrincipalName'))]"
             }
           }
         }
