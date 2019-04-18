@@ -146,7 +146,8 @@
           "name": "DcCustomScript",
           "location": "[resourceGroup().location]",
           "dependsOn": [
-            "[concat('Microsoft.Compute/virtualMachines/', variables('DcVmName'))]"
+            "[concat('Microsoft.Compute/virtualMachines/', variables('DcVmName'))]",
+            "[resourceId('Microsoft.Network/networkInterfaces/', variables('DcNicName'))]"
           ],
           "properties":{
             "publisher": "Microsoft.Compute",
@@ -155,7 +156,7 @@
             "typeHandlerVersion": "1.9",
             "settings": {
               "fileUris": [
-              "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/Artifacts/windows-hydratecontosodc/HydrateContosoDC.ps1"
+              "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/windows-DomainController/HydrateDc.ps1"
               ],
               "commandToExecute": "[concat('powershell.exe -NonInteractive -ExecutionPolicy bypass -File HydrateDc.ps1 ', parameters('UserPrincipalName'))]"
             }

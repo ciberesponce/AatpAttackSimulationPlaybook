@@ -1,3 +1,7 @@
+param(
+	[string]
+	$UPN_NAME="seccxp.ninja"
+)
 #region ContosoDC
 Write-Output "[!] Starting hydration process for ContosoDC1"
 
@@ -98,9 +102,6 @@ Write-Output "[!] Starting AD Hydration scripts"
 
 Import-Module ADDSDeployment
 
-# UPN--useful when doing Hybrid and syncing to AAD via AAD Connect
-$UPN_NAME = "seccxp.ninja"
-
 # create secure strings; required for New-ADUser function
 $samiraAbbasiPass = ConvertTo-SecureString -String 'NinjaCat123' -AsPlainText -Force
 $ronHdSecurePass = ConvertTo-SecureString -String 'FightingTiger$' -AsPlainText -Force
@@ -154,7 +155,7 @@ catch {
 # Create AATP Service (or ATA one)
 try {
 	New-ADUser -Name 'AatpService' -DisplayName "Azure ATP/ATA Service" -PasswordNeverExpires $true -AccountPassword $AATPService -Enabled $true -AccountExpirationDate 0
-	Set-ADUser -Identity 'aatpservice' -UserPrincipalName "aatpservice@$UPN_NAME"
+	# no need to set UPN; it shouldn't replicate up to AAD anyways
 	Write-Host "[+] Added AatpService (AatpService)"
 }
 catch {
