@@ -11,6 +11,11 @@
       "type": "string",
       "defaultValue": "Password123!@#",
       "metadata": { "description": "Password for the Builtin Administrator account." }
+    },
+    "UserPrincipalName": {
+      "type": "string",
+      "defaultValue": "seccxp.ninja",
+      "metadata": { "description": "The UPN for users who will be provisioned in Active Directory.  Useful when later using AAD Connect"}
     }
   },
   "variables": {
@@ -32,7 +37,6 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "addressSpace": { "addressPrefixes": [ "10.0.24.0/24" ] },
-        "dhcpOptions": { "dnsServers": [ "[variables('DcPrivateIpAddress')]" ] },
         "subnets": [
           {
             "name": "[variables('vNetSubnetName')]",
@@ -148,12 +152,12 @@
             "publisher": "Microsoft.Compute",
             "type": "CustomScriptExtension",
             "autoUpgradeMinorVersion": true,
-            "typeHandlerVersion": "1.7",
+            "typeHandlerVersion": "1.9",
             "settings": {
               "fileUris": [
               "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/Artifacts/windows-hydratecontosodc/HydrateContosoDC.ps1"
               ],
-              "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File HydrateContosoDC.ps1"
+              "commandToExecute": "[concat('powershell.exe -NonInteractive -ExecutionPolicy bypass -File HydrateContosoDC.ps1 ', parameters('UserPrincipalName'))]"
             }
           }
         }
