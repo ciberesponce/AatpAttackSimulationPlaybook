@@ -1,4 +1,5 @@
-# Introduction 
+# Introduction
+
 **Goals:**
 Create method to lower friction for our customers to experience detections (and associating attacks) as much as possible.
 
@@ -6,14 +7,19 @@ Push on GitHub to make publicly available and commit forks/feedback from the com
 
 This is meant to be foundational to Attack Simulation Playbooks going forward, to simulate *real live* environments.
 
+[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/?repository=https://github.com/ciberesponce/AatpAttackSimulationPlaybook)
+
 **Methods:**
 Leverage automation capabilities including:
+
 * ARM Templates (Azure VM provisioning)
 * PowerShell (System hydration, Active Directory Hydration, AzureRM)
 
-# Getting Started
+## Getting Started
+
 To be filled out once ARM Template sequencing is complete.
 
-# Questions
+## Questions
+
 For now:
 [aharri](mailto:aharri@microsoft.com)

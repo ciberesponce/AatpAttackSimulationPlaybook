@@ -19,24 +19,25 @@
     }
   },
   "variables": {
-    "vNetName": "AatpSaPlaybook-vNet",
-    "vNetSubnetName": "Subnet",
-    "vSubnetRefId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNetName'), variables('vNetSubnetName'))]",
     "PrivateIpAddressesArray": {
       "type": "array",
-      "defaultValue": [
+      "Ip": [
         "10.0.24.4",
         "10.0.24.10",
         "10.0.24.11"
       ]
     },
+    "vNetName": "AatpSaPlaybook-vNet",
+    "vNetSubnetName": "Subnet",
+    "vSubnetRefId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNetName'), variables('vNetSubnetName'))]",
+
 
     "GenericNicName": "Nic",
-    "GenericNicLoop": "NicLoop",
     "GenericPublicIpAddressName": "PublicIp",
     "GenericStorageAccountName": "[concat(uniqueString(resourceGroup().id), 'sa')]",
 
     "DcVmName": "ContosoDc",
+    "DcCustomScriptExtensionName": "DcCustomExtension",
     "DcCustomScriptUri": "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/windows-DomainController/HydrateDc.ps1",
     "DcCustomScriptCommandToExecute": "[concat('powershell.exe -NonInteractive -ExecutionPolicy bypass -File HydrateDc.ps1 ', parameters('UserPrincipalName'))]",
     
@@ -101,7 +102,7 @@
       "name": "[concat(variables('GenericNicName'), copyIndex())]",
       "location": "[resourceGroup().location]",
       "copy": {
-        "name": "[variables('GenericNicLoop')]",
+        "name": "NicLoop",
         "count": 3
       },
       "dependsOn": [
@@ -114,7 +115,7 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[variables('PrivateIpAddressesArray')[copyIndex()]]",
+              "privateIPAddress": "[variables('PrivateIpAddressesArray').Ip[copyIndex('NicLoop')]]",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('GenericPublicIpAddressName'), copyIndex()))]"
               },
@@ -174,7 +175,7 @@
         {
           "type": "extensions",
           "apiVersion": "2018-10-01",
-          "name": "DcCustomScript",
+          "name": "[variables('DcCustomScriptExtensionName')]",
           "location": "[resourceGroup().location]",
           "dependsOn": [
             "[resourceId('Microsoft.Compute/virtualMachines', variables('DcVmName'))]"
@@ -202,7 +203,7 @@
       "dependsOn": [ 
         "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 1))]",
         "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),1))]",
-        "[resourceId('Microsoft.Compute/virtualMachines', variables('DcVmName'))]"
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('DcVmName'), variables('DcCustomScriptExtensionName'))]"
       ],
       "properties":{
         "hardwareProfile": {
@@ -271,7 +272,7 @@
       "dependsOn": [ 
         "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 2))]",
         "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),2))]",
-        "[resourceId('Microsoft.Compute/virtualMachines', variables('DcVmName'))]"
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('DcVmName'), variables('DcCustomScriptExtensionName'))]"
       ],
       "properties":{
         "hardwareProfile": {
@@ -298,7 +299,7 @@
         "networkProfile":{
           "networkInterfaces":[
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 1))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 2))]"
             }
           ]
         },
