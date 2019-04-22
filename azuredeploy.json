@@ -22,13 +22,19 @@
     "vNetName": "AatpSaPlaybook-vNet",
     "vNetSubnetName": "Subnet",
     "vSubnetRefId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNetName'), variables('vNetSubnetName'))]",
+    "PrivateIpAddressesArray": {
+      "type": "array",
+      "defaultValue": [
+        "10.0.24.4",
+        "10.0.24.10",
+        "10.0.24.11"
+      ]
+    },
 
     "GenericNicName": "Nic",
     "GenericNicLoop": "NicLoop",
     "GenericPublicIpAddressName": "PublicIp",
-    "GenericPublicIpAddressLoop": "PublicIpLoop",
     "GenericStorageAccountName": "[concat(uniqueString(resourceGroup().id), 'sa')]",
-    "GenericStorageAccountLoop": "storageacctloop",
 
     "DcVmName": "ContosoDc",
     "DcCustomScriptUri": "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/windows-DomainController/HydrateDc.ps1",
@@ -65,7 +71,7 @@
       "location": "[resourceGroup().location]",
       "copy": {
         "count": 3,
-        "name": "[variables('GenericPublicIpAddressLoop')]"
+        "name": "GenericPublicIpAddressLoop"
       },
       "sku": {
         "name":"Basic"
@@ -81,7 +87,7 @@
       "location": "[resourceGroup().location]",
       "copy": {
         "count": 3,
-        "name": "[variables('GenericStorageAccountLoop')]"
+        "name": "GenericStorageAccountLoop"
       },
       "sku": {
         "name": "Standard_LRS"
@@ -99,7 +105,7 @@
         "count": 3
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', variables('GenericPublicIpAddressLoop'))]",
+        "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('GenericPublicIpAddressName'), copyIndex()))]",
         "[resourceId('Microsoft.Network/virtualNetworks', variables('vNetName'))]"
       ],
       "properties": {
@@ -108,9 +114,9 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[concat('10.0.24.', copyIndex(variables('GenericNicLoop'), 4))]",
+              "privateIPAddress": "[variables('PrivateIpAddressesArray')[copyIndex()]]",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('GenericPublicIpAddressLoop'), copyIndex()))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('GenericPublicIpAddressName'), copyIndex()))]"
               },
               "subnet": {
                 "id": "[variables('vSubnetRefId')]"
