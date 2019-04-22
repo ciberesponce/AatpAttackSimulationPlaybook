@@ -57,7 +57,7 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "dhcpOptions":{
-          "dnsServers": "[variables('PrivateIpAddressesArray')[0]]"
+          "dnsServers": "[variables('PrivateIpAddressesArray').Ip[0]]"
         },
         "addressSpace": { "addressPrefixes": [ "10.0.24.0/24" ] },
         "subnets": [
