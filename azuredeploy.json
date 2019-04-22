@@ -15,23 +15,36 @@
     "UserPrincipalName": {
       "type": "string",
       "defaultValue": "seccxp.ninja",
-      "metadata": { "description": "The UPN for users who will be provisioned in Active Directory.  Useful when later using AAD Connect"}
+      "metadata": { "description": "The UPN for users who will be provisioned in Active Directory.  Useful when later using AAD Connect" }
     }
   },
   "variables": {
     "vNetName": "AatpSaPlaybook-vNet",
     "vNetSubnetName": "Subnet",
     "vSubnetRefId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNetName'), variables('vNetSubnetName'))]",
-    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'stor')]",
-    "DcNicName": "ContosoDcNic",
-    "DcPrivateIpAddress": "10.0.24.4",
-    "DcPublicIpAddressName": "DcPublicIpAddress",
+
+    "GenericNicName": "Nic",
+    "GenericNicLoop": "NicLoop",
+    "GenericPublicIpAddressName": "PublicIp",
+    "GenericPublicIpAddressLoop": "PublicIpLoop",
+    "GenericStorageAccountName": "[concat(uniqueString(resourceGroup().id), 'sa')]",
+    "GenericStorageAccountLoop": "storageacctloop",
+
     "DcVmName": "ContosoDc",
-    "DcDisk": "ContosoDcDisk"
+    "DcCustomScriptUri": "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/windows-DomainController/HydrateDc.ps1",
+    "DcCustomScriptCommandToExecute": "[concat('powershell.exe -NonInteractive -ExecutionPolicy bypass -File HydrateDc.ps1 ', parameters('UserPrincipalName'))]",
+    
+    "VictimVmName": "VictimPc",
+    "VictimPcCustomScriptUri": "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/windows-hydratevictimpc/HydrateVictimPC.ps1",
+    "VictimPcCustomScriptCommandToExecute": "[concat('powershell.exe -NonInteractive -ExecutionPolicy bypass -File HydrateVictimPC.ps1')]",
+
+    "AdminVmName": "AdminPc",
+    "AdminPcCustomScriptUri": "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/windows-hydrateadminpc/HydrateAdminPC.ps1",
+    "AdminPcCustomScriptCommandToExecute": "[concat('powershell.exe -NonInteractive -ExecutionPolicy bypass -File HydrateAdminPc.ps1')]"
   },
   "resources": [
     {
-      "apiVersion": "2017-09-01",
+      "apiVersion": "2018-12-01",
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('vNetName')]",
       "location": "[resourceGroup().location]",
@@ -48,8 +61,12 @@
     {
       "apiVersion": "2018-12-01",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('DcPublicIpAddressName')]",
+      "name": "[concat(variables('GenericPublicIpAddressName'), copyIndex())]",
       "location": "[resourceGroup().location]",
+      "copy": {
+        "count": 3,
+        "name": "[variables('GenericPublicIpAddressLoop')]"
+      },
       "sku": {
         "name":"Basic"
       },
@@ -60,8 +77,12 @@
     {
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2018-02-01",
-      "name": "[variables('storageAccountName')]",
+      "name": "[concat(variables('GenericStorageAccountName'), copyIndex())]",
       "location": "[resourceGroup().location]",
+      "copy": {
+        "count": 3,
+        "name": "[variables('GenericStorageAccountLoop')]"
+      },
       "sku": {
         "name": "Standard_LRS"
       },
@@ -71,11 +92,15 @@
     {
       "apiVersion": "2017-09-01",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('DcNicName')]",
+      "name": "[concat(variables('GenericNicName'), copyIndex())]",
       "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "[variables('GenericNicLoop')]",
+        "count": 3
+      },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses/', variables('DcPublicIpAddressName'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks/', variables('vNetName'))]"
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('GenericPublicIpAddressLoop'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vNetName'))]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -83,9 +108,9 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[variables('DcPrivateIpAddress')]",
+              "privateIPAddress": "[concat('10.0.24.', copyIndex(variables('GenericNicLoop'), 4))]",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', variables('DcPublicIpAddressName'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('GenericPublicIpAddressLoop'), copyIndex()))]"
               },
               "subnet": {
                 "id": "[variables('vSubnetRefId')]"
@@ -101,8 +126,8 @@
       "name": "[variables('DcVmName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [ 
-        "[resourceId('Microsoft.Network/networkInterfaces/', variables('DcNicName'))]",
-        "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
+        "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 0))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),0))]"
       ],
       "properties":{
         "hardwareProfile": {
@@ -121,7 +146,7 @@
             "version": "latest"
           },
           "osDisk":{
-            "name": "[variables('DcDisk')]",
+            "name": "[concat(variables('GenericStorageAccountName'), 0)]",
             "caching": "ReadWrite",
             "createOption": "FromImage"
           }
@@ -129,7 +154,7 @@
         "networkProfile":{
           "networkInterfaces":[
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('DcNicName'))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 0))]"
             }
           ]
         },
@@ -146,8 +171,7 @@
           "name": "DcCustomScript",
           "location": "[resourceGroup().location]",
           "dependsOn": [
-            "[concat('Microsoft.Compute/virtualMachines/', variables('DcVmName'))]",
-            "[resourceId('Microsoft.Network/networkInterfaces/', variables('DcNicName'))]"
+            "[resourceId('Microsoft.Compute/virtualMachines', variables('DcVmName'))]"
           ],
           "properties":{
             "publisher": "Microsoft.Compute",
@@ -156,9 +180,147 @@
             "typeHandlerVersion": "1.9",
             "settings": {
               "fileUris": [
-              "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/windows-DomainController/HydrateDc.ps1"
+              "[variables('DcCustomScriptUri')]"
               ],
-              "commandToExecute": "[concat('powershell.exe -NonInteractive -ExecutionPolicy bypass -File HydrateDc.ps1 ', parameters('UserPrincipalName'))]"
+              "commandToExecute": "[variables('DcCustomScriptCommandToExecute')]"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2018-10-01",
+      "name": "[variables('VictimVmName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [ 
+        "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 1))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),1))]",
+        "[resourceId('Microsoft.Compute/virtualMachines', variables('DcVmName'))]"
+      ],
+      "properties":{
+        "hardwareProfile": {
+          "vmSize": "Standard_A2_v2"
+        },
+        "osProfile": {
+          "computerName": "[variables('VictimVmName')]",
+          "adminUsername": "[parameters('builtinAdministratorAccount')]",
+          "adminPassword": "[parameters('builtinAdministratorPassword')]"
+        },
+        "storageProfile":{
+          "imageReference":{
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2016-Datacenter",
+            "version": "latest"
+          },
+          "osDisk":{
+            "name": "[concat(variables('GenericStorageAccountName'), 1)]",
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile":{
+          "networkInterfaces":[
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 1))]"
+            }
+          ]
+        },
+        "diagnosticsProfile":{
+          "bootDiagnostics":{
+            "enabled": false
+          }
+        }
+      },
+      "resources": [
+        {
+          "type": "extensions",
+          "apiVersion": "2018-10-01",
+          "name": "VictimPcCustomScript",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Compute/virtualMachines', variables('VictimVmName'))]"
+          ],
+          "properties":{
+            "publisher": "Microsoft.Compute",
+            "type": "CustomScriptExtension",
+            "autoUpgradeMinorVersion": true,
+            "typeHandlerVersion": "1.9",
+            "settings": {
+              "fileUris": [
+              "[variables('VictimPcCustomScriptUri')]"
+              ],
+              "commandToExecute": "[variables('VictimPcCustomScriptCommandToExecute')]"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2018-10-01",
+      "name": "[variables('AdminVmName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [ 
+        "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 2))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),2))]",
+        "[resourceId('Microsoft.Compute/virtualMachines', variables('DcVmName'))]"
+      ],
+      "properties":{
+        "hardwareProfile": {
+          "vmSize": "Standard_A2_v2"
+        },
+        "osProfile": {
+          "computerName": "[variables('AdminVmName')]",
+          "adminUsername": "[parameters('builtinAdministratorAccount')]",
+          "adminPassword": "[parameters('builtinAdministratorPassword')]"
+        },
+        "storageProfile":{
+          "imageReference":{
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2016-Datacenter",
+            "version": "latest"
+          },
+          "osDisk":{
+            "name": "[concat(variables('GenericStorageAccountName'), 2)]",
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile":{
+          "networkInterfaces":[
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 1))]"
+            }
+          ]
+        },
+        "diagnosticsProfile":{
+          "bootDiagnostics":{
+            "enabled": false
+          }
+        }
+      },
+      "resources": [
+        {
+          "type": "extensions",
+          "apiVersion": "2018-10-01",
+          "name": "AdminPcCustomScript",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Compute/virtualMachines', variables('AdminVmName'))]"
+          ],
+          "properties":{
+            "publisher": "Microsoft.Compute",
+            "type": "CustomScriptExtension",
+            "autoUpgradeMinorVersion": true,
+            "typeHandlerVersion": "1.9",
+            "settings": {
+              "fileUris": [
+              "[variables('AdminPcCustomScriptUri')]"
+              ],
+              "commandToExecute": "[variables('AdminPcCustomScriptCommandToExecute')]"
             }
           }
         }
