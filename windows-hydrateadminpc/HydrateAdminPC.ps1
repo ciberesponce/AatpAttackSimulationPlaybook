@@ -21,7 +21,7 @@ catch {
 # set DNS to ContosoDC IP
 # get contosoDC IP
 try{
-	$contosoDcIp = (Resolve-DnsName "ContosoDC1").IPAddress
+	$contosoDcIp = (Resolve-DnsName "ContosoDC").IPAddress
 
 	# get current DNS
 	$currentDns = (Get-DnsClientServerAddress).ServerAddresses
@@ -30,10 +30,10 @@ try{
 	# make change to DNS with all DNS servers 
 	Set-DnsClientServerAddress -InterfaceAlias "Ethernet 2" -ServerAddresses $currentDns
 	Clear-DnsClientCache
-	Write-Output "[+] Added ContosoDC1 to DNS"
+	Write-Output "[+] Added ContosoDC to DNS"
 }
 catch {
-	Write-Output "[-] Unable to add ContosoDC1 to DNS" -ErrorAction Stop
+	Write-Output "[-] Unable to add ContosoDC to DNS" -ErrorAction Stop
 }
 
 # Turn on network discovery
@@ -135,7 +135,7 @@ try {
 			$j = Start-Job -ScriptBlock $powershellScriptBlock -Credential $cred
 			$r = $j | Wait-Job | Receive-Job
 	
-			$r | fl
+			$r | Format-List
 			
 			Start-Sleep -Seconds 60
 		}

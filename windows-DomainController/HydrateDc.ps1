@@ -3,7 +3,7 @@ param(
 	$UPN_NAME="seccxp.ninja"
 )
 #region ContosoDC
-Write-Output "[!] Starting hydration process for ContosoDC1"
+Write-Output "[!] Starting hydration process for ContosoDC"
 
 # disable real-time AV scans
 try {
@@ -20,10 +20,10 @@ catch {
 try{
 	Get-NetFirewallRule -DisplayGroup 'Network Discovery' | Set-NetFirewallRule -Profile 'Private, Domain, Public' -Enabled true
 	Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing' | Set-NetFirewallRule -Profile 'Private, Domain, Public' -Enabled true
-	Write-Output "[+] Put ContosoDC1 in Network Discovery and File and Printer Sharing Mode"
+	Write-Output "[+] Put ContosoDC in Network Discovery and File and Printer Sharing Mode"
 }
 catch {
-	Write-Output "[-] Unable to put ContosoDC1 in Network Discovery Mode"
+	Write-Output "[-] Unable to put ContosoDC in Network Discovery Mode"
 }
 
 try{
@@ -92,7 +92,7 @@ catch {
 	Write-Output '[-] Unable to change Remote SAM settings (needed for lateral movement graph)'
 }
 
-Write-Output '[+++] Finished ContosoDC1 (system) hydration script; must reboot for changes...'
+Write-Output '[+++] Finished ContosoDC (system) hydration script; must reboot for changes...'
 Write-Output '[ ] If you want to show Hybrid use-cases, Install AAD Connect'
 Write-Output '[ ] For more information: https://docs.microsoft.com/en-us/azure/active-directory/hybrid/tutorial-password-hash-sync#download-and-install-azure-ad-connect'
 # endregion
