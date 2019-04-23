@@ -8,14 +8,29 @@
       "metadata": { "description": "Builtin\\Administrator account's name for the Virtual Machines. This is not a domain account." }
     },
     "builtinAdministratorPassword": {
-      "type": "string",
+      "type": "securestring",
       "defaultValue": "Password123!@#",
-      "metadata": { "description": "Password for the Builtin Administrator account." }
+      "metadata": { "description": "Password for the Builtin Administrator account. Default is 'Password123!@#'" }
     },
     "UserPrincipalName": {
       "type": "string",
       "defaultValue": "seccxp.ninja",
-      "metadata": { "description": "The UPN for users who will be provisioned in Active Directory.  Useful when later using AAD Connect" }
+      "metadata": { 
+        "description": "The UPN for users who will be provisioned in Active Directory.  Useful when later using AAD Connect" 
+      }
+    },
+    "DomainName": {
+      "type": "string",
+      "defaultValue": "Contoso.Azure",
+      "metadata": {
+        "description": "This is the FQDN of the Active Directory domain"
+      }
+    },
+    "safeModeAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The password for the safeModeAdministrator account for the DC. Default value is 'Password123!@#'"
+      }
     }
   },
   "variables": {
@@ -31,15 +46,16 @@
     "vNetSubnetName": "Subnet",
     "vSubnetRefId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNetName'), variables('vNetSubnetName'))]",
 
-
     "GenericNicName": "Nic",
     "GenericPublicIpAddressName": "PublicIp",
     "GenericStorageAccountName": "[concat(uniqueString(resourceGroup().id), 'sa')]",
 
+    "RepoLocation": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook",
+    "RepoDcPackageUri": "[concat(variables('RepoLocation'), 'Dc.zip')]",
+
     "DcVmName": "ContosoDc",
-    "DcCustomScriptExtensionName": "DcCustomExtension",
-    "DcCustomScriptUri": "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/windows-DomainController/HydrateDc.ps1",
-    "DcCustomScriptCommandToExecute": "[concat('powershell.exe -NonInteractive -ExecutionPolicy bypass -File HydrateDc.ps1 ', parameters('UserPrincipalName'))]",
+    "DcPromoteDcDsc": "DcPromoDsc",
+    "RepoDcCreateForestFunction": "ProvisionDcDsc.ps1\\CreateNewADForest",
     
     "VictimVmName": "VictimPc",
     "VictimPcCustomScriptUri": "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/windows-hydratevictimpc/HydrateVictimPC.ps1",
@@ -174,25 +190,40 @@
           }
         }
       },
-      "resources": [
+      "resources":[
         {
           "type": "extensions",
           "apiVersion": "2018-10-01",
-          "name": "[variables('DcCustomScriptExtensionName')]",
+          "name": "[variables('DcPromoteDcDsc')]",
           "location": "[resourceGroup().location]",
           "dependsOn": [
             "[resourceId('Microsoft.Compute/virtualMachines', variables('DcVmName'))]"
           ],
           "properties":{
-            "publisher": "Microsoft.Compute",
-            "type": "CustomScriptExtension",
+            "publisher": "Microsoft.PowerShell",
+            "type": "DSC",
             "autoUpgradeMinorVersion": true,
-            "typeHandlerVersion": "1.9",
+            "typeHandlerVersion": "2.9",
             "settings": {
-              "fileUris": [
-              "[variables('DcCustomScriptUri')]"
-              ],
-              "commandToExecute": "[variables('DcCustomScriptCommandToExecute')]"
+              "Modulesurl": "[variables('RepoDcPackageUri')]",
+              "ConfigurationFunction": "[variables('RepoDcCreateForestFunction')]",
+              "Properties": {
+                "DomainName": "[parameters('DomainName')]",
+                "AdminCreds": {
+                  "UserName": "[parameters('builtinAdministratorAccount')]",
+                  "Password": "PrivateSettingsRef:AdminPassword"
+                },
+                "SafeModeAdminCreds": {
+                  "UserName": "[parameters('builtinAdministratorAccount')]",
+                  "Password": "PrivateSettingsRef:SafeModeAdminPassword"
+                }
+              }
+            },
+            "ProtectedSettings":{
+              "Items": {
+                "AdminPassword": "[parameters('builtinAdministratorAccount')]",
+                "SafeModeAdminPassword": "[parameters('safeModeAdminPassword')]"
+              }
             }
           }
         }
@@ -206,7 +237,7 @@
       "dependsOn": [ 
         "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 1))]",
         "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),1))]",
-        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('DcVmName'), variables('DcCustomScriptExtensionName'))]"
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('DcVmName'), variables('DcPromoteDcDsc'))]"
       ],
       "properties":{
         "hardwareProfile": {
@@ -275,7 +306,7 @@
       "dependsOn": [ 
         "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 2))]",
         "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),2))]",
-        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('DcVmName'), variables('DcCustomScriptExtensionName'))]"
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('DcVmName'), variables('DcPromoteDcDsc'))]"
       ],
       "properties":{
         "hardwareProfile": {
