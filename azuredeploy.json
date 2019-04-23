@@ -51,6 +51,7 @@
     "GenericStorageAccountName": "[concat(uniqueString(resourceGroup().id), 'sa')]",
 
     "RepoLocation": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook",
+    "DcRepoLocation": "[concat(variables('RepoLocation'), 'DomainController')]",
     "RepoDcPackageUri": "[concat(variables('RepoLocation'), 'Dc.zip')]",
 
     "DcVmName": "ContosoDc",
@@ -203,7 +204,13 @@
             "publisher": "Microsoft.PowerShell",
             "type": "DSC",
             "autoUpgradeMinorVersion": true,
-            "typeHandlerVersion": "2.9",
+            "typeHandlerVersion": "2.77",
+            "ProtectedSettings":{
+              "Items": {
+                "AdminPassword": "[parameters('builtinAdministratorAccount')]",
+                "SafeModeAdminPassword": "[parameters('safeModeAdminPassword')]"
+              }
+            },
             "settings": {
               "Modulesurl": "[variables('RepoDcPackageUri')]",
               "ConfigurationFunction": "[variables('RepoDcCreateForestFunction')]",
@@ -214,15 +221,9 @@
                   "Password": "PrivateSettingsRef:AdminPassword"
                 },
                 "SafeModeAdminCreds": {
-                  "UserName": "[parameters('builtinAdministratorAccount')]",
+                  "UserName": "PLACEHOLDER_DO_NOT_USE",
                   "Password": "PrivateSettingsRef:SafeModeAdminPassword"
                 }
-              }
-            },
-            "ProtectedSettings":{
-              "Items": {
-                "AdminPassword": "[parameters('builtinAdministratorAccount')]",
-                "SafeModeAdminPassword": "[parameters('safeModeAdminPassword')]"
               }
             }
           }
