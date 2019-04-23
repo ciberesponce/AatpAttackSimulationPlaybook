@@ -26,6 +26,13 @@
         "description": "This is the FQDN of the Active Directory domain"
       }
     },
+    "NetBiosName": {
+      "type": "string",
+      "defaultValue": "CONTOSO",
+      "metadata": {
+        "description:": "NetBIOS name for the Forest"
+      }
+    },
     "safeModeAdminPassword": {
       "type": "securestring",
       "metadata": {
@@ -50,13 +57,11 @@
     "GenericPublicIpAddressName": "PublicIp",
     "GenericStorageAccountName": "[concat(uniqueString(resourceGroup().id), 'sa')]",
 
-    "RepoLocation": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook",
-    "DcRepoLocation": "[concat(variables('RepoLocation'), 'DomainController')]",
-    "RepoDcPackageUri": "[concat(variables('RepoLocation'), 'Dc.zip')]",
-
     "DcVmName": "ContosoDc",
     "DcPromoteDcDsc": "DcPromoDsc",
-    "RepoDcCreateForestFunction": "ProvisionDcDsc.ps1\\CreateNewADForest",
+    "DcRepoPackageUri": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DomainController/ProvisionDcDsc.zip",
+    "DcDscCreateForestFunction": "ProvisionDcDsc.ps1\\CreateNewADForest",
+    "DcDscHydrateUsersFunction": "ProvisionDcDsc.ps1\\HydrateUsers",
     
     "VictimVmName": "VictimPc",
     "VictimPcCustomScriptUri": "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/windows-hydratevictimpc/HydrateVictimPC.ps1",
@@ -212,10 +217,12 @@
               }
             },
             "settings": {
-              "Modulesurl": "[variables('RepoDcPackageUri')]",
-              "ConfigurationFunction": "[variables('RepoDcCreateForestFunction')]",
+              "Modulesurl": "[variables('DcRepoPackageUri')]",
+              "ConfigurationFunction": "[variables('DcDscCreateForestFunction')]",
               "Properties": {
                 "DomainName": "[parameters('DomainName')]",
+                "UserPrincipalName": "[parameters('UserPrincipalName')]",
+                "NetBiosName": "[parameters('NetBiosName')]",
                 "AdminCreds": {
                   "UserName": "[parameters('builtinAdministratorAccount')]",
                   "Password": "PrivateSettingsRef:AdminPassword"
