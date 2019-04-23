@@ -51,7 +51,7 @@ try {
 	Import-Module ADDSDeployment # Import libraries for ADDS
 	Install-ADDSForest -CreateDnsDelegation:$false -DatabasePath 'C:\Windows\NTDS' -DomainMode 'Win2012R2' -DomainName $DomainName `
 		-DomainNetbiosName $NetBiosName -ForestMode “Win2012R2” -InstallDns:$true -LogPath 'C:\Windows\NTDS' -SysvolPath 'C:\Windows\SYSVOL' `
-		-SafeModeAdministratorPassword (convertto-securestring $SafeModeAdminPass -asplaintext -force) -NoRebootOnCompletion:$false -Force
+		-SafeModeAdministratorPassword (convertto-securestring $SafeModeAdminPass -asplaintext -force) -Force
 
 	Write-Output '[+] ADDS Configured.'
 	Write-Output "[ ] Domain Name: $DomainName `n[ ] NetBios Name: $NetBiosName"
