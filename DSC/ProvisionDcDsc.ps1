@@ -104,6 +104,15 @@ Configuration CreateADForest
 			DependsOn = '[xADDomain]ContosoDC'
 		}
 
+		xWaitForADDomain DscForestWait
+		{
+				DomainName = $Node.DomainName
+				DomainUserCredential = $domainCred
+				RetryCount = $Node.RetryCount
+				RetryIntervalSec = $Node.RetryIntervalSec
+				DependsOn = "[xADDomain]ContosoDC"
+		}
+
 		xADUser SamiraA
 		{
 			DomainName = $DomainName
@@ -112,7 +121,7 @@ Configuration CreateADForest
 			Ensure = 'Present'
 			UserPrincipalName = $UserPrincipalName
 			PasswordNeverExpires = $true
-			DependsOn = "[xADForestProperties]ForestProps"
+			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
 		}
 
 		xADUser RonHD
@@ -122,7 +131,7 @@ Configuration CreateADForest
 			Password = $RonHdPassword
 			Ensure = 'Present'
 			PasswordNeverExpires = $true
-			DependsOn = '[xADForestProperties]ForestProps'
+			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
 		}
 
 		xADUser JeffL
@@ -132,7 +141,7 @@ Configuration CreateADForest
 			Password = $JeffLPassword
 			Ensure = 'Present'
 			PasswordNeverExpires = $true
-			DependsOn = '[xADForestProperties]ForestProps'
+			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
 		}
 
 		xADUser LisaV
@@ -142,7 +151,7 @@ Configuration CreateADForest
 			Password =  $LisaVPassword
 			Ensure = 'Present'
 			PasswordNeverExpires = $true
-			DependsOn = '[xADForestProperties]ForestProps'
+			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
 		}
 
 		xADGroup DomainAdmins
@@ -152,7 +161,7 @@ Configuration CreateADForest
 			GroupScope = 'Global'
 			MembershipAttribute = 'SamAccountName'
 			MembersToInclude = "$DomainName\SamiraA"
-			DependsOn = '[xADUser]SamiraA'
+			DependsOn = @("[xADUser]SamiraA", "[xWaitForADDomain]DscForestWait")
 		}
 
 		xADGroup Helpdesk
@@ -164,7 +173,7 @@ Configuration CreateADForest
 			DisplayName = 'Helpdesk'
 			MembershipAttribute = 'SamAccountName'
 			MembersToInclude = "$DomainName\RonHD"
-			DependsOn = '[xADUser]RonHD'
+			DependsOn = @("[xADUser]RonHD", "[xWaitForADDomain]DscForestWait")
 		}
 	} #end of node
 } #end of configuration
