@@ -61,7 +61,7 @@
     "DcVmName": "ContosoDc",
     "DcPromoteDcDsc": "DcPromoDsc",
     "DcRepoPackageUri": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/raw/master/DSC/ProvisionDcDsc.zip",
-    "DcDscCreateForestFunction": "ProvisionDcDsc.ps1\\CreateNewADForest",
+    "DcDscCreateForestFunction": "ProvisionDcDsc.ps1\\Main",
     "DcDscHydrateUsersFunction": "ProvisionDcDsc.ps1\\HydrateUsers",
     
     "VictimVmName": "VictimPc",
