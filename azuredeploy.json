@@ -42,9 +42,9 @@
     },
     "SamiraAPassword":{
       "type": "securestring",
-      "defaultValue": "NinjaCat123",
+      "defaultValue": "NinjaCat123!@#",
       "metadata": {
-        "description": "SamiraA password. Default is 'NinjaCat123'  SamiraA is Domain Admin"
+        "description": "SamiraA password. Default is 'NinjaCat123!@#'  SamiraA is Domain Admin."
       }
     },
     "RonHdPassword":{
@@ -84,7 +84,7 @@
     "DcPromoteDcDsc": "DcPromoDsc",
     "DcRepoPackageUri": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/raw/master/DSC/ProvisionDcDsc.zip",
     "DcDscCreateForestFunction": "ProvisionDcDsc.ps1\\CreateADForest",
-    
+
     "VictimVmName": "VictimPc",
 
     "AdminVmName": "AdminPc"
