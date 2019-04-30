@@ -106,10 +106,10 @@ Configuration CreateADForest
 
 		xWaitForADDomain DscForestWait
 		{
-				DomainName = $Node.DomainName
-				DomainUserCredential = $domainCred
-				RetryCount = $Node.RetryCount
-				RetryIntervalSec = $Node.RetryIntervalSec
+				DomainName = $DomainName
+				DomainUserCredential = $DomainCreds
+				RetryCount = $RetryCount
+				RetryIntervalSec = $RetryIntervalSec
 				DependsOn = "[xADDomain]ContosoDC"
 		}
 
