@@ -205,7 +205,7 @@
         "networkProfile":{
           "networkInterfaces":[
             {
-              "id": "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('GenericNicName'), 0))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 0))]"
             }
           ]
         },
