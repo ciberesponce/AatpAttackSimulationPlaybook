@@ -112,7 +112,7 @@ Configuration CreateADForest
 			Ensure = 'Present'
 			UserPrincipalName = $UserPrincipalName
 			PasswordNeverExpires = $true
-			DependsOn = '[xADForestProperties] ForestProps'
+			DependsOn = "[xADForestProperties]ForestProps"
 		}
 
 		xADUser RonHD
@@ -122,7 +122,7 @@ Configuration CreateADForest
 			Password = $RonHdPassword
 			Ensure = 'Present'
 			PasswordNeverExpires = $true
-			DependsOn = '[xADForestProperties] ForestProps'
+			DependsOn = '[xADForestProperties]ForestProps'
 		}
 
 		xADUser JeffL
@@ -132,7 +132,7 @@ Configuration CreateADForest
 			Password = $JeffLPassword
 			Ensure = 'Present'
 			PasswordNeverExpires = $true
-			DependsOn = '[xADForestProperties] ForestProps'
+			DependsOn = '[xADForestProperties]ForestProps'
 		}
 
 		xADUser LisaV
@@ -142,7 +142,7 @@ Configuration CreateADForest
 			Password =  $LisaVPassword
 			Ensure = 'Present'
 			PasswordNeverExpires = $true
-			DependsOn = '[xADForestProperties] ForestProps'
+			DependsOn = '[xADForestProperties]ForestProps'
 		}
 
 		xADGroup DomainAdmins
@@ -152,7 +152,7 @@ Configuration CreateADForest
 			GroupScope = 'Global'
 			MembershipAttribute = 'SamAccountName'
 			MembersToInclude = "$DomainName\SamiraA"
-			DependsOn = @('[xADUser]SamiraA', '[xADForestProperties] ForestProps')
+			DependsOn = '[xADUser]SamiraA'
 		}
 
 		xADGroup Helpdesk
@@ -164,7 +164,7 @@ Configuration CreateADForest
 			DisplayName = 'Helpdesk'
 			MembershipAttribute = 'SamAccountName'
 			MembersToInclude = "$DomainName\RonHD"
-			DependsOn = @('[xADUser]RonHD', '[xADForestProperties] ForestProps')
+			DependsOn = '[xADUser]RonHD'
 		}
 	} #end of node
 } #end of configuration

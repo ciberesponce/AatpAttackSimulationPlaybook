@@ -84,8 +84,7 @@
     "DcPromoteDcDsc": "DcPromoDsc",
     "DcRepoPackageUri": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/raw/master/DSC/ProvisionDcDsc.zip",
     "DcDscCreateForestFunction": "ProvisionDcDsc.ps1\\CreateADForest",
-    "DcDscHydrateUsersFunction": "ProvisionDcDsc.ps1\\HydrateUsers",
-
+    
     "VictimVmName": "VictimPc",
 
     "AdminVmName": "AdminPc"
