@@ -32,13 +32,6 @@
       "metadata": {
         "description:": "NetBIOS name for the Forest"
       }
-    },
-    "safeModeAdminPassword": {
-      "type": "securestring",
-      "defaultValue": "Password123!@#",
-      "metadata": {
-        "description": "The password for the safeModeAdministrator account for the DC. Default value is 'Password123!@#'"
-      }
     }
   },
   "variables": {
@@ -61,9 +54,8 @@
     "DcVmName": "ContosoDc",
     "DcPromoteDcDsc": "DcPromoDsc",
     "DcRepoPackageUri": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/raw/master/DSC/ProvisionDcDsc.zip",
-    "DcDscCreateForestFunction": "ProvisionDcDsc.ps1\\Main",
-    "DcDscHydrateUsersFunction": "ProvisionDcDsc.ps1\\HydrateUsers",
-    
+    "DcDscCreateForestFunction": "ProvisionDcDsc.ps1\\CreateADForest",
+  
     "VictimVmName": "VictimPc",
     "VictimPcCustomScriptUri": "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/windows-hydratevictimpc/HydrateVictimPC.ps1",
     "VictimPcCustomScriptCommandToExecute": "[concat('powershell.exe -NonInteractive -ExecutionPolicy bypass -File HydrateVictimPC.ps1')]",
@@ -211,12 +203,6 @@
             "type": "DSC",
             "autoUpgradeMinorVersion": true,
             "typeHandlerVersion": "2.77",
-            "ProtectedSettings":{
-              "Items": {
-                "AdminPassword": "[parameters('builtinAdministratorAccount')]",
-                "SafeModeAdminPassword": "[parameters('safeModeAdminPassword')]"
-              }
-            },
             "settings": {
               "Modulesurl": "[variables('DcRepoPackageUri')]",
               "script": "ProvisionDcDsc.ps1",
@@ -228,11 +214,12 @@
                 "AdminCreds": {
                   "UserName": "[parameters('builtinAdministratorAccount')]",
                   "Password": "PrivateSettingsRef:AdminPassword"
-                },
-                "SafeModeAdminCreds": {
-                  "UserName": "PLACEHOLDER_DO_NOT_USE",
-                  "Password": "PrivateSettingsRef:AdminPassword"
                 }
+              }
+            },
+            "ProtectedSettings":{
+              "Items": {
+                "AdminPassword": "[parameters('builtinAdministratorPassword')]"
               }
             }
           }

@@ -1,4 +1,4 @@
-Configuration Main
+Configuration CreateADForest
 {
 	param(
 		[Parameter(Mandatory=$false)]
@@ -11,18 +11,12 @@ Configuration Main
 		[System.Management.Automation.PSCredential] $AdminCreds,
 
 		[Parameter(Mandatory=$true)]
-		[System.Management.Automation.PSCredential] $SafeModeAdminPassword,
-
-		[Parameter(Mandatory=$true)]
 		[string] $UserPrincipalName = "seccxp.ninja",
 
 		[Int]$RetryCount=20,
 		[Int]$RetryIntervalSec=30
     )
 	Import-DscResource -ModuleName PSDesiredStateConfiguration, XActiveDirectory, xPendingReboot
-
-	[System.Management.Automation.PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential `
-        ("${DomainName}\$($Admincreds.UserName)", $Admincreds.Password)
 
 	Node localhost
 	{
@@ -57,6 +51,12 @@ Configuration Main
 			WindowsFeature RSAT_AD_Tools
 			{
 				Ensure = 'Present'
+				Name = 'RSAT-AD-PowerShell'
+			}
+
+			WindowsFeature RSAT_AD_Tools
+			{
+				Ensure = 'Present'
 				Name = 'RSAT-AD-Tools'
 			}
 
@@ -70,8 +70,8 @@ Configuration Main
 			{
 				DomainName = $DomainName
 				DomainNetbiosName = $NetBiosName
-				DomainAdministratorCredential = $DomainCreds
-				SafemodeAdministratorPassword = $SafeModeAdminPassword
+				DomainAdministratorCredential = $AdminCreds
+				SafemodeAdministratorPassword = $AdminCreds
 				ForestMode = 'Win2012R2'
 				DatabasePath = 'C:\Windows\NTDS'
 				LogPath = 'C:\Windows\NTDS'
