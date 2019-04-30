@@ -13,6 +13,18 @@ Configuration CreateADForest
 		[Parameter(Mandatory=$true)]
 		[string] $UserPrincipalName = "seccxp.ninja",
 
+		[Parameter(Mandatory=$true)]
+		[pscredential]$JeffLCreds,
+
+		[Parameter(Mandatory=$true)]
+		[pscredential]$SamiraACreds,
+
+		[Parameter(Mandatory=$true)]
+		[pscredential]$RonHdCreds,
+
+		[Parameter(Mandatory=$true)]
+		[pscredential]$LisaVCreds,
+
 		[Int]$RetryCount=20,
 		[Int]$RetryIntervalSec=30
     )
@@ -23,7 +35,7 @@ Configuration CreateADForest
 	$InterfaceAlias=$($Interface.Name)
 
 	[System.Management.Automation.PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($AdminCreds.UserName)", $AdminCreds.Password)
-		
+	
 	Node localhost
 	{
 		LocalConfigurationManager
@@ -91,59 +103,46 @@ Configuration CreateADForest
 			UserPrincipalNameSuffixToAdd = $UserPrincipalName
 			DependsOn = '[xADDomain]ContosoDC'
 		}
-	} #end of node
-} #end of configuration
 
-Configuration HydrateUsers
-{
-	param(
-		[string]$DomainName
-	)
-
-	Import-DscResource -ModuleName xActiveDirectory
-    
-	Node localhost
-	{
-		LocalConfigurationManager
-		{
-			RebootNodeIfNeeded = $true
-		}
-		#region Users
 		xADUser SamiraA
 		{
 			DomainName = $DomainName
 			UserName = 'SamiraA'
-			Password = ConvertTo-SecureString -String 'NinjaCat123' -AsPlainText -Force
+			Password = $SamiraAPassword
 			Ensure = 'Present'
 			UserPrincipalName = $UserPrincipalName
 			PasswordNeverExpires = $true
+			DependsOn = '[xADForestProperties] ForestProps'
 		}
 
 		xADUser RonHD
 		{
 			DomainName = $DomainName
 			UserName = 'RonHD'
-			Password = ConvertTo-SecureString -String 'FightingTiger$' -AsPlainText -Force
+			Password = $RonHdPassword
 			Ensure = 'Present'
 			PasswordNeverExpires = $true
+			DependsOn = '[xADForestProperties] ForestProps'
 		}
 
 		xADUser JeffL
 		{
 			DomainName = $DomainName
 			UserName = 'JeffL'
-			Password = ConvertTo-SecureString -String 'Password$fun' -AsPlainText -Force
+			Password = $JeffLPassword
 			Ensure = 'Present'
 			PasswordNeverExpires = $true
+			DependsOn = '[xADForestProperties] ForestProps'
 		}
 
 		xADUser LisaV
 		{
 			DomainName = $DomainName
 			UserName = 'LisaV'
-			Password =  ConvertTo-SecureString -String 'HightImpactUser1' -AsPlainText -Force
+			Password =  $LisaVPassword
 			Ensure = 'Present'
 			PasswordNeverExpires = $true
+			DependsOn = '[xADForestProperties] ForestProps'
 		}
 
 		xADGroup DomainAdmins
@@ -153,7 +152,7 @@ Configuration HydrateUsers
 			GroupScope = 'Global'
 			MembershipAttribute = 'SamAccountName'
 			MembersToInclude = "$DomainName\SamiraA"
-			DependsOn = '[xADUser]SamiraA'
+			DependsOn = @('[xADUser]SamiraA', '[xADForestProperties] ForestProps')
 		}
 
 		xADGroup Helpdesk
@@ -165,7 +164,7 @@ Configuration HydrateUsers
 			DisplayName = 'Helpdesk'
 			MembershipAttribute = 'SamAccountName'
 			MembersToInclude = "$DomainName\RonHD"
-			DependsOn = '[xADUser]RonHD'
+			DependsOn = @('[xADUser]RonHD', '[xADForestProperties] ForestProps')
 		}
-	}#end of Node
-} # end of configuration
+	} #end of node
+} #end of configuration

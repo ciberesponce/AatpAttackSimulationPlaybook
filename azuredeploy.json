@@ -32,7 +32,36 @@
       "metadata": {
         "description:": "NetBIOS name for the Forest"
       }
+    },
+    "JeffLPassword": {
+      "type": "securestring",
+      "defaultValue": "Password$fun",
+      "metadata": {
+        "description": "Password for JeffL. Default is 'Password$fun'  JeffL is admin on VictimPC (but no other domain credentials)."
+      }
+    },
+    "SamiraAPassword":{
+      "type": "securestring",
+      "defaultValue": "NinjaCat123",
+      "metadata": {
+        "description": "SamiraA password. Default is 'NinjaCat123'  SamiraA is Domain Admin"
+      }
+    },
+    "RonHdPassword":{
+      "type": "securestring",
+      "defaultValue": "FightingTiger$",
+      "metadata": {
+        "description": "RonHD's password. Default is FightingTiger$. RonHD is member of Helpdesk."
+      }
+    },
+    "LisaVPassword":{
+      "type": "securestring",
+      "defaultValue": "FightingTiger$",
+      "metadata": {
+        "description": "LisaV's password. By default it is 'HightImpactUser1'  LisaV has access to High Impact data and will be used in future labs."
+      }
     }
+
   },
   "variables": {
     "PrivateIpAddressesArray": {
@@ -211,12 +240,32 @@
                 "AdminCreds": {
                   "UserName": "[parameters('builtinAdministratorAccount')]",
                   "Password": "PrivateSettingsRef:AdminPassword"
+                },
+                "JeffLCreds":{
+                  "UserName": "JeffL",
+                  "Password": "PrivateSettingsRef:JeffLPassword"
+                },
+                "SamiraACreds": {
+                  "UserName": "SamiraA",
+                  "Password": "PrivateSettingsRef:SamiraAPassword"
+                },
+                "RonHdCreds": {
+                  "UserName": "RonHD",
+                  "Password": "PrivateSettingsRef:RonHDPassword"
+                },
+                "LisaVCreds": {
+                  "UserName": "LisaV",
+                  "Password": "PrivateSettingsRef:LisaVPassword"
                 }
               }
             },
             "ProtectedSettings":{
               "Items": {
-                "AdminPassword": "[parameters('builtinAdministratorPassword')]"
+                "AdminPassword": "[parameters('builtinAdministratorPassword')]",
+                "JeffLPassword": "[parameters('JeffLPassword')]",
+                "SamiraAPassword": "[parameters('SamiraAPassword')]",
+                "RonHDPassword": "[parameters('RonHdPassword')]",
+                "LisaVPassword": "[parameters('LisaVPassword')]"
               }
             }
           }
