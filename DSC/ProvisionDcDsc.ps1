@@ -23,7 +23,6 @@ Configuration CreateADForest
 	$InterfaceAlias=$($Interface.Name)
 
 	[System.Management.Automation.PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($AdminCreds.UserName)", $AdminCreds.Password)
-    
 		
 	Node localhost
 	{
@@ -92,69 +91,81 @@ Configuration CreateADForest
 			UserPrincipalNameSuffixToAdd = $UserPrincipalName
 			DependsOn = '[xADDomain]ContosoDC'
 		}
+	} #end of node
+} #end of configuration
 
-		# #region Users
-		# xADUser SamiraA
-		# {
-		# 	DomainName = $DomainName
-		# 	DomainAdministratorCredential = $DomainCreds
-		# 	UserName = 'SamiraA'
-		# 	Password = 'NinjaCat123'
-		# 	Ensure = 'Present'
-		# 	UserPrincipalName = $UserPrincipalName
-		# 	PasswordNeverExpires = $true
-		# }
-	
-		# xADUser RonHD
-		# {
-		# 	DomainName = $DomainName
-		# 	DomainAdministratorCredential = $DomainCreds
-		# 	UserName = 'RonHD'
-		# 	Password = 'FightingTiger$'
-		# 	Ensure = 'Present'
-		# 	PasswordNeverExpires = $true
-		# }
-	
-		# xADUser JeffL
-		# {
-		# 	DomainName = $DomainName
-		# 	DomainAdministratorCredential = $DomainCreds
-		# 	UserName = 'JeffL'
-		# 	Password = 'Password$fun'
-		# 	Ensure = 'Present'
-		# 	PasswordNeverExpires = $true
-		# }
-	
-		# xADUser LisaV
-		# {
-		# 	DomainName = $DomainName
-		# 	DomainAdministratorCredential = $DomainCreds
-		# 	UserName = 'LisaV'
-		# 	Password = 'HightImpactUser1'
-		# 	Ensure = 'Present'
-		# 	PasswordNeverExpires = $true
-		# }
-	
-		# xADGroup DomainAdmins
-		# {
-		# 	GroupName = 'Domain Admins'
-		# 	Category = 'Security'
-		# 	GroupScope = 'Global'
-		# 	MembershipAttribute = 'SamAccountName'
-		# 	MembersToInclude = "$DomainName\SamiraA"
-		# 	DependsOn = '[xADUser]SamiraA'
-		# }
-	
-		# xADGroup Helpdesk
-		# {
-		# 	GroupName = 'Helpdesk'
-		# 	Category = 'Security'
-		# 	GroupScope = 'Global'
-		# 	Description = 'Helpdesk for this domain'
-		# 	DisplayName = 'Helpdesk'
-		# 	MembershipAttribute = 'SamAccountName'
-		# 	MembersToInclude = "$DomainName\RonHD"
-		# 	DependsOn = '[xADUser]RonHD'
-		# }
+Configuration HydrateUsers
+{
+	param(
+		[string]$DomainName
+	)
+
+	Import-DscResource -ModuleName xActiveDirectory
+    
+	Node localhost
+	{
+		LocalConfigurationManager
+		{
+			RebootNodeIfNeeded = $true
+		}
+		#region Users
+		xADUser SamiraA
+		{
+			DomainName = $DomainName
+			UserName = 'SamiraA'
+			Password = ConvertTo-SecureString -String 'NinjaCat123' -AsPlainText -Force
+			Ensure = 'Present'
+			UserPrincipalName = $UserPrincipalName
+			PasswordNeverExpires = $true
+		}
+
+		xADUser RonHD
+		{
+			DomainName = $DomainName
+			UserName = 'RonHD'
+			Password = ConvertTo-SecureString -String 'FightingTiger$' -AsPlainText -Force
+			Ensure = 'Present'
+			PasswordNeverExpires = $true
+		}
+
+		xADUser JeffL
+		{
+			DomainName = $DomainName
+			UserName = 'JeffL'
+			Password = ConvertTo-SecureString -String 'Password$fun' -AsPlainText -Force
+			Ensure = 'Present'
+			PasswordNeverExpires = $true
+		}
+
+		xADUser LisaV
+		{
+			DomainName = $DomainName
+			UserName = 'LisaV'
+			Password =  ConvertTo-SecureString -String 'HightImpactUser1' -AsPlainText -Force
+			Ensure = 'Present'
+			PasswordNeverExpires = $true
+		}
+
+		xADGroup DomainAdmins
+		{
+			GroupName = 'Domain Admins'
+			Category = 'Security'
+			GroupScope = 'Global'
+			MembershipAttribute = 'SamAccountName'
+			MembersToInclude = "$DomainName\SamiraA"
+			DependsOn = '[xADUser]SamiraA'
+		}
+
+		xADGroup Helpdesk
+		{
+			GroupName = 'Helpdesk'
+			Category = 'Security'
+			GroupScope = 'Global'
+			Description = 'Helpdesk for this domain'
+			DisplayName = 'Helpdesk'
+			MembershipAttribute = 'SamAccountName'
+			MembersToInclude = "$DomainName\RonHD"
+			DependsOn = '[xADUser]RonHD'
+		}
 	}#end of Node
 } # end of configuration
