@@ -269,37 +269,6 @@
               }
             }
           }
-        },
-        {
-            "name": "",
-            "type": "extensions",
-            "apiVersion": "2018-10-01",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('DcDscCreateForestFunction'))]"
-            ],
-            "properties": {
-                "publisher": "Microsoft.Powershell",
-                "type": "DSC",
-                "typeHandlerVersion": "2.9",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                  "modulesUrl": "[variables('DcRepoPackageUri')]",
-                  "configurationFunction": "[variables('DcDscHydrateUsersFunction')]",
-                    "properties": {
-                        "DomaainName": "[parameters('DomainName')]",
-                        "AdminCreds": {
-                          "UserName": "[parameters('builtinAdministratorAccount')]",
-                          "Password": "PrivateSettingsRef:AdminPassword"
-                          }
-                    },
-                    "protectedSettings": {
-                      "Items": {
-                        "AdminPassword": "[parameters('builtinAdministratorPassword')]"
-                      }
-                    }
-                }
-            }
         }
       ]
     },
