@@ -181,7 +181,7 @@
       ],
       "properties":{
         "hardwareProfile": {
-          "vmSize": "Standard_A2_v2"
+          "vmSize": "Standard_A4_v2"
         },
         "osProfile": {
           "computerName": "[variables('DcVmName')]",
@@ -227,7 +227,7 @@
             "publisher": "Microsoft.Powershell",
             "type": "DSC",
             "autoUpgradeMinorVersion": true,
-            "typeHandlerVersion": "3.0",
+            "typeHandlerVersion": "2.9",
             "settings": {
               "modulesUrl": "[variables('DcRepoPackageUri')]",
               "script": "ProvisionDcDsc.ps1",
