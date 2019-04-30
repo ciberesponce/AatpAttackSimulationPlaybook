@@ -92,7 +92,7 @@ Configuration Main
 				DomainUserCredential = $DomainCreds
 				RetryCount = $RetryCount
 				RetryIntervalSec = $RetryIntervalSec
-				DependsOn = '[xADDomain ContosoDC]'
+				DependsOn = '[xADDomain]ContosoDC'
 			}
 
 			xPendingReboot Reboot
