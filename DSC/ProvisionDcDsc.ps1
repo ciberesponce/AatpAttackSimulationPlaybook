@@ -160,7 +160,7 @@ Configuration CreateADForest
 			Category = 'Security'
 			GroupScope = 'Global'
 			MembershipAttribute = 'SamAccountName'
-			MembersToInclude = "$DomainName\SamiraA"
+			MembersToInclude = "SamiraA"
 			DependsOn = @("[xADUser]SamiraA", "[xWaitForADDomain]DscForestWait")
 		}
 
@@ -172,7 +172,7 @@ Configuration CreateADForest
 			Description = 'Helpdesk for this domain'
 			DisplayName = 'Helpdesk'
 			MembershipAttribute = 'SamAccountName'
-			MembersToInclude = "$DomainName\RonHD"
+			MembersToInclude = "RonHD"
 			DependsOn = @("[xADUser]RonHD", "[xWaitForADDomain]DscForestWait")
 		}
 	} #end of node

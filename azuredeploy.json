@@ -56,9 +56,9 @@
     },
     "LisaVPassword":{
       "type": "securestring",
-      "defaultValue": "FightingTiger$",
+      "defaultValue": "HightImpactUser1!",
       "metadata": {
-        "description": "LisaV's password. By default it is 'HightImpactUser1'  LisaV has access to High Impact data and will be used in future labs."
+        "description": "LisaV's password. By default it is 'HightImpactUser1!'  LisaV has access to High Impact data and will be used in future labs."
       }
     }
 
@@ -227,7 +227,7 @@
             "publisher": "Microsoft.Powershell",
             "type": "DSC",
             "autoUpgradeMinorVersion": true,
-            "typeHandlerVersion": "2.9",
+            "typeHandlerVersion": "3.0",
             "settings": {
               "modulesUrl": "[variables('DcRepoPackageUri')]",
               "script": "ProvisionDcDsc.ps1",
