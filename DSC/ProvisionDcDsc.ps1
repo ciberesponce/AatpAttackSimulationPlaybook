@@ -16,25 +16,42 @@ Configuration CreateADForest
 		[Int]$RetryCount=20,
 		[Int]$RetryIntervalSec=30
     )
-	Import-DscResource -ModuleName PSDesiredStateConfiguration, XActiveDirectory, xPendingReboot
+	Import-DscResource -ModuleName PSDesiredStateConfiguration, XActiveDirectory, `
+		xPendingReboot, xNetworking, xStorage
 
+	$Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
+	$InterfaceAlias=$($Interface.Name)
+
+	[System.Management.Automation.PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($AdminCreds.UserName)", $AdminCreds.Password)
+    
+		
 	Node localhost
 	{
-		  LocalConfigurationManager{
-				ActionAfterReboot = 'ContinueConfiguration'
-				ConfigurationMode = 'ApplyOnly'
+			LocalConfigurationManager
+			{
 				RebootNodeIfNeeded = $true
 			}
-		   WindowsFeature DNS
+			
+			WindowsFeature DNS
 			{
 				Ensure = 'Present'
 				Name = 'DNS'
 			}
 
-			WindowsFeature RSAT{
-				Ensure = 'Present'
-				Name = 'RSAT'
+			xDnsServerAddress DnsServerAddress 
+			{ 
+				Address        = '127.0.0.1' 
+				InterfaceAlias = $InterfaceAlias
+				AddressFamily  = 'IPv4'
+				DependsOn = "[WindowsFeature]DNS"
 			}
+
+			WindowsFeature DnsTools
+	    {
+	        Ensure = "Present"
+          Name = "RSAT-DNS-Server"
+					DependsOn = "[WindowsFeature]DNS"
+	    }
 
 			WindowsFeature ADDSInstall
 			{
@@ -42,36 +59,26 @@ Configuration CreateADForest
 				Name = 'AD-Domain-Services'
 			}
 
-			WindowsFeature RSAT_ADDS
+			WindowsFeature ADDSTools
 			{
-				Ensure = 'Present'
-				Name = 'RSAT-ADDS'
+					Ensure = "Present"
+					Name = "RSAT-ADDS-Tools"
+					DependsOn = "[WindowsFeature]ADDSInstall"
 			}
 
-			WindowsFeature RSAT_AD_PowerShell
+			WindowsFeature ADAdminCenter
 			{
-				Ensure = 'Present'
-				Name = 'RSAT-AD-PowerShell'
-			}
-
-			WindowsFeature RSAT_AD_Tools
-			{
-				Ensure = 'Present'
-				Name = 'RSAT-AD-Tools'
-			}
-
-			WindowsFeature RSAT_Role_Tools
-			{
-				Ensure = 'Present'
-				Name = 'RSAT-Role-Tools'
+					Ensure = "Present"
+					Name = "RSAT-AD-AdminCenter"
+					DependsOn = "[WindowsFeature]ADDSInstall"
 			}
 
 			xADDomain ContosoDC
 			{
 				DomainName = $DomainName
 				DomainNetbiosName = $NetBiosName
-				DomainAdministratorCredential = $AdminCreds
-				SafemodeAdministratorPassword = $AdminCreds
+				DomainAdministratorCredential = $DomainCreds
+				SafemodeAdministratorPassword = $DomainCreds
 				ForestMode = 'Win2012R2'
 				DatabasePath = 'C:\Windows\NTDS'
 				LogPath = 'C:\Windows\NTDS'
@@ -83,15 +90,6 @@ Configuration CreateADForest
 			{
 				ForestName = $DomainName
 				UserPrincipalNameSuffixToAdd = $UserPrincipalName
-				DependsOn = '[xADDomain]ContosoDC'
-			}
-
-			xWaitForADDomain DscForestWait
-			{
-				DomainName = $DomainName
-				DomainUserCredential = $DomainCreds
-				RetryCount = $RetryCount
-				RetryIntervalSec = $RetryIntervalSec
 				DependsOn = '[xADDomain]ContosoDC'
 			}
 
