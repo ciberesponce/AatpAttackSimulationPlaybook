@@ -35,6 +35,7 @@
     },
     "safeModeAdminPassword": {
       "type": "securestring",
+      "defaultValue": "Password123!@#",
       "metadata": {
         "description": "The password for the safeModeAdministrator account for the DC. Default value is 'Password123!@#'"
       }
@@ -218,6 +219,7 @@
             },
             "settings": {
               "Modulesurl": "[variables('DcRepoPackageUri')]",
+              "script": "ProvisionDcDsc.ps1",
               "ConfigurationFunction": "[variables('DcDscCreateForestFunction')]",
               "Properties": {
                 "DomainName": "[parameters('DomainName')]",
@@ -229,7 +231,7 @@
                 },
                 "SafeModeAdminCreds": {
                   "UserName": "PLACEHOLDER_DO_NOT_USE",
-                  "Password": "PrivateSettingsRef:SafeModeAdminPassword"
+                  "Password": "PrivateSettingsRef:AdminPassword"
                 }
               }
             }
