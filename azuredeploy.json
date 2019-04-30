@@ -60,7 +60,7 @@
 
     "DcVmName": "ContosoDc",
     "DcPromoteDcDsc": "DcPromoDsc",
-    "DcRepoPackageUri": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DomainController/ProvisionDcDsc.zip",
+    "DcRepoPackageUri": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/raw/master/DSC/ProvisionDcDsc.zip",
     "DcDscCreateForestFunction": "ProvisionDcDsc.ps1\\CreateNewADForest",
     "DcDscHydrateUsersFunction": "ProvisionDcDsc.ps1\\HydrateUsers",
     
