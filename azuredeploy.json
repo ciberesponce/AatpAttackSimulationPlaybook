@@ -57,12 +57,8 @@
     "DcDscCreateForestFunction": "ProvisionDcDsc.ps1\\CreateADForest",
   
     "VictimVmName": "VictimPc",
-    "VictimPcCustomScriptUri": "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/windows-hydratevictimpc/HydrateVictimPC.ps1",
-    "VictimPcCustomScriptCommandToExecute": "[concat('powershell.exe -NonInteractive -ExecutionPolicy bypass -File HydrateVictimPC.ps1')]",
 
-    "AdminVmName": "AdminPc",
-    "AdminPcCustomScriptUri": "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/windows-hydrateadminpc/HydrateAdminPC.ps1",
-    "AdminPcCustomScriptCommandToExecute": "[concat('powershell.exe -NonInteractive -ExecutionPolicy bypass -File HydrateAdminPc.ps1')]"
+    "AdminVmName": "AdminPc"
   },
   "resources": [
     {
@@ -199,15 +195,15 @@
             "[resourceId('Microsoft.Compute/virtualMachines', variables('DcVmName'))]"
           ],
           "properties":{
-            "publisher": "Microsoft.PowerShell",
+            "publisher": "Microsoft.Powershell",
             "type": "DSC",
             "autoUpgradeMinorVersion": true,
-            "typeHandlerVersion": "2.77",
+            "typeHandlerVersion": "2.9",
             "settings": {
-              "Modulesurl": "[variables('DcRepoPackageUri')]",
+              "modulesUrl": "[variables('DcRepoPackageUri')]",
               "script": "ProvisionDcDsc.ps1",
-              "ConfigurationFunction": "[variables('DcDscCreateForestFunction')]",
-              "Properties": {
+              "configurationFunction": "[variables('DcDscCreateForestFunction')]",
+              "properties": {
                 "DomainName": "[parameters('DomainName')]",
                 "UserPrincipalName": "[parameters('UserPrincipalName')]",
                 "NetBiosName": "[parameters('NetBiosName')]",
@@ -270,30 +266,7 @@
             "enabled": false
           }
         }
-      },
-      "resources": [
-        {
-          "type": "extensions",
-          "apiVersion": "2018-10-01",
-          "name": "VictimPcCustomScript",
-          "location": "[resourceGroup().location]",
-          "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', variables('VictimVmName'))]"
-          ],
-          "properties":{
-            "publisher": "Microsoft.Compute",
-            "type": "CustomScriptExtension",
-            "autoUpgradeMinorVersion": true,
-            "typeHandlerVersion": "1.9",
-            "settings": {
-              "fileUris": [
-              "[variables('VictimPcCustomScriptUri')]"
-              ],
-              "commandToExecute": "[variables('VictimPcCustomScriptCommandToExecute')]"
-            }
-          }
-        }
-      ]
+      }
     },
     {
       "type": "Microsoft.Compute/virtualMachines",
@@ -339,30 +312,7 @@
             "enabled": false
           }
         }
-      },
-      "resources": [
-        {
-          "type": "extensions",
-          "apiVersion": "2018-10-01",
-          "name": "AdminPcCustomScript",
-          "location": "[resourceGroup().location]",
-          "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', variables('AdminVmName'))]"
-          ],
-          "properties":{
-            "publisher": "Microsoft.Compute",
-            "type": "CustomScriptExtension",
-            "autoUpgradeMinorVersion": true,
-            "typeHandlerVersion": "1.9",
-            "settings": {
-              "fileUris": [
-              "[variables('AdminPcCustomScriptUri')]"
-              ],
-              "commandToExecute": "[variables('AdminPcCustomScriptCommandToExecute')]"
-            }
-          }
-        }
-      ]
+      }
     }
   ]
 }

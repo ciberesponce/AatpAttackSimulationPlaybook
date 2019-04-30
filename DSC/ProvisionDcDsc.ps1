@@ -8,7 +8,7 @@ Configuration CreateADForest
 		[string]$NetBiosName='Contoso',
 
 		[Parameter(Mandatory=$true)]
-		[System.Management.Automation.PSCredential] $AdminCreds,
+		[PSCredential] $AdminCreds,
 
 		[Parameter(Mandatory=$true)]
 		[string] $UserPrincipalName = "seccxp.ninja",
@@ -48,7 +48,7 @@ Configuration CreateADForest
 				Name = 'RSAT-ADDS'
 			}
 
-			WindowsFeature RSAT_AD_Tools
+			WindowsFeature RSAT_AD_PowerShell
 			{
 				Ensure = 'Present'
 				Name = 'RSAT-AD-PowerShell'
