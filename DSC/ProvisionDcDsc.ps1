@@ -29,7 +29,7 @@ Configuration CreateADForest
 		[Int]$RetryIntervalSec=30
     )
 	Import-DscResource -ModuleName PSDesiredStateConfiguration, XActiveDirectory, `
-		xPendingReboot, xNetworking, xStorage
+		xPendingReboot, xNetworking, xStorage, xDefender
 
 	$Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
 	$InterfaceAlias=$($Interface.Name)
@@ -175,5 +175,19 @@ Configuration CreateADForest
 			MembersToInclude = "RonHD"
 			DependsOn = @("[xADUser]RonHD", "[xWaitForADDomain]DscForestWait")
 		}
+
+		xMpPreference DefenderSettings
+		{
+			Name = 'DefenderProperties'
+			DisableRealtimeMonitoring = $true
+			ExclusionPath = 'c:\Temp'
+		}
+
+		# scheduled tasks section
+		# https://github.com/PowerShell/ComputerManagementDsc/wiki/ScheduledTask
+		# good way to avert attackers knowing if its planted there via other means
+		# would also mean can't do this via ScheduledTask, that it would need to run as a real Extension 
+		# applied every XXX minutes
+
 	} #end of node
 } #end of configuration
