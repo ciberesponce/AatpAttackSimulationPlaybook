@@ -27,11 +27,12 @@ Configuration CreateADForest
 
 		[Int]$RetryCount=20,
 		[Int]$RetryIntervalSec=30
-    )
-	Import-DscResource -ModuleName PSDesiredStateConfiguration, XActiveDirectory, `
-		xPendingReboot, xNetworking, xStorage, xDefender
+	)
+	
+	Import-DscResource -ModuleName PSDesiredStateConfiguration, XActiveDirectory, xPendingReboot, `
+		xNetworking, xStorage, xDefender
 
-	$Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
+	$Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
 	$InterfaceAlias=$($Interface.Name)
 
 	[System.Management.Automation.PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($AdminCreds.UserName)", $AdminCreds.Password)
@@ -100,7 +101,7 @@ Configuration CreateADForest
 		xADForestProperties ForestProps
 		{
 			ForestName = $DomainName
-			UserPrincipalNameSuffixToAdd = $UserPrincipalName
+			UserPrincipalNameSuffixToAdd = $ # important for AAD Connect purposes
 			DependsOn = '[xADDomain]ContosoDC'
 		}
 
@@ -113,7 +114,7 @@ Configuration CreateADForest
 				DependsOn = "[xADDomain]ContosoDC"
 		}
 
-		xADUser SamiraA
+		xADUser SamiraA # Domain Admin
 		{
 			DomainName = $DomainName
 			UserName = 'SamiraA'
@@ -124,7 +125,7 @@ Configuration CreateADForest
 			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
 		}
 
-		xADUser RonHD
+		xADUser RonHD # Helpdesk
 		{
 			DomainName = $DomainName
 			UserName = 'RonHD'
@@ -134,7 +135,7 @@ Configuration CreateADForest
 			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
 		}
 
-		xADUser JeffL
+		xADUser JeffL # Victim
 		{
 			DomainName = $DomainName
 			UserName = 'JeffL'
@@ -144,7 +145,7 @@ Configuration CreateADForest
 			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
 		}
 
-		xADUser LisaV
+		xADUser LisaV # Access to High Impact Data
 		{
 			DomainName = $DomainName
 			UserName = 'LisaV'
