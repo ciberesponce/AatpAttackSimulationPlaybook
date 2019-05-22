@@ -4,7 +4,7 @@ Configuration SetupAdminPc
         # Credential to domain join
         [Parameter(Mandatory=$true)]
         [PSCredential]
-        $DomainJoinCredential,
+        $DomainCreds,
 
         # DomainName
         [Parameter(Mandatory=$true)]
@@ -13,13 +13,16 @@ Configuration SetupAdminPc
     )
     Import-DscResource -ModuleName xComputerManagement, xDefender, xPSDesiredStateConfiguration 
 
+	[System.Management.Automation.PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($DomainCreds.UserName)", $DomainCreds.Password)
+
+
     Node localhost
     {
         xComputer NameComputer
         {
             Name = 'AdminPC'
             DomainName = $DomainName
-            Credential = $DomainJoinCredential
+            Credential = $DomainCreds
         }
 
         xMpPreference DefenderSettings

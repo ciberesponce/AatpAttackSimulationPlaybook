@@ -387,7 +387,7 @@
               "configurationFunction": "[variables('AdminPcDscFunction')]",
               "script": "ProvisionAdminPcDsc.ps1",
               "properties": {
-                "DomainJoinCredential": {
+                "DomainCreds": {
                   "UserName": "[concat(parameters('NetBiosName'),'\\RonHD')]",
                   "Password": "PrivateSettingsRef:RonHDPassword"
                 },
