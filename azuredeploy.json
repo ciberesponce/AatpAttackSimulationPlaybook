@@ -86,8 +86,14 @@
     "DcDscCreateForestFunction": "ProvisionDcDsc.ps1\\CreateADForest",
 
     "VictimVmName": "VictimPc",
+    "VictimPcDscName": "VictimPcDsc",
+    "VictimPcDscRepoPackageUri": "",
+    "VictimPcDscFunction": "ProvisionVictimPcDsc.ps1\\SetupVictimPc",
 
-    "AdminVmName": "AdminPc"
+    "AdminPcVmName": "AdminPc",
+    "AdminPcDscName": "AdminPcDsc",
+    "AdminPcDscRepoPackageUri": "",
+    "AdminPcDscFunction": "ProvisionAdminPcDsc.ps1\\SetupAdminPc"
   },
   "resources": [
     {
@@ -320,7 +326,7 @@
     {
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2018-10-01",
-      "name": "[variables('AdminVmName')]",
+      "name": "[variables('AdminPcVmName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [ 
         "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 2))]",
@@ -332,7 +338,7 @@
           "vmSize": "Standard_A2_v2"
         },
         "osProfile": {
-          "computerName": "[variables('AdminVmName')]",
+          "computerName": "[variables('AdminPcVmName')]",
           "adminUsername": "[parameters('builtinAdministratorAccount')]",
           "adminPassword": "[parameters('builtinAdministratorPassword')]"
         },
@@ -361,7 +367,41 @@
             "enabled": false
           }
         }
-      }
+      },
+      "resources": [
+        {
+          "type": "extensions",
+          "apiVersion": "2018-10-01",
+          "location": "[resourceGroup().location]",
+          "name": "[variables('AdminPcDscName')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Compute/virtualMachines', variables('AdminPcVmName'))]"
+          ],
+          "properties": {
+            "type": "DSC",
+            "publisher": "Microsoft.Powershell",
+            "autoUpgradeMinorVersion": true,
+            "typeHandlerVersion": "2.9",
+            "settings": {
+              "modulesUrl": "[variables('AdminPcDscRepoPackageUri')]",
+              "configurationFunction": "[variables('AdminPcDscFunction')]",
+              "script": "ProvisionAdminPcDsc.ps1",
+              "properties": {
+                "DomainJoinCredential": {
+                  "UserName": "[concat(parameters('NetBiosName'),'\\RonHD')]",
+                  "Password": "PrivateSettingsRef:RonHDPassword"
+                },
+                "DomainName": "[parameters('DomainName')]"
+              }
+            },
+            "ProtectedSettings":{
+              "Items":{
+                "RonHDPassword": "[parameters('RonHdPassword')]"
+              }
+            }
+          }
+        }
+      ]
     }
   ]
 }

@@ -29,7 +29,7 @@ Configuration CreateADForest
 		[Int]$RetryIntervalSec=30
 	)
 	
-	Import-DscResource -ModuleName PSDesiredStateConfiguration, XActiveDirectory, xPendingReboot, `
+	Import-DscResource -ModuleName xPSDesiredStateConfiguration, XActiveDirectory, xPendingReboot, `
 		xNetworking, xStorage, xDefender
 
 	$Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
@@ -181,7 +181,7 @@ Configuration CreateADForest
 		{
 			Name = 'DefenderProperties'
 			DisableRealtimeMonitoring = $true
-			ExclusionPath = 'c:\Temp'
+			ExclusionPath = 'C:\Temp'
 		}
 
 		# scheduled tasks section
