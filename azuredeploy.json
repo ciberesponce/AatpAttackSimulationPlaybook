@@ -92,7 +92,7 @@
 
     "AdminPcVmName": "AdminPc",
     "AdminPcDscName": "AdminPcDsc",
-    "AdminPcDscRepoPackageUri": "",
+    "AdminPcDscRepoPackageUri": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/raw/master/DSC/ProvisionAdminPcDsc.zip",
     "AdminPcDscFunction": "ProvisionAdminPcDsc.ps1\\SetupAdminPc"
   },
   "resources": [
