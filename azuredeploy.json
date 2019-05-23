@@ -87,7 +87,7 @@
 
     "VictimVmName": "VictimPc",
     "VictimPcDscName": "VictimPcDsc",
-    "VictimPcDscRepoPackageUri": "",
+    "VictimPcDscRepoPackageUri": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionVictimPcDsc.zip?raw=true",
     "VictimPcDscFunction": "ProvisionVictimPcDsc.ps1\\SetupVictimPc",
 
     "AdminPcVmName": "AdminPc",
@@ -269,7 +269,7 @@
                 "AdminPassword": "[parameters('builtinAdministratorPassword')]",
                 "JeffLPassword": "[parameters('JeffLPassword')]",
                 "SamiraAPassword": "[parameters('SamiraAPassword')]",
-                "RonHDPassword": "[parameters('RonHdPassword')]",
+                "RonHDPassword": "[parameters('RonHDPassword')]",
                 "LisaVPassword": "[parameters('LisaVPassword')]"
               }
             }

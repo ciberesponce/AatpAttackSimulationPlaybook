@@ -2,33 +2,33 @@ Configuration CreateADForest
 {
 	param(
 		[Parameter(Mandatory=$false)]
-		[String]$DomainName='Contoso.Azure',
+		[string]$DomainName='Contoso.Azure',
 
 		[Parameter(Mandatory=$false)]
 		[string]$NetBiosName='Contoso',
 
 		[Parameter(Mandatory=$true)]
-		[PSCredential] $AdminCreds,
+		[PSCredential]$AdminCreds,
 
 		[Parameter(Mandatory=$true)]
-		[string] $UserPrincipalName = "seccxp.ninja",
+		[string]$UserPrincipalName = "seccxp.ninja",
 
 		[Parameter(Mandatory=$true)]
-		[pscredential]$JeffLCreds,
+		[PSCredential]$JeffLCreds,
 
 		[Parameter(Mandatory=$true)]
-		[pscredential]$SamiraACreds,
+		[PSCredential]$SamiraACreds,
 
 		[Parameter(Mandatory=$true)]
-		[pscredential]$RonHdCreds,
+		[PSCredential]$RonHdCreds,
 
 		[Parameter(Mandatory=$true)]
-		[pscredential]$LisaVCreds,
+		[PSCredential]$LisaVCreds,
 
-		[Int]$RetryCount=20,
-		[Int]$RetryIntervalSec=30
+		[int]$RetryCount=20,
+		[int]$RetryIntervalSec=30
 	)
-	
+
 	Import-DscResource -ModuleName xPSDesiredStateConfiguration, xActiveDirectory, xPendingReboot, xNetworking, xStorage, xDefender
 
 	$Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
