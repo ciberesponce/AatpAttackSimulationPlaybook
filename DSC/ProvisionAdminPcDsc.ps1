@@ -39,6 +39,7 @@ Configuration SetupAdminPc
             Name = 'AdminPC'
             DomainName = $DomainName
             Credential = $DomainCreds
+            DependsOn = "[xDnsServerAddress]DnsSettings"
         }
 
         xMpPreference DefenderSettings
@@ -53,7 +54,7 @@ Configuration SetupAdminPc
             GroupName = 'Administrators'
             MembersToInclude = "$DomainName\RonHD"
             Ensure = 'Present'
-            DependsOn = '[xMpPreference]DefenderSettings'
+            DependsOn = '[xComputer]NameComputer'
         }
     }
 }
