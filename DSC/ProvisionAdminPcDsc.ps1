@@ -9,15 +9,31 @@ Configuration SetupAdminPc
         # DomainName
         [Parameter(Mandatory=$true)]
         [String]
-        $DomainName
+        $DomainName,
+
+        # DNS Server in case not set by vNet
+        [Parameter(Mandatory=$true)]
+        [string]
+        $DnsServer
     )
-    Import-DscResource -ModuleName xComputerManagement, xDefender, xPSDesiredStateConfiguration 
+    Import-DscResource -ModuleName xComputerManagement, xDefender, xPSDesiredStateConfiguration, xNetworking, xStorage, xDefender, `
+    PSDesiredStateConfiguration
 
 	[System.Management.Automation.PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($DomainCreds.UserName)", $DomainCreds.Password)
 
+    $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
+	$InterfaceAlias=$($Interface.Name)
 
     Node localhost
     {
+        xDnsServerAddress DnsSettings
+        {
+            Address = $DnsServer
+            InterfaceAlias = $InterfaceAlias
+            AddressFamily = "IPv4"
+            Validate = $true
+        }
+
         xComputer NameComputer
         {
             Name = 'AdminPC'
