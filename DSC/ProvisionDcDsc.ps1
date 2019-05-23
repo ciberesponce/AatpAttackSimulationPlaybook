@@ -17,7 +17,7 @@ Configuration CreateADForest
 		[System.Management.Automation.PSCredential]$JeffLCreds,
 
 		[Parameter(Mandatory=$true)]
-		[PSCSystem.Management.Automation.PSCredentialredential]$SamiraACreds,
+		[System.Management.Automation.PSCredential]$SamiraACreds,
 
 		[Parameter(Mandatory=$true)]
 		[System.Management.Automation.PSCredential]$RonHdCreds,
