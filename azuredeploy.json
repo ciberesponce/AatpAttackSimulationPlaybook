@@ -287,8 +287,7 @@
       "location": "[resourceGroup().location]",
       "dependsOn": [ 
         "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 1))]",
-        "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),1))]",
-        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('DcVmName'), variables('DcPromoteDcDsc'))]"
+        "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),1))]"
       ],
       "properties":{
         "hardwareProfile": {
@@ -333,8 +332,7 @@
       "location": "[resourceGroup().location]",
       "dependsOn": [ 
         "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 2))]",
-        "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),2))]",
-        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('DcVmName'), variables('DcPromoteDcDsc'))]"
+        "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),2))]"
       ],
       "properties":{
         "hardwareProfile": {
@@ -378,7 +376,8 @@
           "location": "[resourceGroup().location]",
           "name": "[variables('AdminPcDscName')]",
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', variables('AdminPcVmName'))]"
+            "[resourceId('Microsoft.Compute/virtualMachines', variables('AdminPcVmName'))]",
+            "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('DcVmName'), variables('DcPromoteDcDsc'))]"
           ],
           "properties": {
             "type": "DSC",
