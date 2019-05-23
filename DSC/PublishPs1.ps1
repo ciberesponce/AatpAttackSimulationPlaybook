@@ -1,5 +1,5 @@
 $items = Get-ChildItem ".\DSC\*.ps1" -Exclude "PublishPs1.ps1","HydrateAdminPC.ps1","HydrateVictimPC.ps1"
-Write-Host "[ ] Publishing $items as Dsc Modules" -ForegroundColor Cyan
+Write-Host "[!] Publishing $($items.Count) as DSC Modules" -ForegroundColor Cyan
 foreach ($item in $items){
     $filename = $item.Name
     $basefile = $filename.Split('.')[0]
