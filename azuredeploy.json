@@ -233,7 +233,7 @@
             "publisher": "Microsoft.Powershell",
             "type": "DSC",
             "autoUpgradeMinorVersion": true,
-            "typeHandlerVersion": "2.9",
+            "typeHandlerVersion": "2.77",
             "settings": {
               "modulesUrl": "[variables('DcRepoPackageUri')]",
               "script": "ProvisionDcDsc.ps1",
@@ -381,7 +381,7 @@
             "type": "DSC",
             "publisher": "Microsoft.Powershell",
             "autoUpgradeMinorVersion": true,
-            "typeHandlerVersion": "2.9",
+            "typeHandlerVersion": "2.77",
             "settings": {
               "modulesUrl": "[variables('AdminPcDscRepoPackageUri')]",
               "configurationFunction": "[variables('AdminPcDscFunction')]",

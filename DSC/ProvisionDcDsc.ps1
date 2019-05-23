@@ -8,28 +8,29 @@ Configuration CreateADForest
 		[string]$NetBiosName='Contoso',
 
 		[Parameter(Mandatory=$true)]
-		[PSCredential]$AdminCreds,
+		[System.Management.Automation.PSCredential]$AdminCreds,
 
 		[Parameter(Mandatory=$true)]
 		[string]$UserPrincipalName = "seccxp.ninja",
 
 		[Parameter(Mandatory=$true)]
-		[PSCredential]$JeffLCreds,
+		[System.Management.Automation.PSCredential]$JeffLCreds,
 
 		[Parameter(Mandatory=$true)]
-		[PSCredential]$SamiraACreds,
+		[PSCSystem.Management.Automation.PSCredentialredential]$SamiraACreds,
 
 		[Parameter(Mandatory=$true)]
-		[PSCredential]$RonHdCreds,
+		[System.Management.Automation.PSCredential]$RonHdCreds,
 
 		[Parameter(Mandatory=$true)]
-		[PSCredential]$LisaVCreds,
+		[System.Management.Automation.PSCredential]$LisaVCreds,
 
 		[int]$RetryCount=20,
 		[int]$RetryIntervalSec=30
 	)
 
-	Import-DscResource -ModuleName xPSDesiredStateConfiguration, xActiveDirectory, xPendingReboot, xNetworking, xStorage, xDefender
+	Import-DscResource -ModuleName PSDesiredStateConfiguration, xActiveDirectory, xPendingReboot, `
+		xNetworking, xStorage, xDefender
 
 	$Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
 	$InterfaceAlias=$($Interface.Name)
