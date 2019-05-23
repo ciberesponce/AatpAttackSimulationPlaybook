@@ -391,10 +391,10 @@
               "script": "ProvisionAdminPcDsc.ps1",
               "properties": {
                 "DomainCreds": {
-                  "UserName": "[concat(parameters('NetBiosName'),'\\RonHD')]",
+                  "UserName": "RonHD",
                   "Password": "PrivateSettingsRef:RonHDPassword"
                 },
-                "DomainName": "[parameters('DomainName')]",
+                "NetBiosName": "[parameters('NetBiosName')]",
                 "DnsServer": "[variables('PrivateIpAddressesArray').Ip[0]]"
               }
             },

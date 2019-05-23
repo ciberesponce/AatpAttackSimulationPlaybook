@@ -1,10 +1,10 @@
 Configuration CreateADForest
 {
 	param(
-		[Parameter(Mandatory=$false)]
+		[Parameter(Mandatory=$true)]
 		[string]$DomainName='Contoso.Azure',
 
-		[Parameter(Mandatory=$false)]
+		[Parameter(Mandatory=$true)]
 		[string]$NetBiosName='Contoso',
 
 		[Parameter(Mandatory=$true)]

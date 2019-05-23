@@ -9,17 +9,17 @@ Configuration SetupAdminPc
         # DomainName
         [Parameter(Mandatory=$true)]
         [String]
-        $DomainName,
+        $NetBiosName,
 
         # DNS Server in case not set by vNet
         [Parameter(Mandatory=$true)]
-        [string]
+        [String]
         $DnsServer
     )
     Import-DscResource -ModuleName xComputerManagement, xDefender, xPSDesiredStateConfiguration, xNetworking, xStorage, xDefender, `
     PSDesiredStateConfiguration
 
-	[System.Management.Automation.PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($DomainCreds.UserName)", $DomainCreds.Password)
+	[System.Management.Automation.PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($DomainCreds.UserName)", $DomainCreds.Password)
 
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
 	$InterfaceAlias=$($Interface.Name)
@@ -34,7 +34,7 @@ Configuration SetupAdminPc
             Validate = $true
         }
 
-        xComputer NameComputer
+        xComputer JoinDomain
         {
             Name = 'AdminPC'
             DomainName = $DomainName
@@ -52,9 +52,9 @@ Configuration SetupAdminPc
         xGroup AddAdmins
         {
             GroupName = 'Administrators'
-            MembersToInclude = "$DomainName\RonHD"
+            MembersToInclude = "Helpdesk"
             Ensure = 'Present'
-            DependsOn = '[xComputer]NameComputer'
+            DependsOn = '[xComputer]JoinDomain'
         }
     }
 }
