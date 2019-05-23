@@ -105,13 +105,13 @@
         "addressSpace": { 
           "addressPrefixes": [ "10.0.24.0/24" ] },
         "dhcpOptions":{
-          "dnsServers": "[variables('PrivateIpAddressesArray').Ip[0]]",
+          "dnsServers": "[variables('PrivateIpAddressesArray').Ip[0]]"
         },
         "subnets": [
           {
             "name": "[variables('vNetSubnetName')]",
             "properties": { 
-              "addressPrefix": "10.0.24.0/24",
+              "addressPrefix": "10.0.24.0/24"
             }
           }
         ]
