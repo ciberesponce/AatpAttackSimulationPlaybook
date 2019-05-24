@@ -395,14 +395,6 @@
                 "NetBiosName": "[parameters('NetBiosName')]",
                 "DomainName": "[parameters('DomainName')]"
               }
-            },
-            "ProtectedSettings": {
-              "configurationArguments": {
-                "RonHdCreds": {
-                  "UserName": "RonHD",
-                  "Password": "[parameters('RonHdPassword')]"
-                }
-              }
             }
           }
         }

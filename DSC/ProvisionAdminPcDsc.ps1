@@ -9,7 +9,8 @@ Configuration SetupAdminPc
 
         [Parameter(Mandatory=$true)]
         [string]$DomainName
-	)
+    )
+    
     Import-DscResource -ModuleName xComputerManagement, xDefender, xPSDesiredStateConfiguration, `
     xNetworking, xStorage, xDefender, xPSDesiredStateConfiguration
 
