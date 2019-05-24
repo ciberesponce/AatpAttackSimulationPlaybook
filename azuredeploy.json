@@ -244,36 +244,32 @@
               "properties": {
                 "DomainName": "[parameters('DomainName')]",
                 "UserPrincipalName": "[parameters('UserPrincipalName')]",
-                "NetBiosName": "[parameters('NetBiosName')]",
-                "AdminCreds": {
-                  "UserName": "[parameters('builtinAdministratorAccount')]",
-                  "Password": "PrivateSettingsRef:AdminPassword"
-                },
-                "JeffLCreds":{
-                  "UserName": "JeffL",
-                  "Password": "PrivateSettingsRef:JeffLPassword"
-                },
-                "SamiraACreds": {
-                  "UserName": "SamiraA",
-                  "Password": "PrivateSettingsRef:SamiraAPassword"
-                },
-                "RonHdCreds": {
-                  "UserName": "RonHD",
-                  "Password": "PrivateSettingsRef:RonHDPassword"
-                },
-                "LisaVCreds": {
-                  "UserName": "LisaV",
-                  "Password": "PrivateSettingsRef:LisaVPassword"
-                }
+                "NetBiosName": "[parameters('NetBiosName')]"
+
               }
             },
             "ProtectedSettings":{
               "Items": {
-                "AdminPassword": "[parameters('builtinAdministratorPassword')]",
-                "JeffLPassword": "[parameters('JeffLPassword')]",
-                "SamiraAPassword": "[parameters('SamiraAPassword')]",
-                "RonHDPassword": "[parameters('RonHDPassword')]",
-                "LisaVPassword": "[parameters('LisaVPassword')]"
+                "AdminCreds": {
+                  "UserName": "[parameters('builtinAdministratorAccount')]",
+                  "Password": "[parameters('builtinAdministratorPassword')]"
+                },
+                "JeffLCreds":{
+                  "UserName": "JeffL",
+                  "Password": "[parameters('JeffLPassword')]"
+                },
+                "SamiraACreds": {
+                  "UserName": "SamiraA",
+                  "Password": "[parameters('SamiraAPassword')]"
+                },
+                "RonHdCreds": {
+                  "UserName": "RonHD",
+                  "Password": "[parameters('RonHdPassword')]"
+                },
+                "LisaVCreds": {
+                  "UserName": "LisaV",
+                  "Password": "[parameters('LisaVPassword')]"
+                }
               }
             }
           }
