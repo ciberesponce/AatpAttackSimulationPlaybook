@@ -83,12 +83,10 @@
     "DcVmName": "ContosoDc",
     "DcPromoteDcDsc": "DcPromoDsc",
     "DcRepoPackageUri": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/raw/master/DSC/ProvisionDcDsc.zip",
-    "DcDscCreateForestFunction": "ProvisionDcDsc.ps1\\CreateADForest",
 
     "VictimVmName": "VictimPc",
     "VictimPcDscName": "VictimPcDsc",
     "VictimPcDscRepoPackageUri": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionVictimPcDsc.zip?raw=true",
-    "VictimPcDscFunction": "ProvisionVictimPcDsc.ps1\\SetupVictimPc",
 
     "AdminPcVmName": "AdminPc",
     "AdminPcDscName": "AdminPcDsc",
@@ -385,13 +383,13 @@
             "settings": {
               "wmfVersion": "latest",
               "configuration": {
-                "url": "[variables('AdminPcDscRepoPackageUri')]",
+                "url": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionAdminPcDsc.zip?raw=true",
                 "script": "ProvisionAdminPcDsc.ps1",
                 "function": "SetupAdminPc"
               },
               "configurationArguments": {
                 "DomainName": "[parameters('DomainName')]",
-                "DnsServer": "[variables('PrivateIpAddressesArray').Ip[0]]"
+                "DnsServer": "[string(variables('PrivateIpAddressesArray').Ip[0])]"
               }
             },
             "protectedSettings": {
