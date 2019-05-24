@@ -4,11 +4,11 @@ Configuration SetupAdminPc
 		# [Parameter(Mandatory=$true)]
         # [PSCredential]$RonHdCreds,
         
-        [Parameter(Mandatory=$true)]
-        [string]$NetBiosName,
+        [Parameter(Mandatory=$false)]
+        [string]$NetBiosName="CONTOSO",
 
-        [Parameter(Mandatory=$true)]
-        [string]$DomainName
+        [Parameter(Mandatory=$false)]
+        [string]$DomainName="Contoso.Azure"
     )
     
     Import-DscResource -ModuleName xComputerManagement, xDefender, xPSDesiredStateConfiguration, `

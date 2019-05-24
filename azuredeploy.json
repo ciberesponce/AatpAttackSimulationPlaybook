@@ -390,10 +390,6 @@
                 "url": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionAdminPcDsc.zip?raw=true",
                 "script": "ProvisionAdminPcDsc.ps1",
                 "function": "SetupAdminPc"
-              },
-              "configurationArguments": {
-                "NetBiosName": "[parameters('NetBiosName')]",
-                "DomainName": "[parameters('DomainName')]"
               }
             }
           }
