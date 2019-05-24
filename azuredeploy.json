@@ -381,12 +381,11 @@
             "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('DcVmName'), variables('DcPromoteDcDsc'))]"
           ],
           "properties":{
+            "publisher": "Microsoft.Powershell",
             "type": "DSC",
             "autoUpgradeMinorVersion": true,
-            "publisher": "Microsoft.Powershell",
             "typeHandlerVersion": "2.77",
             "settings": {
-              "wmfVersion": "latest",
               "configuration": {
                 "url": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionAdminPcDsc.zip?raw=true",
                 "script": "ProvisionAdminPcDsc.ps1",
@@ -397,7 +396,7 @@
                 "DomainName": "[parameters('DomainName')]"
               }
             },
-            "protectedSettings": {
+            "ProtectedSettings": {
               "configurationArguments": {
                 "RonHdCreds": {
                   "UserName": "RonHD",
