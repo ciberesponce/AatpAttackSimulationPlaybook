@@ -5,12 +5,15 @@ Configuration SetupAdminPc
         [PSCredential]$RonHdCreds,
         
         [Parameter(Mandatory=$true)]
+        [string]$NetBiosName,
+
+        [Parameter(Mandatory=$true)]
         [string]$DomainName
 	)
     Import-DscResource -ModuleName xComputerManagement, xDefender, xPSDesiredStateConfiguration, `
     xNetworking, xStorage, xDefender, xPSDesiredStateConfiguration
 
-	[PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($RonHdCreds.UserName)", $RonHdCreds.Password)
+	[PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($RonHdCreds.UserName)", $RonHdCreds.Password)
 
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
 	$InterfaceAlias=$($Interface.Name)
