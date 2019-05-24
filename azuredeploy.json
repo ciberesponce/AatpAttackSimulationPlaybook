@@ -384,6 +384,11 @@
             "publisher": "Microsoft.Powershell",
             "autoUpgradeMinorVersion": true,
             "typeHandlerVersion": "2.77",
+            "protectedSettings": {
+              "Items":{
+                "RonHDPassword": "[parameters('RonHdPassword')]"
+              }
+            },
             "settings": {
               "modulesUrl": "[variables('AdminPcDscRepoPackageUri')]",
               "configurationFunction": "[variables('AdminPcDscFunction')]",
@@ -391,15 +396,10 @@
               "properties": {
                 "DomainCreds": {
                   "UserName": "RonHD",
-                  "Password": "PrivateSettingsRef:RonHDPassword"
+                  "Password": "PrivateSettingsRef:RonHdPassword"
                 },
                 "NetBiosName": "[parameters('NetBiosName')]",
                 "DnsServer": "[variables('PrivateIpAddressesArray').Ip[0]]"
-              }
-            },
-            "ProtectedSettings":{
-              "Items":{
-                "RonHDPassword": "[parameters('RonHdPassword')]"
               }
             }
           }

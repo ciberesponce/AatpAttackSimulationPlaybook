@@ -170,11 +170,11 @@ Configuration CreateADForest
 			GroupName = 'Helpdesk'
 			Category = 'Security'
 			GroupScope = 'Global'
-			Description = 'Helpdesk for this domain'
+			Description = 'Tier-2 (desktop) Helpdesk for this domain'
 			DisplayName = 'Helpdesk'
 			MembershipAttribute = 'SamAccountName'
 			MembersToInclude = "RonHD"
-			DependsOn = @("[xADUser]RonHD", "[xWaitForADDomain]DscForestWait")
+			DependsOn = @("[xADUser]RonHD","[xWaitForADDomain]DscForestWait")
 		}
 
 		xMpPreference DefenderSettings
