@@ -8,22 +8,22 @@ Configuration CreateADForest
 		[string]$NetBiosName='Contoso',
 
 		[Parameter(Mandatory=$true)]
-		[System.Management.Automation.PSCredential]$AdminCreds,
+		[PSCredential]$AdminCreds,
 
 		[Parameter(Mandatory=$true)]
 		[string]$UserPrincipalName = "seccxp.ninja",
 
 		[Parameter(Mandatory=$true)]
-		[System.Management.Automation.PSCredential]$JeffLCreds,
+		[PSCredential]$JeffLCreds,
 
 		[Parameter(Mandatory=$true)]
-		[System.Management.Automation.PSCredential]$SamiraACreds,
+		[PSCredential]$SamiraACreds,
 
 		[Parameter(Mandatory=$true)]
-		[System.Management.Automation.PSCredential]$RonHdCreds,
+		[PSCredential]$RonHdCreds,
 
 		[Parameter(Mandatory=$true)]
-		[System.Management.Automation.PSCredential]$LisaVCreds,
+		[PSCredential]$LisaVCreds,
 
 		[int]$RetryCount=20,
 		[int]$RetryIntervalSec=30
@@ -35,7 +35,7 @@ Configuration CreateADForest
 	$Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
 	$InterfaceAlias=$($Interface.Name)
 
-	[System.Management.Automation.PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($AdminCreds.UserName)", $AdminCreds.Password)
+	[PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($AdminCreds.UserName)", $AdminCreds.Password)
 	
 	Node localhost
 	{

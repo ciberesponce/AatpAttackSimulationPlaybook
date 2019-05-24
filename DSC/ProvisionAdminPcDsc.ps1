@@ -3,7 +3,7 @@ Configuration SetupAdminPc
     param(
         # Credential to domain join
         [Parameter(Mandatory=$true)]
-		[System.Management.Automation.PSCredential]$DomainCreds,
+		[PSCredential]$DomainCreds,
 
         # DomainName
         [Parameter(Mandatory=$true)]

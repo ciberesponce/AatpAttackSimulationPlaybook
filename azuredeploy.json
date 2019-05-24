@@ -2,38 +2,38 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "builtinAdministratorAccount": {
+    "builtinAdministratorAccount":{
       "type": "string",
       "defaultValue": "ContosoAdmin",
       "metadata": { "description": "Builtin\\Administrator account's name for the Virtual Machines. This is not a domain account." }
     },
-    "builtinAdministratorPassword": {
+    "builtinAdministratorPassword":{
       "type": "securestring",
       "defaultValue": "Password123!@#",
       "metadata": { "description": "Password for the Builtin Administrator account. Default is 'Password123!@#'" }
     },
-    "UserPrincipalName": {
+    "UserPrincipalName":{
       "type": "string",
       "defaultValue": "seccxp.ninja",
       "metadata": { 
         "description": "The UPN for users who will be provisioned in Active Directory.  Useful when later using AAD Connect" 
       }
     },
-    "DomainName": {
+    "DomainName":{
       "type": "string",
       "defaultValue": "Contoso.Azure",
       "metadata": {
         "description": "This is the FQDN of the Active Directory domain"
       }
     },
-    "NetBiosName": {
+    "NetBiosName":{
       "type": "string",
       "defaultValue": "CONTOSO",
       "metadata": {
         "description:": "NetBIOS name for the Forest"
       }
     },
-    "JeffLPassword": {
+    "JeffLPassword":{
       "type": "securestring",
       "defaultValue": "Password$fun",
       "metadata": {
@@ -379,27 +379,29 @@
             "[resourceId('Microsoft.Compute/virtualMachines', variables('AdminPcVmName'))]",
             "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('DcVmName'), variables('DcPromoteDcDsc'))]"
           ],
-          "properties": {
+          "properties":{
             "type": "DSC",
-            "publisher": "Microsoft.Powershell",
             "autoUpgradeMinorVersion": true,
+            "publisher": "Microsoft.Powershell",
             "typeHandlerVersion": "2.77",
-            "protectedSettings": {
-              "Items":{
-                "RonHDPassword": "[parameters('RonHdPassword')]"
-              }
-            },
             "settings": {
-              "modulesUrl": "[variables('AdminPcDscRepoPackageUri')]",
-              "configurationFunction": "[variables('AdminPcDscFunction')]",
-              "script": "ProvisionAdminPcDsc.ps1",
-              "properties": {
-                "DomainCreds": {
-                  "UserName": "RonHD",
-                  "Password": "PrivateSettingsRef:RonHdPassword"
-                },
+              "wmfVersion": "latest",
+              "configuration": {
+                "url": "[variables('AdminPcDscRepoPackageUri')]",
+                "script": "ProvisionAdminPcDsc.ps1",
+                "function": "SetupAdminPc"
+              },
+              "configurationArguments": {
                 "NetBiosName": "[parameters('NetBiosName')]",
                 "DnsServer": "[variables('PrivateIpAddressesArray').Ip[0]]"
+              }
+            },
+            "protectedSettings": {
+              "configurationArguments": {
+                "DomainCreds": {
+                  "UserName": "RonHD",
+                  "Password": "[parameters('RonHdPassword')]"
+                }
               }
             }
           }
