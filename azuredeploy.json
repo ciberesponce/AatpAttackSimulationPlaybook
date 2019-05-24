@@ -396,7 +396,7 @@
             },
             "protectedSettings": {
               "configurationArguments": {
-                "DomainCreds": {
+                "RonHdCreds": {
                   "UserName": "RonHD",
                   "Password": "[parameters('RonHdPassword')]"
                 }

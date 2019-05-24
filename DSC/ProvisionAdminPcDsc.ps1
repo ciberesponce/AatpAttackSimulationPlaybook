@@ -2,7 +2,7 @@ Configuration SetupAdminPc
 {
     param(
 		[Parameter(Mandatory=$true)]
-        [PSCredential]$DomainCreds,
+        [PSCredential]$RonHdCreds,
         
         [Parameter(Mandatory=$true)]
         [string]$DomainName,
@@ -13,7 +13,7 @@ Configuration SetupAdminPc
     Import-DscResource -ModuleName xComputerManagement, xDefender, xPSDesiredStateConfiguration, xNetworking, xStorage, xDefender, `
     PSDesiredStateConfiguration
 
-	[System.Management.Automation.PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($DomainCreds.UserName)", $DomainCreds.Password)
+	[PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($RonHdCreds.UserName)", $RonHdCreds.Password)
 
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
 	$InterfaceAlias=$($Interface.Name)
