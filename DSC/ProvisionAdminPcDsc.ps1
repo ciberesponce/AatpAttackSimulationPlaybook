@@ -5,13 +5,10 @@ Configuration SetupAdminPc
         [PSCredential]$RonHdCreds,
         
         [Parameter(Mandatory=$true)]
-        [string]$DomainName,
-
-        [Parameter(Mandatory=$true)]
-        [string]$DnsServer
+        [string]$DomainName
 	)
     Import-DscResource -ModuleName xComputerManagement, xDefender, xPSDesiredStateConfiguration, xNetworking, xStorage, xDefender, `
-    PSDesiredStateConfiguration
+    xPSDesiredStateConfiguration
 
 	[PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($RonHdCreds.UserName)", $RonHdCreds.Password)
 
@@ -20,13 +17,13 @@ Configuration SetupAdminPc
 
     Node localhost
     {
-        xDnsServerAddress DnsSettings
-        {
-            Address = $DnsServer
-            InterfaceAlias = $InterfaceAlias
-            AddressFamily = "IPv4"
-            Validate = $true
-        }
+        # xDnsServerAddress DnsSettings
+        # {
+        #     Address = $DnsServer
+        #     InterfaceAlias = $InterfaceAlias
+        #     AddressFamily = "IPv4"
+        #     Validate = $true
+        # }
 
         xComputer JoinDomain
         {

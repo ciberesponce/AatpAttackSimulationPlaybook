@@ -388,8 +388,7 @@
                 "function": "SetupAdminPc"
               },
               "configurationArguments": {
-                "DomainName": "[parameters('DomainName')]",
-                "DnsServer": "[string(variables('PrivateIpAddressesArray').Ip[0])]"
+                "DomainName": "[parameters('DomainName')]"
               }
             },
             "protectedSettings": {
