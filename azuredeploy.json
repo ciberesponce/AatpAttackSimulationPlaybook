@@ -238,10 +238,12 @@
             "autoUpgradeMinorVersion": true,
             "typeHandlerVersion": "2.77",
             "settings": {
-              "modulesUrl": "[variables('DcRepoPackageUri')]",
-              "script": "ProvisionDcDsc.ps1",
-              "configurationFunction": "[variables('DcDscCreateForestFunction')]",
-              "properties": {
+              "configuration": {
+                "url": "[variables('DcRepoPackageUri')]",
+                "script": "ProvisionDcDsc.ps1",
+                "function": "CreateADForest"
+              },
+              "configurationArguments": {
                 "DomainName": "[parameters('DomainName')]",
                 "UserPrincipalName": "[parameters('UserPrincipalName')]",
                 "NetBiosName": "[parameters('NetBiosName')]"
@@ -249,7 +251,7 @@
               }
             },
             "ProtectedSettings":{
-              "Items": {
+              "configurationArguments": {
                 "AdminCreds": {
                   "UserName": "[parameters('builtinAdministratorAccount')]",
                   "Password": "[parameters('builtinAdministratorPassword')]"
@@ -388,7 +390,7 @@
                 "function": "SetupAdminPc"
               },
               "configurationArguments": {
-                "NetBiosName": "[parameters('NetBiosName')]",
+                "DomainName": "[parameters('DomainName')]",
                 "DnsServer": "[variables('PrivateIpAddressesArray').Ip[0]]"
               }
             },
