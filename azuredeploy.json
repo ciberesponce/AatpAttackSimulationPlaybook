@@ -249,8 +249,9 @@
               "configurationArguments": {
                 "DomainName": "[parameters('DomainName')]",
                 "UserPrincipalName": "[parameters('UserPrincipalName')]",
-                "NetBiosName": "[parameters('NetBiosName')]"
-
+                "NetBiosName": "[parameters('NetBiosName')]",
+                "AllowModuleOverwrite": true
+                }
               }
             },
             "ProtectedSettings":{
@@ -390,6 +391,9 @@
                 "url": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionAdminPcDsc.zip?raw=true",
                 "script": "ProvisionAdminPcDsc.ps1",
                 "function": "SetupAdminPc"
+              },
+              "configurationArguments": {
+                "AllowModuleOverwrite": true
               }
             }
           }
