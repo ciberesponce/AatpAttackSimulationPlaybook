@@ -249,9 +249,7 @@
               "configurationArguments": {
                 "DomainName": "[parameters('DomainName')]",
                 "UserPrincipalName": "[parameters('UserPrincipalName')]",
-                "NetBiosName": "[parameters('NetBiosName')]",
-                "AllowModuleOverwrite": true
-                }
+                "NetBiosName": "[parameters('NetBiosName')]"
               }
             },
             "ProtectedSettings":{
