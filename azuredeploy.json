@@ -82,16 +82,11 @@
 
     "DcVmName": "ContosoDc",
     "DcPromoteDcDsc": "DcPromoDsc",
-    "DcRepoPackageUri": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/raw/master/DSC/ProvisionDcDsc.zip",
 
     "VictimVmName": "VictimPc",
-    "VictimPcDscName": "VictimPcDsc",
-    "VictimPcDscRepoPackageUri": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionVictimPcDsc.zip?raw=true",
 
     "AdminPcVmName": "AdminPc",
-    "AdminPcDscName": "AdminPcDsc",
-    "AdminPcDscRepoPackageUri": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/raw/master/DSC/ProvisionAdminPcDsc.zip",
-    "AdminPcDscFunction": "ProvisionAdminPcDsc.ps1\\SetupAdminPc"
+    "AdminPcDscName": "AdminPcDsc"
   },
   "resources": [
     {
@@ -242,7 +237,7 @@
             "typeHandlerVersion": "2.77",
             "settings": {
               "configuration": {
-                "url": "[variables('DcRepoPackageUri')]",
+                "url": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/raw/master/DSC/ProvisionDcDsc.zip",
                 "script": "ProvisionDcDsc.ps1",
                 "function": "CreateADForest"
               },
