@@ -72,7 +72,7 @@
         "10.0.24.11"
       ]
     },
-    "DeploymentVnetDnsName": "Configuration for VNet DNS",
+    "DeploymentVnetDnsName": "vNetDnsSettingsDeployment",
 
     "vNetAddressPrefix": "10.0.24.0/24",
     "vNetName": "AatpSaPlaybook-vNet",
