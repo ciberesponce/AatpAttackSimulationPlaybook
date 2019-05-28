@@ -278,10 +278,25 @@
       "properties":{
         "mode": "Incremental",
         "templateLink": {
-          "uri": ""
+          "uri": "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/Nested/VNetConfiguration.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters":{
+          "virtualNetworkName": {
+            "value": "[variables('vNetName')]"
+          },
+          "dnsServers": {
+            "value": "[string(variables('PrivateIpAddressesArray').Ip[0])]"
+          },
+          "subnets":
+          {
+            "value": "[variables('vNetSubnetName')]"
+          },
+          "addressPrefix": {
+            "value": "[variables('vNetAddressPrefix')]"
+          }
         }
       }
-
     },
     {
       "type": "Microsoft.Compute/virtualMachines",
