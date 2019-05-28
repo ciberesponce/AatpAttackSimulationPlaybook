@@ -23,13 +23,19 @@ Configuration SetupAdminPc
 
     Node localhost
     {
-        # xDnsServerAddress DnsSettings
-        # {
-        #     Address = $DnsServer
-        #     InterfaceAlias = $InterfaceAlias
-        #     AddressFamily = "IPv4"
-        #     Validate = $true
-        # }
+		LocalConfigurationManager
+		{
+            RebootNodeIfNeeded = $true
+            AllowModuleOverwrite = $true
+        }
+        
+        xDnsServerAddress DnsSettings
+        {
+            Address = $DnsServer
+            InterfaceAlias = $InterfaceAlias
+            AddressFamily = "IPv4"
+            Validate = $true
+        }
 
         xComputer JoinDomain
         {

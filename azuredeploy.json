@@ -286,7 +286,7 @@
             "value": "[variables('vNetName')]"
           },
           "dnsServers": {
-            "value": "[string(variables('PrivateIpAddressesArray').Ip[0])]"
+            "value": "[variables('PrivateIpAddressesArray').Ip[0]]"
           },
           "subnets":
           {
@@ -407,9 +407,6 @@
                 "url": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionAdminPcDsc.zip?raw=true",
                 "script": "ProvisionAdminPcDsc.ps1",
                 "function": "SetupAdminPc"
-              },
-              "configurationArguments": {
-                "AllowModuleOverwrite": true
               }
             }
           }
