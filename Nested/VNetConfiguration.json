@@ -6,7 +6,7 @@
       "addressPrefix": {
         "type": "string"
       },
-      "dnsServers": {
+      "dnsServer": {
         "type": "array",
         "defaultValue": [ ]
       },
@@ -33,7 +33,7 @@
             ]
           },
           "dhcpOptions": {
-            "dnsServers": "[parameters('dnsServers')]"
+            "dnsServers": "[parameters('dnsServer')]"
           },
           "subnets": "[parameters('subnets')]"
         }

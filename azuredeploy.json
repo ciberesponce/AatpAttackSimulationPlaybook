@@ -286,14 +286,14 @@
             "value": "[variables('vNetName')]"
           },
           "dnsServers": {
-            "value": "[variables('PrivateIpAddressesArray').Ip[0]]"
+            "value": "[array(variables('PrivateIpAddressesArray').Ip[0])]"
           },
           "subnets":
           {
-            "value": "[variables('vNetSubnetName')]"
+            "value": "[array(variables('vNetSubnetName'))]"
           },
           "addressPrefix": {
-            "value": "[variables('vNetAddressPrefix')]"
+            "value": "[string(variables('vNetAddressPrefix'))]"
           }
         }
       }
