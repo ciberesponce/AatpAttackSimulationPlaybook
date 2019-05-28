@@ -285,14 +285,21 @@
           "virtualNetworkName": {
             "value": "[variables('vNetName')]"
           },
-          "dnsServer":{
+          "dnsServers":{
             "value": "[array(variables('PrivateIpAddressesArray').Ip[0])]"
           },
+          "addressPrefix": {
+            "value": "[variables('vNetAddressPrefix')]"
+          },
           "subnets":{
-            "value": "[variables('vNetSubnetName')]",
-            "properties":{ 
-              "addressPrefix": "[string(variables('vNetAddressPrefix'))]"
-            }
+            "value": [
+              {
+                "name": "[variables('vNetSubnetName')]",
+                "properties":{
+                  "addressPrefix": "[variables('vNetAddressPrefix')]"
+                }
+              }
+            ]
           }
         }
       }
@@ -394,7 +401,7 @@
           "name": "[variables('AdminPcDscName')]",
           "dependsOn": [
             "[resourceId('Microsoft.Compute/virtualMachines', variables('AdminPcVmName'))]",
-            "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('DcVmName'), variables('DcPromoteDcDsc'))]"
+            "[resourceId('Microsoft.Resources/deployments', variables('DeploymentVnetDnsName'))]"
           ],
           "properties":{
             "publisher": "Microsoft.Powershell",
