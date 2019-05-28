@@ -72,6 +72,9 @@
         "10.0.24.11"
       ]
     },
+    "DeploymentVnetDnsName": "Configuration for VNet DNS",
+
+    "vNetAddressPrefix": "10.0.24.0/24",
     "vNetName": "AatpSaPlaybook-vNet",
     "vNetSubnetName": "Subnet",
     "vSubnetRefId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNetName'), variables('vNetSubnetName'))]",
@@ -96,15 +99,13 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "addressSpace": { 
-          "addressPrefixes": [ "10.0.24.0/24" ] },
-        "dhcpOptions":{
-          "dnsServers": "[string(variables('PrivateIpAddressesArray').Ip[0])]"
+          "addressPrefixes": [ "[variables('vNetAddressPrefix')]" ] 
         },
         "subnets": [
           {
             "name": "[variables('vNetSubnetName')]",
             "properties": { 
-              "addressPrefix": "10.0.24.0/24"
+              "addressPrefix": "[variables('vNetAddressPrefix')]"
             }
           }
         ]
@@ -169,12 +170,7 @@
               }
             }
           }
-        ],
-        "dnsSettings":{
-          "dnsServers":[
-            "[string(variables('PrivateIpAddressesArray').Ip[0])]"
-          ]
-        }
+        ]
       }
     },
     {
@@ -274,6 +270,18 @@
           }
         }
       ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2017-05-10",
+      "name": "[variables('DeploymentVnetDnsName')]",
+      "properties":{
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": ""
+        }
+      }
+
     },
     {
       "type": "Microsoft.Compute/virtualMachines",
