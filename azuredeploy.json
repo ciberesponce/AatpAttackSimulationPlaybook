@@ -285,15 +285,14 @@
           "virtualNetworkName": {
             "value": "[variables('vNetName')]"
           },
-          "dnsServers": {
+          "dnsServer":{
             "value": "[array(variables('PrivateIpAddressesArray').Ip[0])]"
           },
-          "subnets":
-          {
-            "value": "[array(variables('vNetSubnetName'))]"
-          },
-          "addressPrefix": {
-            "value": "[string(variables('vNetAddressPrefix'))]"
+          "subnets":{
+            "value": "[variables('vNetSubnetName')]",
+            "properties":{ 
+              "addressPrefix": "[string(variables('vNetAddressPrefix'))]"
+            }
           }
         }
       }
