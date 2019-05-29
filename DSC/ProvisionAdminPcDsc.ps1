@@ -19,7 +19,7 @@ Configuration SetupAdminPc
     # $User = $AdminCred.UserName
     # $Pass = $AdminCred.Password
 
-    Import-DscResource -ModuleName xPSDesiredStateConfiguration, xComputerManagement, xDefender
+    Import-DscResource -ModuleName xDefender
 
 	# [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($RonHdCreds.UserName)", $RonHdCreds.Password)
 	[PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$User)", $Pass)
@@ -34,12 +34,12 @@ Configuration SetupAdminPc
             ActionAfterReboot = 'ContinueConfiguration'
         }
 
-        xComputer JoinDomain
-        {
-            Name = 'AdminPC'
-            DomainName = $DomainName
-            Credential = $Creds
-        }
+        # xComputer JoinDomain
+        # {
+        #     Name = 'AdminPC'
+        #     DomainName = $DomainName
+        #     Credential = $Creds
+        # }
 
         xMpPreference DefenderSettings
         {
@@ -48,12 +48,12 @@ Configuration SetupAdminPc
             DisableRealtimeMonitoring = $true
         }
 
-        xGroup AddAdmins
-        {
-            GroupName = 'Administrators'
-            MembersToInclude = "Helpdesk"
-            Ensure = 'Present'
-            DependsOn = '[xComputer]JoinDomain'
-        }
+        # xGroup AddAdmins
+        # {
+        #     GroupName = 'Administrators'
+        #     MembersToInclude = "Helpdesk"
+        #     Ensure = 'Present'
+        #     DependsOn = '[xComputer]JoinDomain'
+        # }
     }
 }
