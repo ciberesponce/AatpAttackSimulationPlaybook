@@ -19,17 +19,16 @@ Configuration SetupAdminPc
     # $User = $AdminCred.UserName
     # $Pass = $AdminCred.Password
 
-    Import-DscResource -ModuleName xComputerManagement, xDefender, xPSDesiredStateConfiguration, `
-    xNetworking, xStorage, xDefender, PSDesiredStateConfiguration
+    Import-DscResource -ModuleName xPSDesiredStateConfiguration, xComputerManagement, xDefender
 
 	# [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($RonHdCreds.UserName)", $RonHdCreds.Password)
-
-    [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("$NetBiosName\$User", "$Pass")
+	[PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$User)", $Pass)
 
     Node localhost
     {
 		LocalConfigurationManager
 		{
+            ConfigurationMode = 'ApplyOnly'
             RebootNodeIfNeeded = $true
             AllowModuleOverwrite = $true
             ActionAfterReboot = 'ContinueConfiguration'
