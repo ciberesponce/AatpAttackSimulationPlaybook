@@ -1,17 +1,25 @@
 Configuration SetupAdminPc
 {
-    $NetBiosName=[string]"CONTOSO"
-    $DomainName=[string]"Contoso.Azure"
-    
+    param(
+        [Parameter(Mandatory=$true)]
+        [string] $DomainName,
+        
+        [Parameter(Mandatory=$true)]
+        [string] $NetBiosName,
+
+        [Parameter(Mandatory=$true)]
+        [PSCredential] $AdminCred
+    )
+
     Import-DscResource -ModuleName xComputerManagement, xDefender, xPSDesiredStateConfiguration, `
-    xNetworking, xStorage, xDefender, xPSDesiredStateConfiguration
+    xNetworking, xStorage, xDefender, PSDesiredStateConfiguration
 
 	# [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($RonHdCreds.UserName)", $RonHdCreds.Password)
 
-    [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("$NetBiosName\RonHD", "FightingTiger$")
+    $User = $AdminCred.UserName
+    $Pass = $AdminCred.Password
 
-    $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
-	$InterfaceAlias=$($Interface.Name)
+    [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("$NetBiosName\$User", "$Pass")
 
     Node localhost
     {
@@ -19,14 +27,7 @@ Configuration SetupAdminPc
 		{
             RebootNodeIfNeeded = $true
             AllowModuleOverwrite = $true
-        }
-        
-        xDnsServerAddress DnsSettings
-        {
-            Address = $DnsServer
-            InterfaceAlias = $InterfaceAlias
-            AddressFamily = "IPv4"
-            Validate = $true
+            ActionAfterReboot = 'ContinueConfiguration'
         }
 
         xComputer JoinDomain
@@ -34,7 +35,6 @@ Configuration SetupAdminPc
             Name = 'AdminPC'
             DomainName = $DomainName
             Credential = $Creds
-            DependsOn = "[xDnsServerAddress]DnsSettings"
         }
 
         xMpPreference DefenderSettings
