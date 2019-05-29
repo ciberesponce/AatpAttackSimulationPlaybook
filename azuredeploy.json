@@ -401,8 +401,8 @@
           "name": "[variables('AdminPcDscName')]",
           "location": "[resourceGroup().location]",
           "dependsOn": [
-            "[resourceId('Microsoft.Resources/deployments', concat(variables('DeploymentVnetDnsName')))]",
-            "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('DcVmName')), concat('extensions'), concat(variables('DcPromoteDcDsc')))]"
+            "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('AdminPcVmName')))]",
+            "[resourceId('Microsoft.Resources/deployments', concat(variables('DeploymentVnetDnsName')))]"
           ],
           "properties":{
             "publisher": "Microsoft.Powershell",
