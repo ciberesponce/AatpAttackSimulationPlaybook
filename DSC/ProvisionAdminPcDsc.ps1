@@ -41,19 +41,19 @@ Configuration SetupAdminPc
             Credential = $Creds            
         }
 
+        Group AddAdmins
+        {
+            GroupName = 'Administrators'
+            MembersToInclude = "Helpdesk"
+            Ensure = 'Present'
+            DependsOn = '[xComputer]JoinDomain'
+        }
+
         xMpPreference DefenderSettings
         {
             Name = 'DefenderSettings'
             ExclusionPath = 'C:\Temp'
             DisableRealtimeMonitoring = $true
         }
-
-        # xGroup AddAdmins
-        # {
-        #     GroupName = 'Administrators'
-        #     MembersToInclude = "Helpdesk"
-        #     Ensure = 'Present'
-        #     DependsOn = '[xComputer]JoinDomain'
-        # }
     }
 }
