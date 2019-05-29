@@ -205,6 +205,7 @@
             "createOption": "FromImage"
           }
         },
+        "licenseType": "Windows_Server",
         "networkProfile":{
           "networkInterfaces":[
             {
@@ -414,18 +415,6 @@
                 "url": "[variables('AdminPcDscUrl')]",
                 "script": "ProvisionAdminPcDsc.ps1",
                 "function": "SetupAdminPc"
-              },
-              "configurationArguments": {
-                "DomainName": "[parameters('DomainName')]",
-                "NetBiosName": "[parameters('NetBiosName')]"
-              }
-            },
-            "protectedSettings": {
-              "configurationArguments": {
-                "AdminCred": {
-                  "UserName": "RonHD",
-                  "Password": "[parameters('RonHdPassword')]"
-                }
               }
             }
           }
