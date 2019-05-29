@@ -10,8 +10,16 @@ Configuration SetupAdminPc
     #     [Parameter(Mandatory=$true)]
     #     [PSCredential] $AdminCred
     # )
+    # [string]$DomainName = "Contoso.Azure"
+    # [string]$NetBiosName = "Contoso"
 
-    Import-DscResource -ModuleName xDefender
+    # [string]$User = "RonHD"
+    # $Pass = ConvertTo-SecureString "FightingTiger$" -AsPlainText -Force 
+
+    # $User = $AdminCred.UserName
+    # $Pass = $AdminCred.Password
+
+    Import-DscResource -ModuleName xPSDesiredStateConfiguration, xDefender
 
 	# [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($RonHdCreds.UserName)", $RonHdCreds.Password)
 	# [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$User)", $Pass)
