@@ -84,7 +84,7 @@
     "GenericStorageAccountName": "[concat(uniqueString(resourceGroup().id), 'sa')]",
 
     "DcVmName": "ContosoDc",
-    "DcPromoteDcDsc": "DcPromoDsc",
+    "DcPromoteDcDscName": "DcPromoDsc",
 
     "VictimVmName": "VictimPc",
 
@@ -223,7 +223,7 @@
         {
           "type": "extensions",
           "apiVersion": "2018-10-01",
-          "name": "[variables('DcPromoteDcDsc')]",
+          "name": "[variables('DcPromoteDcDscName')]",
           "location": "[resourceGroup().location]",
           "dependsOn": [
             "[resourceId('Microsoft.Compute/virtualMachines', variables('DcVmName'))]"
@@ -277,6 +277,9 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2017-05-10",
       "name": "[variables('DeploymentVnetDnsName')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('DcVmName'), variables('DcPromoteDcDscName'))]"
+      ],
       "properties":{
         "mode": "Incremental",
         "templateLink": {
@@ -402,8 +405,8 @@
           "name": "[variables('AdminPcDscName')]",
           "location": "[resourceGroup().location]",
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('AdminPcVmName')))]",
-            "[resourceId('Microsoft.Resources/deployments', concat(variables('DeploymentVnetDnsName')))]"
+            "[resourceId('Microsoft.Compute/virtualMachines', variables('AdminPcVmName'))]",
+            "[resourceId('Microsoft.Resources/deployments', variables('DeploymentVnetDnsName'))]"
           ],
           "properties":{
             "publisher": "Microsoft.Powershell",

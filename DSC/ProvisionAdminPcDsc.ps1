@@ -10,19 +10,19 @@ Configuration SetupAdminPc
     #     [Parameter(Mandatory=$true)]
     #     [PSCredential] $AdminCred
     # )
-    # [string]$DomainName = "Contoso.Azure"
-    # [string]$NetBiosName = "Contoso"
+    [string]$DomainName = "Contoso.Azure"
+    [string]$NetBiosName = "Contoso"
 
-    # [string]$User = "RonHD"
-    # $Pass = ConvertTo-SecureString "FightingTiger$" -AsPlainText -Force 
+    [string]$User = "RonHD"
+    $Pass = ConvertTo-SecureString "FightingTiger$" -AsPlainText -Force 
 
     # $User = $AdminCred.UserName
     # $Pass = $AdminCred.Password
 
-    Import-DscResource -ModuleName xPSDesiredStateConfiguration, xDefender
+    Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc
 
 	# [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($RonHdCreds.UserName)", $RonHdCreds.Password)
-	# [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$User)", $Pass)
+	[PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$User)", $Pass)
 
     Node localhost
     {
@@ -34,12 +34,12 @@ Configuration SetupAdminPc
             ActionAfterReboot = 'ContinueConfiguration'
         }
 
-        # xComputer JoinDomain
-        # {
-        #     Name = 'AdminPC'
-        #     DomainName = $DomainName
-        #     Credential = $Creds
-        # }
+        Computer JoinDomain
+        {
+            Name = 'AdminPC'
+            DomainName = $DomainName
+            Credential = $Creds            
+        }
 
         xMpPreference DefenderSettings
         {
