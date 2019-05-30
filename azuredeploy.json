@@ -418,6 +418,19 @@
                 "url": "[variables('AdminPcDscUrl')]",
                 "script": "ProvisionAdminPcDsc.ps1",
                 "function": "SetupAdminPc"
+              },
+              "configurationArguments": {
+                "DomainName": "[parameters('DomainName')]",
+                "NetBiosName": "[parameters('NetBiosName')]",
+                "DnsServer": "[variables('PrivateIpAddressesArray').Ip[0]]"
+              }
+            },
+            "ProtectedSettings":{
+              "configurationArguments": {
+                "AdminCreds": {
+                  "UserName": "RonHD",
+                  "Password": "[parameters('RonHdPassword')]"
+                }
               }
             }
           }
