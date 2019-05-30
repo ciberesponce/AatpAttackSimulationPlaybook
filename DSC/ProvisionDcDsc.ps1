@@ -42,6 +42,7 @@ Configuration CreateADForest
 		LocalConfigurationManager
 		{
 			RebootNodeIfNeeded = $true
+			AllowModuleOverwrite = $true
 		}
 		
 		WindowsFeature DNS
