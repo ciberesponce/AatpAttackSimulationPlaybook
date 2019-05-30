@@ -30,19 +30,18 @@ Configuration CreateADForest
 	)
 
 	Import-DscResource -ModuleName PSDesiredStateConfiguration, xActiveDirectory, xPendingReboot, `
-		NetworkingDsc, xStorage, xDefender
+		xNetworking, xStorage, xDefender
 
 	$Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
 	$InterfaceAlias=$($Interface.Name)
 
-	[PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("$DomainName\$($AdminCreds.UserName)", $AdminCreds.Password)
+	[PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($AdminCreds.UserName)", $AdminCreds.Password)
 	
 	Node localhost
 	{
 		LocalConfigurationManager
 		{
 			RebootNodeIfNeeded = $true
-			AllowModuleOverwrite = $true
 		}
 		
 		WindowsFeature DNS
@@ -51,7 +50,7 @@ Configuration CreateADForest
 			Name = 'DNS'
 		}
 
-		DnsServerAddress DnsServerAddress 
+		xDnsServerAddress DnsServerAddress 
 		{ 
 			Address        = '127.0.0.1'
 			InterfaceAlias = $InterfaceAlias
