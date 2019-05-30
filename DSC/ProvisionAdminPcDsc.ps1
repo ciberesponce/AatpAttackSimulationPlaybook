@@ -2,23 +2,23 @@ Configuration SetupAdminPc
 {
     param(
         [Parameter(Mandatory=$true)]
-        [string] $DomainName,
+        [string]$DomainName,
         
         [Parameter(Mandatory=$true)]
-        [string] $NetBiosName,
+        [string]$NetBiosName,
 
         [Parameter(Mandatory=$true)]
-        [string] $DnsServer,
+        [string]$DnsServer,
 
         [Parameter(Mandatory=$true)]
-        [PSCredential] $AdminCred
+        [PSCredential]$AdminCred
     )
     Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc
 
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
 	$InterfaceAlias=$($Interface.Name)
 
-	[PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCred.UserName)", $AdminCred.Pass)
+	[PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCred.UserName)", $AdminCred.Password)
 	# [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$User)", $Pass)
 
     Node localhost
