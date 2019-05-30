@@ -35,7 +35,7 @@ Configuration CreateADForest
 	$Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
 	$InterfaceAlias=$($Interface.Name)
 
-	[PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($AdminCreds.UserName)", $($AdminCreds.Password))
+	[PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($AdminCreds.UserName)", $AdminCreds.Password)
 	
 	Node localhost
 	{
