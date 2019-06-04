@@ -16,7 +16,9 @@ Configuration SetupAdminPc
     Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc
 
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
-	$InterfaceAlias=$($Interface.Name)
+    $InterfaceAlias=$($Interface.Name)
+    
+    $Helpdesk = "$NetBiosName\Helpdesk"
 
 	[PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCred.UserName)", $AdminCred.Password)
 	# [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$User)", $Pass)
@@ -50,7 +52,15 @@ Configuration SetupAdminPc
         Group AddAdmins
         {
             GroupName = 'Administrators'
-            MembersToInclude = "Helpdesk"
+            MembersToInclude = $Helpdesk
+            Ensure = 'Present'
+            DependsOn = '[Computer]JoinDomain'
+        }
+
+        Group AddRemoteDesktopUsers
+        {
+            GroupName = 'Remote Desktop Users'
+            MembersToInclude = 'SamiraA'
             Ensure = 'Present'
             DependsOn = '[Computer]JoinDomain'
         }
