@@ -17,8 +17,6 @@ Configuration SetupAdminPc
 
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
     $InterfaceAlias=$($Interface.Name)
-    
-    $Helpdesk = "$NetBiosName\Helpdesk"
 
 	[PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCred.UserName)", $AdminCred.Password)
 	# [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$User)", $Pass)
@@ -52,7 +50,7 @@ Configuration SetupAdminPc
         Group AddAdmins
         {
             GroupName = 'Administrators'
-            MembersToInclude = $Helpdesk
+            MembersToInclude = "$NetBiosName\Helpdesk"
             Ensure = 'Present'
             DependsOn = '[Computer]JoinDomain'
         }
@@ -60,7 +58,7 @@ Configuration SetupAdminPc
         Group AddRemoteDesktopUsers
         {
             GroupName = 'Remote Desktop Users'
-            MembersToInclude = 'SamiraA'
+            MembersToInclude = @("$NetBiosName\SamiraA", "$NetBiosName\Helpdesk")
             Ensure = 'Present'
             DependsOn = '[Computer]JoinDomain'
         }
