@@ -428,8 +428,8 @@
             "ProtectedSettings":{
               "configurationArguments": {
                 "AdminCred": {
-                  "UserName": "RonHD",
-                  "Password": "[parameters('RonHdPassword')]"
+                  "UserName": "[parameters('builtinAdministratorAccount')]",
+                  "Password": "[parameters('builtinAdministratorPassword')]"
                 }
               }
             }

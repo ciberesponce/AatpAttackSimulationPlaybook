@@ -39,22 +39,22 @@ Configuration SetupAdminPc
             Validate = $true
         }
 
-        # Computer JoinDomain
-        # {
-        #     Name = 'AdminPC'
-        #     DomainName = $DomainName
-        #     Credential = $Creds
-        #     Server =  
-        #     DependsOn = "[xDnsServerAddress]DnsServerAddress"
-        # }
+        Computer JoinDomain
+        {
+            Name = 'AdminPC'
+            DomainName = $DomainName
+            Credential = $Creds
+            Server =  
+            DependsOn = "[DnsServerAddress]DnsServerAddress"
+        }
 
-        # Group AddAdmins
-        # {
-        #     GroupName = 'Administrators'
-        #     MembersToInclude = "Helpdesk"
-        #     Ensure = 'Present'
-        #     DependsOn = '[Computer]JoinDomain'
-        # }
+        Group AddAdmins
+        {
+            GroupName = 'Administrators'
+            MembersToInclude = "Helpdesk"
+            Ensure = 'Present'
+            DependsOn = '[Computer]JoinDomain'
+        }
 
         xMpPreference DefenderSettings
         {
