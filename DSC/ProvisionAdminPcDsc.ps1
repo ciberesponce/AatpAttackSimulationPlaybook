@@ -44,7 +44,6 @@ Configuration SetupAdminPc
             Name = 'AdminPC'
             DomainName = $DomainName
             Credential = $Creds
-            Server =  
             DependsOn = "[DnsServerAddress]DnsServerAddress"
         }
 
