@@ -103,6 +103,7 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
             ExecuteAsCredential = $SamiraADomainCred
             Hidden = $true
             RepeatInterval = '00:05:00'
+            RepetitionDuration = 'Indefinitely'
             StartWhenAvailable = $true
             DependsOn = @('[Computer]JoinDomain','[File]ScheduledTaskFile')
         }
