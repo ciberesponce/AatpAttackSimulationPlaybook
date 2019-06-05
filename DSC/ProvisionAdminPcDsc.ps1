@@ -27,9 +27,8 @@ Configuration SetupAdminPc
     $InterfaceAlias=$($Interface.Name)
 
     $SamiraASmbScriptLocation = [string]'C:\ScheduledTasks\SamiraASmbSimulation.ps1'
-    # [PSCredential]$SamiraADomainCred = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($SamiraACred.UserName)", $SamiraACred.Password)
+    [PSCredential]$SamiraADomainCred = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($SamiraACred.UserName)", $SamiraACred.Password)
 	[PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCred.UserName)", $AdminCred.Password)
-	# [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$User)", $Pass)
 
     Node localhost
     {
