@@ -430,6 +430,10 @@
                 "AdminCred": {
                   "UserName": "[parameters('builtinAdministratorAccount')]",
                   "Password": "[parameters('builtinAdministratorPassword')]"
+                },
+                "SamiraACred": {
+                  "UserName": "SamiraA",
+                  "Password": "[parameters('SamiraAPassword')]"
                 }
               }
             }
