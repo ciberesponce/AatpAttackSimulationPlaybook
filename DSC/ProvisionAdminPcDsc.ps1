@@ -27,9 +27,7 @@ Configuration SetupAdminPc
     $InterfaceAlias=$($Interface.Name)
 
     $SamiraASmbScriptLocation = [string]'C:\ScheduledTasks\SamiraASmbSimulation.ps1'
-    $SamiraADomainCred = 	New-Object System.Management.Automation.PSCredential ("${DomainName}\$($SamiraACred.UserName)", $AdminSamiraACred.Password)
-
-
+    [PSCredential]$SamiraADomainCred = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($SamiraACred.UserName)", $SamiraACred.Password)
 	[PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCred.UserName)", $AdminCred.Password)
 	# [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$User)", $Pass)
 
@@ -102,17 +100,17 @@ while ($true){
             Type = 'File'
         }
 
-        # ScheduledTask ScheduleTaskSamiraA
-        # {
-        #     TaskName = 'SimulateDomainAdminTraffic'
-        #     ScheduleType = 'AtStartup'
-        #     Description = 'Simulates Domain Admin traffic from Admin workstation. Useful for SMB Session Enumeration and other items'
-        #     Ensure = 'Present'
-        #     Enable = $true
-        #     ExecuteAsCredential = $SamiraADomainCred
-        #     Hidden = $true
-        #     StartWhenAvailable = $true
-        #     DependsOn = @('[Computer]JoinDomain','[File]ScheduledTaskFile')
-        # }
+        ScheduledTask ScheduleTaskSamiraA
+        {
+            TaskName = 'SimulateDomainAdminTraffic'
+            ScheduleType = 'AtStartup'
+            Description = 'Simulates Domain Admin traffic from Admin workstation. Useful for SMB Session Enumeration and other items'
+            Ensure = 'Present'
+            Enable = $true
+            ExecuteAsCredential = $SamiraADomainCred
+            Hidden = $true
+            StartWhenAvailable = $true
+            DependsOn = @('[Computer]JoinDomain','[File]ScheduledTaskFile')
+        }
     }
 }
