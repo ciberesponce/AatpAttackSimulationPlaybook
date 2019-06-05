@@ -43,6 +43,11 @@ Configuration CreateADForest
 	$Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
 	$InterfaceAlias=$($Interface.Name)
 
+	$JeffLPassword = $JeffLCreds.Password
+	$SamiraAPassword = $SamiraACreds.Password
+	$RonHdPassword = $RonHdCreds.Password
+	$LisaVPassword = $LisaVCreds.Password
+
 	[PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($AdminCreds.UserName)", $AdminCreds.Password)
 	
 	Node localhost
@@ -126,7 +131,7 @@ Configuration CreateADForest
 		{
 			DomainName = $DomainName
 			UserName = 'SamiraA'
-			Password = $SamiraACreds.Password
+			Password = $SamiraAPassword
 			Ensure = 'Present'
 			UserPrincipalName = $UserPrincipalName
 			PasswordNeverExpires = $true
@@ -137,7 +142,7 @@ Configuration CreateADForest
 		{
 			DomainName = $DomainName
 			UserName = 'RonHD'
-			Password = $RonHdCreds.Password
+			Password = $RonHdPassword
 			Ensure = 'Present'
 			PasswordNeverExpires = $true
 			DisplayName = 'RonHD'
@@ -148,7 +153,7 @@ Configuration CreateADForest
 		{
 			DomainName = $DomainName
 			UserName = 'JeffL'
-			Password = $JeffLCreds.Password
+			Password = $JeffLPassword
 			Ensure = 'Present'
 			PasswordNeverExpires = $true
 			DisplayName = 'JeffL'
@@ -159,7 +164,7 @@ Configuration CreateADForest
 		{
 			DomainName = $DomainName
 			UserName = 'LisaV'
-			Password =  $LisaVCreds.Password
+			Password =  $LisaVPassword
 			Ensure = 'Present'
 			PasswordNeverExpires = $true
 			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
