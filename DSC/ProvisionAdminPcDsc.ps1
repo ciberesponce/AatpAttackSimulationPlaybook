@@ -100,17 +100,17 @@ while ($true){
             Type = 'File'
         }
 
-        ScheduledTask ScheduleTaskSamiraA
-        {
-            TaskName = 'SimulateDomainAdminTraffic'
-            ScheduleType = 'AtStartup'
-            Description = 'Simulates Domain Admin traffic from Admin workstation. Useful for SMB Session Enumeration and other items'
-            Ensure = 'Present'
-            Enable = $true
-            ExecuteAsCredential = $SamiraADomainCred
-            Hidden = $true
-            StartWhenAvailable = $true
-            DependsOn = @('[Computer]JoinDomain','[File]ScheduledTaskFile')
-        }
+        # ScheduledTask ScheduleTaskSamiraA
+        # {
+        #     TaskName = 'SimulateDomainAdminTraffic'
+        #     ScheduleType = 'AtStartup'
+        #     Description = 'Simulates Domain Admin traffic from Admin workstation. Useful for SMB Session Enumeration and other items'
+        #     Ensure = 'Present'
+        #     Enable = $true
+        #     ExecuteAsCredential = $SamiraADomainCred
+        #     Hidden = $true
+        #     StartWhenAvailable = $true
+        #     DependsOn = @('[Computer]JoinDomain','[File]ScheduledTaskFile')
+        # }
     }
 }
