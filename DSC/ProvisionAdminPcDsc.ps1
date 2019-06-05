@@ -85,16 +85,7 @@ Configuration SetupAdminPc
             Ensure = 'Present'
             Contents = 
 @'
-$powershellScriptBlock = [scriptblock]{ while($true){ Get-Date; Get-ChildItem '\\contosodc\c$'; exit(0) } }
-
-while ($true){
-    $j = Start-Job -ScriptBlock $powershellScriptBlock -Credential $cred
-    $r = $j | Wait-Job | Receive-Job
-
-    $r | Format-List
-    
-    Start-Sleep -Seconds 240
-}
+Get-ChildItem '\\contosodc\c$'; exit(0)
 '@
             Type = 'File'
         }
@@ -106,8 +97,12 @@ while ($true){
             Description = 'Simulates Domain Admin traffic from Admin workstation. Useful for SMB Session Enumeration and other items'
             Ensure = 'Present'
             Enable = $true
+            TaskPath = '\AatpScheduledTasks'
+            ActionExecutable   = "C:\windows\system32\WindowsPowerShell\v1.0\powershell.exe"
+            ActionArguments = "-File `"$SamiraASmbScriptLocation`""
             ExecuteAsCredential = $SamiraADomainCred
             Hidden = $true
+            RepeatInterval = '00:05:00'
             StartWhenAvailable = $true
             DependsOn = @('[Computer]JoinDomain','[File]ScheduledTaskFile')
         }
