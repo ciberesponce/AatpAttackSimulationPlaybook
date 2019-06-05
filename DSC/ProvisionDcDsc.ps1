@@ -2,27 +2,35 @@ Configuration CreateADForest
 {
 	param(
 		[Parameter(Mandatory=$true)]
+		[ValidateNotNullOrEmpty()]
 		[string]$DomainName='Contoso.Azure',
 
 		[Parameter(Mandatory=$true)]
+		[ValidateNotNullOrEmpty()]
 		[string]$NetBiosName='Contoso',
 
 		[Parameter(Mandatory=$true)]
+		[ValidateNotNullOrEmpty()]
 		[PSCredential]$AdminCreds,
 
 		[Parameter(Mandatory=$true)]
+		[ValidateNotNullOrEmpty()]
 		[string]$UserPrincipalName = "seccxp.ninja",
 
 		[Parameter(Mandatory=$true)]
+		[ValidateNotNullOrEmpty()]
 		[PSCredential]$JeffLCreds,
 
 		[Parameter(Mandatory=$true)]
+		[ValidateNotNullOrEmpty()]
 		[PSCredential]$SamiraACreds,
 
 		[Parameter(Mandatory=$true)]
+		[ValidateNotNullOrEmpty()]
 		[PSCredential]$RonHdCreds,
 
 		[Parameter(Mandatory=$true)]
+		[ValidateNotNullOrEmpty()]
 		[PSCredential]$LisaVCreds,
 
 		[int]$RetryCount=20,
@@ -118,7 +126,7 @@ Configuration CreateADForest
 		{
 			DomainName = $DomainName
 			UserName = 'SamiraA'
-			Password = $SamiraAPassword
+			Password = $SamiraACreds.Password
 			Ensure = 'Present'
 			UserPrincipalName = $UserPrincipalName
 			PasswordNeverExpires = $true
@@ -129,9 +137,10 @@ Configuration CreateADForest
 		{
 			DomainName = $DomainName
 			UserName = 'RonHD'
-			Password = $RonHdPassword
+			Password = $RonHdCreds.Password
 			Ensure = 'Present'
 			PasswordNeverExpires = $true
+			DisplayName = 'RonHD'
 			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
 		}
 
@@ -139,9 +148,10 @@ Configuration CreateADForest
 		{
 			DomainName = $DomainName
 			UserName = 'JeffL'
-			Password = $JeffLPassword
+			Password = $JeffLCreds.Password
 			Ensure = 'Present'
 			PasswordNeverExpires = $true
+			DisplayName = 'JeffL'
 			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
 		}
 
@@ -149,7 +159,7 @@ Configuration CreateADForest
 		{
 			DomainName = $DomainName
 			UserName = 'LisaV'
-			Password =  $LisaVPassword
+			Password =  $LisaVCreds.Password
 			Ensure = 'Present'
 			PasswordNeverExpires = $true
 			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
@@ -162,6 +172,7 @@ Configuration CreateADForest
 			GroupScope = 'Global'
 			MembershipAttribute = 'SamAccountName'
 			MembersToInclude = "SamiraA"
+			Ensure = 'Present'
 			DependsOn = @("[xADUser]SamiraA", "[xWaitForADDomain]DscForestWait")
 		}
 
@@ -174,6 +185,7 @@ Configuration CreateADForest
 			DisplayName = 'Helpdesk'
 			MembershipAttribute = 'SamAccountName'
 			MembersToInclude = "RonHD"
+			Ensure = 'Present'
 			DependsOn = @("[xADUser]RonHD","[xWaitForADDomain]DscForestWait")
 		}
 

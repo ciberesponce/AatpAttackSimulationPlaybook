@@ -2,15 +2,19 @@ Configuration SetupAdminPc
 {
     param(
         [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
         [string]$DomainName,
         
         [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
         [string]$NetBiosName,
 
         [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
         [string]$DnsServer,
 
         [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
         [PSCredential]$AdminCred
     )
     Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc
