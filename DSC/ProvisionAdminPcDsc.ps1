@@ -93,7 +93,7 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
         ScheduledTask ScheduleTaskSamiraA
         {
             TaskName = 'SimulateDomainAdminTraffic'
-            ScheduleType = 'AtStartup'
+            ScheduleType = 'Once'
             Description = 'Simulates Domain Admin traffic from Admin workstation. Useful for SMB Session Enumeration and other items'
             Ensure = 'Present'
             Enable = $true
@@ -102,6 +102,7 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
             ActionArguments = "-File `"$SamiraASmbScriptLocation`""
             ExecuteAsCredential = $SamiraADomainCred
             Hidden = $true
+            Priority = 9
             RepeatInterval = '00:05:00'
             RepetitionDuration = 'Indefinitely'
             StartWhenAvailable = $true
