@@ -85,7 +85,7 @@ Configuration SetupAdminPc
             DestinationPath = $SamiraASmbScriptLocation
             Ensure = 'Present'
             Contents = 
-@"
+@'
 $powershellScriptBlock = [scriptblock]{ while($true){ Get-Date; Get-ChildItem '\\contosodc\c$'; exit(0) } }
 
 while ($true){
@@ -96,7 +96,7 @@ while ($true){
     
     Start-Sleep -Seconds 240
 }
-"@
+'@
             Type = 'File'
         }
 
