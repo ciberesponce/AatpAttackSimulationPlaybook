@@ -72,6 +72,39 @@ Configuration SetupAdminPc
             DependsOn = '[Computer]JoinDomain'
         }
 
+        Registry HideServerManager
+        {
+            Key = 'HKLM:\SOFTWARE\Microsoft\ServerManager'
+            ValueName = 'DoNotOpenServerManagerAtLogon'
+            ValueType = 'Dword'
+            ValueData = '0x1'
+            Force = $true
+            Ensure = 'Present'
+            DependsOn = '[Computer]JoinDomain'
+        }
+
+        Registry HideInitialServerManager
+        {
+            Key = 'HKLM:\SOFTWARE\Microsoft\ServerManager\Oobe'
+            ValueName = 'DoNotOpenInitialConfigurationTasksAtLogon'
+            ValueType = 'Dword'
+            ValueData = '0x1'
+            Force = $true
+            Ensure = 'Present'
+            DependsOn = '[Computer]JoinDomain'
+        }
+
+        Registry AuditModeSamr
+        {
+            Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa'
+            ValueName = 'RestrictRemoteSamAuditOnlyMode'
+            ValueType = 'Dword'
+            ValueData = '0x1'
+            Force = $true
+            Ensure = 'Present'
+            DependsOn = '[Computer]JoinDomain'
+        }
+
         xMpPreference DefenderSettings
         {
             Name = 'DefenderSettings'
