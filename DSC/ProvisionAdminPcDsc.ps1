@@ -26,7 +26,7 @@ Configuration SetupAdminPc
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
     $InterfaceAlias=$($Interface.Name)
 
-    $SamiraASmbScriptLocation = [script]'C:\ScheduledTasks\SamiraASmbSimulation.ps1'
+    $SamiraASmbScriptLocation = [string]'C:\ScheduledTasks\SamiraASmbSimulation.ps1'
     $SamiraADomainCred = 	New-Object System.Management.Automation.PSCredential ("${DomainName}\$($SamiraACred.UserName)", $AdminSamiraACred.Password)
 
 
