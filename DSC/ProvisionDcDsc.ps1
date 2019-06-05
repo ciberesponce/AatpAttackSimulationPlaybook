@@ -129,6 +129,8 @@ Configuration CreateADForest
 			Password = $SamiraACreds
 			Ensure = 'Present'
 			UserPrincipalName = $UserPrincipalName
+			GivenName = 'Samira'
+			Surname = 'A'
 			PasswordNeverExpires = $true
 			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
 		}
@@ -139,6 +141,8 @@ Configuration CreateADForest
 			UserName = 'RonHD'
 			Password = $RonHdCreds
 			Ensure = 'Present'
+			GivenName = 'Ron'
+			Surname = 'HD'
 			PasswordNeverExpires = $true
 			DisplayName = 'RonHD'
 			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
@@ -148,6 +152,8 @@ Configuration CreateADForest
 		{
 			DomainName = $DomainName
 			UserName = 'JeffL'
+			GivenName = 'Jeff'
+			Surname = 'Leatherman'
 			Password = $JeffLCreds
 			Ensure = 'Present'
 			PasswordNeverExpires = $true
@@ -159,6 +165,8 @@ Configuration CreateADForest
 		{
 			DomainName = $DomainName
 			UserName = 'LisaV'
+			GivenName = 'Lisa'
+			Surname = 'Valentine'
 			Password =  $LisaVCreds
 			Ensure = 'Present'
 			PasswordNeverExpires = $true
