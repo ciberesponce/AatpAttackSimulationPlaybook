@@ -82,7 +82,7 @@ Configuration SetupAdminPc
             Key = 'HKLM:\SOFTWARE\Microsoft\ServerManager'
             ValueName = 'DoNotOpenServerManagerAtLogon'
             ValueType = 'Dword'
-            ValueData = '0x1'
+            ValueData = '1'
             Force = $true
             Ensure = 'Present'
             DependsOn = '[Computer]JoinDomain'
@@ -93,7 +93,7 @@ Configuration SetupAdminPc
             Key = 'HKLM:\SOFTWARE\Microsoft\ServerManager\Oobe'
             ValueName = 'DoNotOpenInitialConfigurationTasksAtLogon'
             ValueType = 'Dword'
-            ValueData = '0x1'
+            ValueData = '1'
             Force = $true
             Ensure = 'Present'
             DependsOn = '[Computer]JoinDomain'
@@ -104,7 +104,7 @@ Configuration SetupAdminPc
             Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa'
             ValueName = 'RestrictRemoteSamAuditOnlyMode'
             ValueType = 'Dword'
-            ValueData = '0x1'
+            ValueData = '1'
             Force = $true
             Ensure = 'Present'
             DependsOn = '[Computer]JoinDomain'
