@@ -21,7 +21,7 @@ Configuration SetupAdminPc
         [ValidateNotNullOrEmpty()]
         [PsCredential]$SamiraACred
     )
-    Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc
+    Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity
 
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
     $InterfaceAlias=$($Interface.Name)
@@ -46,6 +46,11 @@ Configuration SetupAdminPc
 			InterfaceAlias = $InterfaceAlias
             AddressFamily  = 'IPv4'
             Validate = $true
+        }
+
+        xUAC DisableUac
+        {
+            Setting = "NeverNotifyAndDisableAll"
         }
 
         Computer JoinDomain

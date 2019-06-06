@@ -329,9 +329,9 @@
         },
         "storageProfile":{
           "imageReference":{
-            "publisher": "MicrosoftWindowsDesktop",
-            "offer": "Windows-10",
-            "sku": "rs5-enterprise",
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2016-Datacenter",
             "version": "latest"
           },
           "osDisk":{
@@ -340,7 +340,7 @@
             "createOption": "FromImage"
           }
         },
-        "licenseType": "Windows_Client",
+        "licenseType": "Windows_Server",
         "networkProfile":{
           "networkInterfaces":[
             {
@@ -375,9 +375,9 @@
         },
         "storageProfile":{
           "imageReference":{
-            "publisher": "MicrosoftWindowsDesktop",
-            "offer": "Windows-10",
-            "sku": "rs5-enterprise",
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2016-Datacenter",
             "version": "latest"
           },
           "osDisk":{
@@ -386,7 +386,7 @@
             "createOption": "FromImage"
           }
         },
-        "licenseType": "Windows_Client",
+        "licenseType": "Windows_Server",
         "networkProfile":{
           "networkInterfaces":[
             {
