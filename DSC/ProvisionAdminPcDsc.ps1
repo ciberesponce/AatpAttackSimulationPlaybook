@@ -48,6 +48,18 @@ Configuration SetupAdminPc
             Validate = $true
         }
 
+        xIEEsc DisableAdminIeEsc
+        {
+            UserRole = 'Administrators'
+            IsEnabled = 'Disabled'
+        }
+
+        xIEEsc DisableUserIeEsc
+        {
+            UserRole = 'Users'
+            IsEnabled = 'Disabled'
+        }
+
         xUAC DisableUac
         {
             Setting = "NeverNotifyAndDisableAll"
