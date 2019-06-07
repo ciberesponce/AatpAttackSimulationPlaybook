@@ -75,12 +75,7 @@
     },
     "DeploymentVnetDnsName": "vNetDnsSettingsDeployment",
 
-    "AipVmName": "Client01",
-    "AipDomainServiceAccount":"AipScanner",
-    "AipDomainServiceAccountPassword": "Somepass1",
-    "AipDscUrl": "",
-
-
+ 
     "vNetAddressPrefix": "10.0.24.0/24",
     "vNetName": "AatpSaPlaybook-vNet",
     "vNetSubnetName": "Subnet",
@@ -97,7 +92,12 @@
 
     "AdminPcVmName": "AdminPc",
     "AdminPcDscUrl": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionAdminPcDsc.zip?raw=true",
-    "AdminPcDscName": "AdminPcDsc"
+    "AdminPcDscName": "AdminPcDsc",
+
+    "AipVmName": "Client01",
+    "AipDomainServiceAccount":"AipScanner",
+    "AipDomainServiceAccountPassword": "Somepass1",
+    "AipDscUrl": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionAipClient.zip?raw=true"
   },
   "resources": [
     {
