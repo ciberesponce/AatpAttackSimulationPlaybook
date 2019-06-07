@@ -33,6 +33,10 @@ Configuration CreateADForest
 		[ValidateNotNullOrEmpty()]
 		[PSCredential]$LisaVCreds,
 
+		[Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [PsCredential]$AipServiceCreds,
+
 		[int]$RetryCount=20,
 		[int]$RetryIntervalSec=30
 	)
@@ -127,6 +131,19 @@ Configuration CreateADForest
 			DomainName = $DomainName
 			UserName = 'SamiraA'
 			Password = $SamiraACreds
+			Ensure = 'Present'
+			UserPrincipalName = $UserPrincipalName
+			GivenName = 'Samira'
+			Surname = 'A'
+			PasswordNeverExpires = $true
+			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
+		}
+
+		xADUser AipService
+		{
+			DomainName = $DomainName
+			UserName = $AipService.UserName
+			Password = $AipService
 			Ensure = 'Present'
 			UserPrincipalName = $UserPrincipalName
 			GivenName = 'Samira'

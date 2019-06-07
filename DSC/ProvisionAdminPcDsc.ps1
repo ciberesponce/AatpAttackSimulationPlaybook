@@ -20,6 +20,7 @@ Configuration SetupAdminPc
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
         [PsCredential]$SamiraACred
+
     )
     Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity
 
