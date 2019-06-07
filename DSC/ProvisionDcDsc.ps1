@@ -142,12 +142,12 @@ Configuration CreateADForest
 		xADUser AipService
 		{
 			DomainName = $DomainName
-			UserName = $AipService.UserName
-			Password = $AipService
+			UserName = $AipServiceCreds.UserName
+			Password = $AipServiceCreds
 			Ensure = 'Present'
 			UserPrincipalName = $UserPrincipalName
-			GivenName = 'Samira'
-			Surname = 'A'
+			GivenName = 'Aip Service'
+			Surname = 'Account'
 			PasswordNeverExpires = $true
 			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
 		}
