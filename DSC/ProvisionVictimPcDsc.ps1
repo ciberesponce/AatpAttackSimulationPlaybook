@@ -17,12 +17,7 @@ Configuration SetupVictimPc
 
             [Parameter(Mandatory=$true)]
             [ValidateNotNullOrEmpty()]
-            [PSCredential]$AdminCred,
-
-            [Parameter(Mandatory=$true)]
-            [ValidateNotNullOrEmpty()]
-            [PsCredential]$SamiraACred
-
+            [PSCredential]$AdminCred
         )
         Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity
 
