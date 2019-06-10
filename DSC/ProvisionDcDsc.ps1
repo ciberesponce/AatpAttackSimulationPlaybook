@@ -146,7 +146,7 @@ Configuration CreateADForest
 			Password = $AipServiceCreds
 			Ensure = 'Present'
 			UserPrincipalName = $UserPrincipalName
-			GivenName = 'Aip Service'
+			GivenName = 'AipService'
 			Surname = 'Account'
 			PasswordNeverExpires = $true
 			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
