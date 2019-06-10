@@ -26,7 +26,6 @@ Configuration SetupAipScannerCore
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
     $InterfaceAlias=$($Interface.Name)
 
-    [PSCredential]$AipScannerCred = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AipScannerCred.UserName)", $AipScannerCred.Password)
 	[PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCred.UserName)", $AdminCred.Password)
 
     Node localhost
