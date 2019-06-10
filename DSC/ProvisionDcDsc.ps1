@@ -132,7 +132,6 @@ Configuration CreateADForest
 			UserName = 'SamiraA'
 			Password = $SamiraACreds
 			Ensure = 'Present'
-			UserPrincipalName = $UserPrincipalName
 			GivenName = 'Samira'
 			Surname = 'A'
 			PasswordNeverExpires = $true
@@ -145,7 +144,6 @@ Configuration CreateADForest
 			UserName = $AipServiceCreds.UserName
 			Password = $AipServiceCreds
 			Ensure = 'Present'
-			UserPrincipalName = $UserPrincipalName
 			GivenName = 'AipService'
 			Surname = 'Account'
 			PasswordNeverExpires = $true
