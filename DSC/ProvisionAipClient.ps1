@@ -53,7 +53,7 @@ Configuration SetupAipScannerCore
 
         Computer JoinDomain
         {
-            Name = 'AdminPC'
+            Name = 'Client01'
             DomainName = $DomainName
             Credential = $Creds
             DependsOn = "[DnsServerAddress]DnsServerAddress"
