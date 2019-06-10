@@ -61,7 +61,7 @@ Configuration CreateADForest
 			Ensure = 'Present'
 			Name = 'DNS'
 		}
-
+		
 		xDnsServerAddress DnsServerAddress 
 		{ 
 			Address        = '127.0.0.1'
@@ -125,6 +125,28 @@ Configuration CreateADForest
 				RetryIntervalSec = $RetryIntervalSec
 				DependsOn = "[xADDomain]ContosoDC"
 		}
+
+		Registry HideServerManager
+        {
+            Key = 'HKLM:\SOFTWARE\Microsoft\ServerManager'
+            ValueName = 'DoNotOpenServerManagerAtLogon'
+            ValueType = 'Dword'
+            ValueData = '1'
+            Force = $true
+            Ensure = 'Present'
+			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
+        }
+
+        Registry HideInitialServerManager
+        {
+            Key = 'HKLM:\SOFTWARE\Microsoft\ServerManager\Oobe'
+            ValueName = 'DoNotOpenInitialConfigurationTasksAtLogon'
+            ValueType = 'Dword'
+            ValueData = '1'
+            Force = $true
+            Ensure = 'Present'
+			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
+        }
 
 		xADUser SamiraA
 		{

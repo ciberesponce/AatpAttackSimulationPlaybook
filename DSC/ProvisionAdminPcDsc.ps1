@@ -52,13 +52,13 @@ Configuration SetupAdminPc
         xIEEsc DisableAdminIeEsc
         {
             UserRole = 'Administrators'
-            IsEnabled = 'Disabled'
+            IsEnabled = $false
         }
 
         xIEEsc DisableUserIeEsc
         {
             UserRole = 'Users'
-            IsEnabled = 'Disabled'
+            IsEnabled = $false
         }
 
         xUAC DisableUac

@@ -89,6 +89,7 @@
     "DcPromoteDcDscName": "DcPromoDsc",
 
     "VictimVmName": "VictimPc",
+    "VictimDscName": "VictimDsc",
 
     "AdminPcVmName": "AdminPc",
     "AdminPcDscUrl": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionAdminPcDsc.zip?raw=true",
@@ -97,6 +98,7 @@
     "AipVmName": "Client01",
     "AipDomainServiceAccount":"AipScanner",
     "AipDomainServiceAccountPassword": "Somepass1",
+    "AipClientDscName": "AipDsc",
     "AipDscUrl": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionAipClient.zip?raw=true"
   },
   "resources": [
@@ -503,7 +505,7 @@
         {
           "type": "extensions",
           "apiVersion": "2018-10-01",
-          "name": "[variables('AdminPcDscName')]",
+          "name": "[variables('AipClientDscName')]",
           "location": "[resourceGroup().location]",
           "dependsOn": [
             "[resourceId('Microsoft.Compute/virtualMachines', variables('AipVmName'))]",

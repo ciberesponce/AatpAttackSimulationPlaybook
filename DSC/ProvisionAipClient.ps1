@@ -42,13 +42,13 @@ Configuration SetupAipScannerCore
         xIEEsc DisableAdminIeEsc
         {
             UserRole = 'Administrators'
-            IsEnabled = 'Disabled'
+            IsEnabled = $false
         }
 
         xIEEsc DisableUserIeEsc
         {
             UserRole = 'Users'
-            IsEnabled = 'Disabled'
+            IsEnabled = $false
         }
 
         Computer JoinDomain
@@ -63,6 +63,28 @@ Configuration SetupAipScannerCore
         {
             GroupName = 'Administrators'
             MembersToInclude = "$NetBiosName\$($AipScannerCred.UserName)"
+            Ensure = 'Present'
+            DependsOn = '[Computer]JoinDomain'
+        }
+
+        Registry HideServerManager
+        {
+            Key = 'HKLM:\SOFTWARE\Microsoft\ServerManager'
+            ValueName = 'DoNotOpenServerManagerAtLogon'
+            ValueType = 'Dword'
+            ValueData = '1'
+            Force = $true
+            Ensure = 'Present'
+            DependsOn = '[Computer]JoinDomain'
+        }
+
+        Registry HideInitialServerManager
+        {
+            Key = 'HKLM:\SOFTWARE\Microsoft\ServerManager\Oobe'
+            ValueName = 'DoNotOpenInitialConfigurationTasksAtLogon'
+            ValueType = 'Dword'
+            ValueData = '1'
+            Force = $true
             Ensure = 'Present'
             DependsOn = '[Computer]JoinDomain'
         }
