@@ -120,25 +120,31 @@ Configuration SetupVictimPc
 
         Script DownloadAipMsi
 		{
-            GetScript = 
-            {
-                @{
-                    GetScript = $GetScript
-                    SetScript = $SetScript
-                    TestScript = $TestScript
-                    Result = ('True' -in (Test-Path $AipOnDisk))
-                }
-            }
-
-            SetScript = 
+			SetScript = 
             {
                 Invoke-WebRequest -Uri "$AipMsiUri" -OutFile "$AipOnDisk"
             }
-
+			GetScript = 
+            {
+				if (Test-Path $AipOnDisk){
+					return @{
+						result = $true
+					}
+				}
+				else {
+					return @{
+						result = $false
+					}
+				}
+            }
             TestScript = 
             {
-                $Status = ('True' -in (Test-Path $AipOnDisk))
-                $Status -eq $True
+				if (Test-Path $AipOnDisk){
+					return $true
+				}
+				else {
+					return $false
+				}
 			}
 		}
 
