@@ -186,10 +186,10 @@ Configuration CreateADForest
 
 		Package InstallAadConnect
 		{
-			Name = 'AAD Connect'
+			Name = 'Microsoft Azure AD Connect'
+			ProductId = $AadConnectProductId
 			Ensure = 'Present'
 			Path = 'C:\LabTools\aadconnect.msi'
-			ProductId = $AadConnectProductId
 			Arguments = '/quiet'
 			DependsOn = @("[Script]DownloadAadMsi","[xADForestProperties]ForestProps","[xWaitForADDomain]DscForestWait")
 		}
@@ -286,11 +286,5 @@ Configuration CreateADForest
 			DisableRealtimeMonitoring = $true
 			ExclusionPath = 'c:\Temp'
 		}
-
-		# scheduled tasks section
-		# https://github.com/PowerShell/ComputerManagementDsc/wiki/ScheduledTask
-		# good way to avert attackers knowing if its planted there via other means
-		# would also mean can't do this via ScheduledTask, that it would need to run as a real Extension 
-		# applied every XXX minutes
 	} #end of node
 } #end of configuration
