@@ -122,7 +122,11 @@ Configuration SetupVictimPc
 		{
 			SetScript = 
             {
-                Invoke-WebRequest -Uri "$AipMsiUri" -OutFile "$AipOnDisk"
+                if ((Test-Path -PathType Container -LiteralPath 'C:\LabTools\') -ne $true){
+					New-Item -Path 'C:\LabTools\' -ItemType Directory
+				}
+				[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzureADConnect.msi' -OutFile 'C:\LabTools\aip_installer.msi'
             }
 			GetScript = 
             {
