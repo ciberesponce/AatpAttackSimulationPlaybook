@@ -154,7 +154,7 @@ Configuration CreateADForest
 		{
 			SetScript = 
             {
-                Invoke-WebRequest -Uri 'https://www.microsoft.com/en-us/download/confirmation.aspx?id=47594' -OutFile 'C:\LabTools\aadconnect.msi'
+                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzureADConnect.msi' -OutFile 'C:\LabTools\aadconnect.msi'
             }
 			GetScript = 
             {
