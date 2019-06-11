@@ -126,11 +126,11 @@ Configuration SetupVictimPc
 					New-Item -Path 'C:\LabTools\' -ItemType Directory
 				}
 				[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzureADConnect.msi' -OutFile 'C:\LabTools\aip_installer.msi'
+                Invoke-WebRequest -Uri '' -OutFile 'C:\LabTools\aip_installer.msi'
             }
 			GetScript = 
             {
-				if (Test-Path $AipOnDisk){
+				if (Test-Path 'C:\LabTools\aip_installer.msi'){
 					return @{
 						result = $true
 					}
@@ -143,7 +143,7 @@ Configuration SetupVictimPc
             }
             TestScript = 
             {
-				if (Test-Path $AipOnDisk){
+				if (Test-Path 'C:\LabTools\aip_installer.msi'){
 					return $true
 				}
 				else {
@@ -152,14 +152,14 @@ Configuration SetupVictimPc
 			}
 		}
 
-		Package InstallAadConnect
+		Package InstallAipClient
 		{
 			Name = 'AAD Connect'
 			Ensure = 'Present'
 			Path = $AipOnDisk
 			ProductId = $AipProductId
 			Arguments = '/quiet'
-			DependsOn = @("[Script]DownloadAipMsi","[xADForestProperties]ForestProps","[xWaitForADDomain]DscForestWait")
+			DependsOn = @('[Script]DownloadAipMsi','[Computer]JoinDomain')
 		}
     }
 }
