@@ -126,7 +126,7 @@ Configuration SetupVictimPc
 					New-Item -Path 'C:\LabTools\' -ItemType Directory
 				}
 				[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                Invoke-WebRequest -Uri '' -OutFile 'C:\LabTools\aip_installer.msi'
+                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzInfoProtection_MSI_for_central_deployment.msi?raw=true' -OutFile 'C:\LabTools\aip_installer.msi'
             }
 			GetScript = 
             {
