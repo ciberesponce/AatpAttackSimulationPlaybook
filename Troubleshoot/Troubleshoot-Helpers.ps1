@@ -4,6 +4,7 @@ param(
     [string]
     $resourceGroup = 'Andrew-Test'
 )
+#array showing VMName, DSC name
 $vmData = @(
     ('ContosoDc', 'DcPromoDsc'),
     ('AdminPc', 'AdminPcDsc'),
