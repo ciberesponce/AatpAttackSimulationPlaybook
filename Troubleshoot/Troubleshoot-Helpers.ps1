@@ -5,10 +5,10 @@ param(
     $resourceGroup = 'Andrew-Test'
 )
 $vmData = @(
-    ('Client01', 'AipDsc'),
-    ('AdminPc', 'AdminPcDsc'),
     ('ContosoDc', 'DcPromoDsc'),
-    ('VictimPc', 'VictimDsc')
+    ('AdminPc', 'AdminPcDsc'),
+    ('VictimPc', 'VictimDsc'),
+    ('Client01', 'AipDsc')
 )
 foreach ($vmSet in $vmData) {
     Remove-AzVMExtension -ResourceGroupName $resourceGroup -VMName $vmset[0] -Name $vmSet[1] -Force
