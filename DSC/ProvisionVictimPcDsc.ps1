@@ -22,6 +22,9 @@ Configuration SetupVictimPc
     $Interface = Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
     $InterfaceAlias = $($Interface.Name)
 
+    $AipMsiUri = [uri]"https://download.microsoft.com/download/4/9/1/491251F7-46BA-46EC-B2B5-099155DD3C27/AzInfoProtection_MSI_for_central_deployment.msi"
+    $AipOnDisk = 'C:\LabTools\aip_installer.msi'
+    $AipProductId = "48A06F18-951C-42CA-86F1-3046AF06D15E"
     # [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCred.UserName)", $AdminCred.Password)
 
     Node localhost
@@ -114,5 +117,39 @@ Configuration SetupVictimPc
             ExclusionPath = 'C:\Temp'
             DisableRealtimeMonitoring = $true
         }
+
+        Script DownloadAipMsi
+		{
+            GetScript = 
+            {
+                @{
+                    GetScript = $GetScript
+                    SetScript = $SetScript
+                    TestScript = $TestScript
+                    Result = ('True' -in (Test-Path $AipOnDisk))
+                }
+            }
+
+            SetScript = 
+            {
+                Invoke-WebRequest -Uri "$AipMsiUri" -OutFile "$AipOnDisk"
+            }
+
+            TestScript = 
+            {
+                $Status = ('True' -in (Test-Path $AipOnDisk))
+                $Status -eq $True
+			}
+		}
+
+		Package InstallAadConnect
+		{
+			Name = 'AAD Connect'
+			Ensure = 'Present'
+			Path = $AipOnDisk
+			ProductId = $AipProductId
+			Arguments = '/quiet'
+			DependsOn = @("[Script]DownloadAipMsi","[xADForestProperties]ForestProps","[xWaitForADDomain]DscForestWait")
+		}
     }
 }

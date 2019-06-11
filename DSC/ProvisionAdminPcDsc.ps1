@@ -49,29 +49,33 @@ Configuration SetupAdminPc
             Validate = $true
         }
 
-        xIEEsc DisableAdminIeEsc
-        {
-            UserRole = 'Administrators'
-            IsEnabled = $false
-        }
-
-        xIEEsc DisableUserIeEsc
-        {
-            UserRole = 'Users'
-            IsEnabled = $false
-        }
-
-        xUAC DisableUac
-        {
-            Setting = "NeverNotifyAndDisableAll"
-        }
-
         Computer JoinDomain
         {
             Name = 'AdminPC'
             DomainName = $DomainName
             Credential = $Creds
             DependsOn = "[DnsServerAddress]DnsServerAddress"
+        }
+
+        xIEEsc DisableAdminIeEsc
+        {
+            UserRole = 'Administrators'
+            IsEnabled = $false
+            DependsOn = "[Computer]JoinDomain"
+        }
+
+        xIEEsc DisableUserIeEsc
+        {
+            UserRole = 'Users'
+            IsEnabled = $false
+            DependsOn = "[Computer]JoinDomain"
+
+        }
+
+        xUAC DisableUac
+        {
+            Setting = "NeverNotifyAndDisableAll"
+            DependsOn = "[Computer]JoinDomain"
         }
 
         Group AddAdmins

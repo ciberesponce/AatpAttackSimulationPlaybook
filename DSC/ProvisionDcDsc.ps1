@@ -50,7 +50,7 @@ Configuration CreateADForest
 	[PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCreds.UserName)", $AdminCreds.Password)
 	
 	[uri]$AadConnectMsi = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=47594"
-	$AadConnectPathOnDisk = 'c:\labtools\aadconnect.msi'
+	$AadConnectPathOnDisk = 'C:\LabTools\aadconnect.msi'
 	$AadConnectProductId = '6069C45A-B2D7-488C-AEC6-9364D11D4314'
 
 	Node localhost
