@@ -23,7 +23,7 @@ This is used to build out the lab for C+AI Security products, including:
 
 | Who | What | Status | Helpful Resources|
 |-----|------|--------|------------------|
-|Andrew| Download aip software on everything but DC; MSI| Exploring | (https://download.microsoft.com/download/4/9/1/491251F7-46BA-46EC-B2B5-099155DD3C27/AzInfoProtection_MSI_for_central_deployment.msi)|
+|Andrew| Download aip software on everything but DC; MSI| COMPLETE | (https://download.microsoft.com/download/4/9/1/491251F7-46BA-46EC-B2B5-099155DD3C27/AzInfoProtection_MSI_for_central_deployment.msi)|
 
 - Make directory a share
 - Make AipScanner service account a domain account

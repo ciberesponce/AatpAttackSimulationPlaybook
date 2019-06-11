@@ -26,6 +26,8 @@ Configuration SetupAipScannerCore
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
     $InterfaceAlias=$($Interface.Name)
 
+    $AipProductId = "48A06F18-951C-42CA-86F1-3046AF06D15E"
+
 	[PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCred.UserName)", $AdminCred.Password)
 
     Node localhost
@@ -98,5 +100,49 @@ Configuration SetupAipScannerCore
             Ensure = 'Present'
             DependsOn = '[Computer]JoinDomain'
         }
+
+        Script DownloadAipMsi
+		{
+			SetScript = 
+            {
+                if ((Test-Path -PathType Container -LiteralPath 'C:\LabTools\') -ne $true){
+					New-Item -Path 'C:\LabTools\' -ItemType Directory
+				}
+				[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                Start-BitsTransfer -Source 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzInfoProtection_MSI_for_central_deployment.msi?raw=true' -Destination 'C:\LabTools\aip_installer.msi'
+            }
+			GetScript = 
+            {
+				if (Test-Path 'C:\LabTools\aip_installer.msi'){
+					return @{
+						result = $true
+					}
+				}
+				else {
+					return @{
+						result = $false
+					}
+				}
+            }
+            TestScript = 
+            {
+				if (Test-Path 'C:\LabTools\aip_installer.msi'){
+					return $true
+				}
+				else {
+					return $false
+				}
+			}
+		}
+
+		Package InstallAipClient
+		{
+			Name = 'Microsoft Azure Information Protection'
+			Ensure = 'Present'
+			Path = 'C:\LabTools\aip_installer.msi'
+			ProductId = $AipProductId
+			Arguments = '/quiet'
+			DependsOn = @('[Script]DownloadAipMsi','[Computer]JoinDomain')
+		}
     }
 }
