@@ -158,7 +158,7 @@ Configuration CreateADForest
 					New-Item -Path 'C:\LabTools\' -ItemType Directory
 				}
 				[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzureADConnect.msi' -OutFile 'C:\LabTools\aadconnect.msi'
+                Start-BitsTransfer -Source 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzureADConnect.msi?raw=true' -Destination 'C:\LabTools\aadconnect.msi'
             }
 			GetScript = 
             {
