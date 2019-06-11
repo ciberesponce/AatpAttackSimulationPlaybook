@@ -49,6 +49,10 @@ Configuration CreateADForest
 
 	[PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCreds.UserName)", $AdminCreds.Password)
 	
+	[uri]$AadConnectMsi = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=47594"
+	$AadConnectPathOnDisk = 'c:\labtools\aadconnect.msi'
+	$AadConnectProductId = '6069C45A-B2D7-488C-AEC6-9364D11D4314'
+
 	Node localhost
 	{
 		LocalConfigurationManager
@@ -146,7 +150,41 @@ Configuration CreateADForest
             Force = $true
             Ensure = 'Present'
 			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
-        }
+		}
+
+		Script DownloadAadMsi
+		{
+            GetScript = 
+            {
+                @{
+                    GetScript = $GetScript
+                    SetScript = $SetScript
+                    TestScript = $TestScript
+                    Result = ('True' -in (Test-Path $AadConnectPathOnDisk))
+                }
+            }
+
+            SetScript = 
+            {
+                Invoke-WebRequest -Uri "$AadConnectMsi" -OutFile "$AadConnectPathOnDisk"
+            }
+
+            TestScript = 
+            {
+                $Status = ('True' -in (Test-Path $AadConnectPathOnDisk))
+                $Status -eq $True
+			}
+		}
+
+		Package InstallAadConnect
+		{
+			Name = 'AAD Connect'
+			Ensure = 'Present'
+			Path = $AadConnectPathOnDisk
+			ProductId = $AadConnectProductId
+			Arguments = '/quiet'
+			DependsOn = @("[Script]DownloadAadMsi","[xADForestProperties]ForestProps","[xWaitForADDomain]DscForestWait")
+		}
 
 		xADUser SamiraA
 		{
