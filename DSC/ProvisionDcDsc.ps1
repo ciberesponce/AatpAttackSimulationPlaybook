@@ -49,8 +49,6 @@ Configuration CreateADForest
 
 	[PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCreds.UserName)", $AdminCreds.Password)
 	
-	[uri]$AadConnectMsi = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=47594"
-	[string]$AadConnectPathOnDisk = 'C:\LabTools\aadconnect.msi'
 	[string]$AadConnectProductId = '6069C45A-B2D7-488C-AEC6-9364D11D4314'
 
 	Node localhost
@@ -156,11 +154,11 @@ Configuration CreateADForest
 		{
 			SetScript = 
             {
-                Invoke-WebRequest -Uri "$AadConnectMsi" -OutFile "$AadConnectPathOnDisk"
+                Invoke-WebRequest -Uri 'https://www.microsoft.com/en-us/download/confirmation.aspx?id=47594d' -OutFile 'C:\LabTools\aadconnect.msi'
             }
 			GetScript = 
             {
-				if (Test-Path $AadConnectPathOnDisk){
+				if (Test-Path -LiteralPath 'C:\LabTools\aadconnect.msi'){
 					return @{
 						result = $true
 					}
@@ -173,7 +171,7 @@ Configuration CreateADForest
             }
             TestScript = 
             {
-				if (Test-Path $AadConnectPathOnDisk){
+				if (Test-Path -LiteralPath 'C:\LabTools\aadconnect.msi'){
 					return $true
 				}
 				else {
@@ -186,7 +184,7 @@ Configuration CreateADForest
 		{
 			Name = 'AAD Connect'
 			Ensure = 'Present'
-			Path = $AadConnectPathOnDisk
+			Path = 'C:\LabTools\aadconnect.msi'
 			ProductId = $AadConnectProductId
 			Arguments = '/quiet'
 			DependsOn = @("[Script]DownloadAadMsi","[xADForestProperties]ForestProps","[xWaitForADDomain]DscForestWait")
