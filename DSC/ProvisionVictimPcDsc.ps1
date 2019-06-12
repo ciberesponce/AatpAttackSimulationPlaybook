@@ -228,7 +228,7 @@ Configuration SetupVictimPc
             }
         }
 
-        Script DownloadPowerSploit
+        Script DownloadNetSess
         {
             SetScript = 
             {
@@ -236,7 +236,7 @@ Configuration SetupVictimPc
                     New-Item -Path 'C:\Tools\' -ItemType Directory
                 }
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                Start-BitsTransfer -Source 'https://github.com/PowerShellMafia/PowerSploit/archive/master.zip' -Destination 'C:\Tools\NetSess.zip'
+                Start-BitsTransfer -Source 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/NetSess.zip?raw=true' -Destination 'C:\Tools\NetSess.zip'
             }
             GetScript = 
             {
