@@ -158,6 +158,108 @@ Configuration SetupVictimPc
 			ProductId = $AipProductId
 			Arguments = '/quiet'
 			DependsOn = @('[Script]DownloadAipMsi','[Computer]JoinDomain')
-		}
+        }
+        
+        Script DownloadMimikatz
+		{
+			SetScript = 
+            {
+                if ((Test-Path -PathType Container -LiteralPath 'C:\Tools') -ne $true){
+					New-Item -Path 'C:\Tools\' -ItemType Directory
+				}
+				[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                Start-BitsTransfer -Source 'https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20190512/mimikatz_trunk.zip' -Destination 'C:\Tools\Mimikatz_20190512.zip'
+            }
+			GetScript = 
+            {
+				if (Test-Path 'C:\Tools\Mimikatz_20190512.zip'){
+					return @{
+						result = $true
+					}
+				}
+				else {
+					return @{
+						result = $false
+					}
+				}
+            }
+            TestScript = 
+            {
+				if (Test-Path 'C:\Tools\Mimikatz_20190512.zip'){
+					return $true
+				}
+				else {
+					return $false
+				}
+            }
+        }
+        
+        Script DownloadPowerSploit
+        {
+            SetScript = 
+            {
+                if ((Test-Path -PathType Container -LiteralPath 'C:\Tools') -ne $true){
+                    New-Item -Path 'C:\Tools\' -ItemType Directory
+                }
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                Start-BitsTransfer -Source 'https://github.com/PowerShellMafia/PowerSploit/archive/master.zip' -Destination 'C:\Tools\NetSess.zip'
+            }
+            GetScript = 
+            {
+                if (Test-Path 'C:\Tools\PowerSploit.zip'){
+                    return @{
+                        result = $true
+                    }
+                }
+                else {
+                    return @{
+                        result = $false
+                    }
+                }
+            }
+            TestScript = 
+            {
+                if (Test-Path 'C:\Tools\PowerSploit.zip'){
+                    return $true
+                }
+                else {
+                    return $false
+                }
+            }
+        }
+
+        Script DownloadPowerSploit
+        {
+            SetScript = 
+            {
+                if ((Test-Path -PathType Container -LiteralPath 'C:\Tools') -ne $true){
+                    New-Item -Path 'C:\Tools\' -ItemType Directory
+                }
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                Start-BitsTransfer -Source 'https://github.com/PowerShellMafia/PowerSploit/archive/master.zip' -Destination 'C:\Tools\NetSess.zip'
+            }
+            GetScript = 
+            {
+                if (Test-Path 'C:\Tools\NetSess.zip'){
+                    return @{
+                        result = $true
+                    }
+                }
+                else {
+                    return @{
+                        result = $false
+                    }
+                }
+            }
+            TestScript = 
+            {
+                if (Test-Path 'C:\Tools\NetSess.zip'){
+                    return $true
+                }
+                else {
+                    return $false
+                }
+            }
+        }
     }
 }
