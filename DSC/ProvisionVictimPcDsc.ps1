@@ -114,6 +114,7 @@ Configuration SetupVictimPc
             Name = 'DefenderSettings'
             ExclusionPath = 'C:\Temp'
             DisableRealtimeMonitoring = $true
+            DisableArchiveScanning = $true
         }
 
         Script DownloadAipMsi
@@ -192,6 +193,7 @@ Configuration SetupVictimPc
 					return $false
 				}
             }
+            DependsOn = '[xMpPreference]DefenderSettings'
         }
         
         Script DownloadPowerSploit
@@ -202,7 +204,7 @@ Configuration SetupVictimPc
                     New-Item -Path 'C:\Tools\' -ItemType Directory
                 }
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                Start-BitsTransfer -Source 'https://github.com/PowerShellMafia/PowerSploit/archive/master.zip' -Destination 'C:\Tools\NetSess.zip'
+                Start-BitsTransfer -Source 'https://github.com/PowerShellMafia/PowerSploit/archive/master.zip' -Destination 'C:\Tools\PowerSploit.zip'
             }
             GetScript = 
             {

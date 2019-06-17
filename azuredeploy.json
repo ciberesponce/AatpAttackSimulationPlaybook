@@ -74,7 +74,6 @@
       ]
     },
     "DeploymentVnetDnsName": "vNetDnsSettingsDeployment",
-
  
     "vNetAddressPrefix": "10.0.24.0/24",
     "vNetName": "AatpSaPlaybook-vNet",
@@ -203,7 +202,7 @@
           "adminPassword": "[parameters('builtinAdministratorPassword')]"
         },
         "storageProfile":{
-          "imageReference":{
+          "imageReference": {
             "publisher": "MicrosoftWindowsServer",
             "offer": "WindowsServer",
             "sku": "2016-Datacenter",
@@ -231,37 +230,21 @@
       },
       "resources":[
         {
-          "type": "extensions",
           "apiVersion": "2018-10-01",
-          "name": "[variables('DcPromoteDcDscName')]",
-          "location": "[resourceGroup().location]",
           "dependsOn": [
             "[resourceId('Microsoft.Compute/virtualMachines', variables('DcVmName'))]"
           ],
-          "properties":{
-            "publisher": "Microsoft.Powershell",
-            "type": "DSC",
+          "location": "[resourceGroup().location]",
+          "name": "[variables('DcPromoteDcDscName')]",
+          "properties": {
             "autoUpgradeMinorVersion": true,
-            "typeHandlerVersion": "2.77",
-            "settings": {
-              "configuration": {
-                "url": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/raw/master/DSC/ProvisionDcDsc.zip",
-                "script": "ProvisionDcDsc.ps1",
-                "function": "CreateADForest"
-              },
-              "configurationArguments": {
-                "DomainName": "[parameters('DomainName')]",
-                "UserPrincipalName": "[parameters('UserPrincipalName')]",
-                "NetBiosName": "[parameters('NetBiosName')]"
-              }
-            },
-            "ProtectedSettings":{
+            "protectedSettings": {
               "configurationArguments": {
                 "AdminCreds": {
                   "UserName": "[parameters('builtinAdministratorAccount')]",
                   "Password": "[parameters('builtinAdministratorPassword')]"
                 },
-                "JeffLCreds":{
+                "JeffLCreds": {
                   "UserName": "JeffL",
                   "Password": "[parameters('JeffLPassword')]"
                 },
@@ -282,8 +265,24 @@
                   "Password": "[variables('AipDomainServiceAccountPassword')]"
                 }
               }
-            }
-          }
+            },
+            "publisher": "Microsoft.Powershell",
+            "settings": {
+              "configuration": {
+                "url": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/raw/master/DSC/ProvisionDcDsc.zip",
+                "script": "ProvisionDcDsc.ps1",
+                "function": "CreateADForest"
+              },
+              "configurationArguments": {
+                "DomainName": "[parameters('DomainName')]",
+                "UserPrincipalName": "[parameters('UserPrincipalName')]",
+                "NetBiosName": "[parameters('NetBiosName')]"
+              }
+            },
+            "type": "DSC",
+            "typeHandlerVersion": "2.77"
+          },
+          "type": "extensions"
         }
       ]
     },
@@ -395,7 +394,7 @@
                 "DnsServer": "[variables('PrivateIpAddressesArray').Ip[0]]"
               }
             },
-            "ProtectedSettings":{
+            "protectedSettings":{
               "configurationArguments": {
                 "AdminCred": {
                   "UserName": "[parameters('builtinAdministratorAccount')]",
@@ -479,7 +478,7 @@
                 "DnsServer": "[variables('PrivateIpAddressesArray').Ip[0]]"
               }
             },
-            "ProtectedSettings":{
+            "protectedSettings":{
               "configurationArguments": {
                 "AdminCred": {
                   "UserName": "[parameters('builtinAdministratorAccount')]",
