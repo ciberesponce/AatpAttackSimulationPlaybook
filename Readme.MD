@@ -43,3 +43,4 @@ The above chart also shows the Primary owner of the respective lab, as well as t
 |Andrew| Make directory a share | Need more info | |
 |Andrew| Make AipScanner service account a domain account | COMPLETE | Need AAD Connect to work else need PowerShell workaround |
 |Andrew| Install SQL Express (as Aip Service Account) | Need more info | |
+|Andrew|AdminPC gets AIP scanner installed|COMPLETE| |

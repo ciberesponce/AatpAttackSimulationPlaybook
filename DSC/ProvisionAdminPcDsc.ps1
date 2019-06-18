@@ -163,5 +163,51 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
             StartWhenAvailable = $true
             DependsOn = @('[Computer]JoinDomain','[File]ScheduledTaskFile')
         }
+
+        Script DownloadAipMsi
+		{
+			SetScript = 
+            {
+                if ((Test-Path -PathType Container -LiteralPath 'C:\LabTools\') -ne $true){
+					New-Item -Path 'C:\LabTools\' -ItemType Directory
+				}
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
+                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzInfoProtection_MSI_for_central_deployment.msi?raw=true' -Outfile 'C:\LabTools\aip_installer.msi'
+            }
+			GetScript = 
+            {
+				if (Test-Path 'C:\LabTools\aip_installer.msi'){
+					return @{
+						result = $true
+					}
+				}
+				else {
+					return @{
+						result = $false
+					}
+				}
+            }
+            TestScript = 
+            {
+				if (Test-Path 'C:\LabTools\aip_installer.msi'){
+					return $true
+				}
+				else {
+					return $false
+				}
+            }
+            DependsOn = '[Registry]DisableSmartScreen'
+		}
+
+		Package InstallAipClient
+		{
+			Name = 'Microsoft Azure Information Protection'
+			Ensure = 'Present'
+			Path = 'C:\LabTools\aip_installer.msi'
+			ProductId = $AipProductId
+			Arguments = '/quiet'
+			DependsOn = @('[Script]DownloadAipMsi','[Computer]JoinDomain')
+        }
     }
 }
