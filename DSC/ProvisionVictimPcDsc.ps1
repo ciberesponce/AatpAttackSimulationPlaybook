@@ -121,33 +121,59 @@ Configuration SetupVictimPc
         }
 
         #region Modify IE Zone 3 Settings
-        # needed to be able to download from Internet sites
-        Registry ModifyMinLevelZone3
+        # needed to download files via IE from GitHub and other sources
+        # can't just modify regkeys, need to export/import reg
+        # ref: https://support.microsoft.com/en-us/help/182569/internet-explorer-security-zones-registry-entries-for-advanced-users
+        Script DownloadRegkeyZone3Workaround
         {
-            Key = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3'
-            ValueName = 'MinLevel'
-            ValueType = 'Dword'
-            ValueData = '0x00010000'
-            Ensure = 'Present'
-            DependsOn = '[Computer]JoinDomain'
+            SetScript = 
+            {
+                if ((Test-Path -PathType Container -LiteralPath 'C:\LabTools\') -ne $true){
+					New-Item -Path 'C:\LabTools\' -ItemType Directory
+				}
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
+                Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/Downloads/Zone3.reg' -Outfile 'C:\LabTools\RegkeyZone3.reg'
+            }
+			GetScript = 
+            {
+				if (Test-Path 'C:\LabTools\RegkeyZone3.reg'){
+					return @{
+						result = $true
+					}
+				}
+				else {
+					return @{
+						result = $false
+					}
+				}
+            }
+            TestScript = 
+            {
+				if (Test-Path 'C:\LabTools\RegkeyZone3.reg'){
+					return $true
+				}
+				else {
+					return $false
+				}
+            }
+            DependsOn = '[Registry]DisableSmartScreen'
         }
-        Registry ModifyCurrentLevelZone3
+        Script ExecuteZone3Override
         {
-            Key = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3'
-            ValueName = 'CurrentLevel'
-            ValueType = 'Dword'
-            ValueData = '0x00010000'
-            Ensure = 'Present'
-            DependsOn = '[Computer]JoinDomain'
-        }
-        Registry ModifyRecommendedLevelZone3
-        {
-            Key = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3'
-            ValueName = 'RecommendedLevel'
-            ValueType = 'Dword'
-            ValueData = '0x00010000'
-            Ensure = 'Present'
-            DependsOn = '[Computer]JoinDomain'
+            SetScript = 
+            {
+                & 'reg import "C:\LabTools\RegkeyZone3.reg"'
+            }
+			GetScript = 
+            {
+				return $false
+            }
+            TestScript = 
+            {
+				return $true
+            }
+            DependsOn = '[Script]DownloadRegkeyZone3Workaround'
         }
         #endregion
 
@@ -250,7 +276,7 @@ Configuration SetupVictimPc
                     }
                 }
             }
-            DependsOn = @('[xMpPreference]DefenderSettings', '[Registry]DisableSmartScreen', '[Registry]ModifyCurrentLevelZone3')
+            DependsOn = @('[xMpPreference]DefenderSettings', '[Registry]DisableSmartScreen', '[Script]ExecuteZone3Override')
         }
     }
 }
