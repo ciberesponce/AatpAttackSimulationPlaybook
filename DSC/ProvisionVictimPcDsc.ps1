@@ -120,6 +120,8 @@ Configuration SetupVictimPc
             DependsOn = '[Computer]JoinDomain'
         }
 
+        #region Modify IE Zone 3 Settings
+        # needed to be able to download from Internet sites
         Registry ModifyMinLevelZone3
         {
             Key = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3'
@@ -129,7 +131,6 @@ Configuration SetupVictimPc
             Ensure = 'Present'
             DependsOn = '[Computer]JoinDomain'
         }
-
         Registry ModifyCurrentLevelZone3
         {
             Key = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3'
@@ -139,7 +140,6 @@ Configuration SetupVictimPc
             Ensure = 'Present'
             DependsOn = '[Computer]JoinDomain'
         }
-
         Registry ModifyRecommendedLevelZone3
         {
             Key = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3'
@@ -149,6 +149,7 @@ Configuration SetupVictimPc
             Ensure = 'Present'
             DependsOn = '[Computer]JoinDomain'
         }
+        #endregion
 
         xMpPreference DefenderSettings
         {
@@ -165,8 +166,9 @@ Configuration SetupVictimPc
                 if ((Test-Path -PathType Container -LiteralPath 'C:\LabTools\') -ne $true){
 					New-Item -Path 'C:\LabTools\' -ItemType Directory
 				}
-				[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                Start-BitsTransfer -Source 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzInfoProtection_MSI_for_central_deployment.msi?raw=true' -Destination 'C:\LabTools\aip_installer.msi'
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
+                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzInfoProtection_MSI_for_central_deployment.msi?raw=true' -Outfile 'C:\LabTools\aip_installer.msi'
             }
 			GetScript = 
             {
@@ -203,42 +205,7 @@ Configuration SetupVictimPc
 			DependsOn = @('[Script]DownloadAipMsi','[Computer]JoinDomain')
         }
         
-        Script DownloadMimikatz
-		{
-			SetScript = 
-            {
-                if ((Test-Path -PathType Container -LiteralPath 'C:\Tools') -ne $true){
-					New-Item -Path 'C:\Tools\' -ItemType Directory
-				}
-				[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                Start-BitsTransfer -Source 'https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20190512/mimikatz_trunk.zip' -Destination 'C:\Tools\Mimikatz_20190512.zip'
-            }
-			GetScript = 
-            {
-				if (Test-Path 'C:\Tools\Mimikatz_20190512.zip'){
-					return @{
-						result = $true
-					}
-				}
-				else {
-					return @{
-						result = $false
-					}
-				}
-            }
-            TestScript = 
-            {
-				if (Test-Path 'C:\Tools\Mimikatz_20190512.zip'){
-					return $true
-				}
-				else {
-					return $false
-				}
-            }
-            DependsOn = @('[xMpPreference]DefenderSettings', '[Registry]DisableSmartScreen')
-        }
-        
-        Script DownloadPowerSploit
+        Script HackTools
         {
             SetScript = 
             {
@@ -246,11 +213,20 @@ Configuration SetupVictimPc
                     New-Item -Path 'C:\Tools\' -ItemType Directory
                 }
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                Start-BitsTransfer -Source 'https://github.com/PowerShellMafia/PowerSploit/archive/master.zip' -Destination 'C:\Tools\PowerSploit.zip'
-            }
+                $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
+                $tools = @(
+                    ('https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20190512/mimikatz_trunk.zip', 'C:\Tools\Mimikatz_20190512.zip'),
+                    ('https://github.com/PowerShellMafia/PowerSploit/archive/master.zip', 'C:\Tools\PowerSploit.zip'),
+                    ('https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/NetSess.zip?raw=true', 'C:\Tools\NetSess.zip')
+                )
+                foreach ($tool in $tools){
+                    Invoke-WebRequest -Uri $tool[0] -OutFile $tool[1]
+                }
+            }    
+            
             GetScript = 
             {
-                if (Test-Path 'C:\Tools\PowerSploit.zip'){
+                if (Test-Path 'C:\Tools\NetSess.zip' -and Test-Path 'C:\Tools\PowerSploit.zip' -and Test-Path 'C:\Tools\Mimikatz_20190512.zip'){
                     return @{
                         result = $true
                     }
@@ -263,48 +239,18 @@ Configuration SetupVictimPc
             }
             TestScript = 
             {
-                if (Test-Path 'C:\Tools\PowerSploit.zip'){
-                    return $true
+                if (Test-Path 'C:\Tools\NetSess.zip' -and Test-Path 'C:\Tools\PowerSploit.zip' -and Test-Path 'C:\Tools\Mimikatz_20190512.zip'){
+                    return @{
+                        result = $true
+                    }
                 }
                 else {
-                    return $false
+                    return @{
+                        result = $false
+                    }
                 }
             }
             DependsOn = @('[xMpPreference]DefenderSettings', '[Registry]DisableSmartScreen', '[Registry]ModifyCurrentLevelZone3')
-        }
-
-        Script DownloadNetSess
-        {
-            SetScript = 
-            {
-                if ((Test-Path -PathType Container -LiteralPath 'C:\Tools') -ne $true){
-                    New-Item -Path 'C:\Tools\' -ItemType Directory
-                }
-                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                Start-BitsTransfer -Source 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/NetSess.zip?raw=true' -Destination 'C:\Tools\NetSess.zip'
-            }
-            GetScript = 
-            {
-                if (Test-Path 'C:\Tools\NetSess.zip'){
-                    return @{
-                        result = $true
-                    }
-                }
-                else {
-                    return @{
-                        result = $false
-                    }
-                }
-            }
-            TestScript = 
-            {
-                if (Test-Path 'C:\Tools\NetSess.zip'){
-                    return $true
-                }
-                else {
-                    return $false
-                }
-            }
         }
     }
 }
