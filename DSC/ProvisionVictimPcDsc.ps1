@@ -249,7 +249,6 @@ Configuration SetupVictimPc
                     Invoke-WebRequest -Uri $tool[0] -OutFile $tool[1]
                 }
             }    
-            
             GetScript = 
             {
                 if (Test-Path 'C:\Tools\NetSess.zip' -and Test-Path 'C:\Tools\PowerSploit.zip' -and Test-Path 'C:\Tools\Mimikatz_20190512.zip'){
