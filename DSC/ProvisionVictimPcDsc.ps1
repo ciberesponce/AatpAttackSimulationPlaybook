@@ -54,6 +54,7 @@ Configuration SetupVictimPc
             UserRole = 'Users'
             IsEnabled = $false
         }
+        
 
         xUAC DisableUac
         {
@@ -109,6 +110,46 @@ Configuration SetupVictimPc
             DependsOn = '[Computer]JoinDomain'
         }
 
+        Registry DisableSmartScreen
+        {
+            Key = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer'
+            ValueName = 'SmartScreenEnable'
+            ValueType = 'String'
+            ValueData = 'Off'
+            Ensure = 'Present'
+            DependsOn = '[Computer]JoinDomain'
+        }
+
+        Registry ModifyMinLevelZone3
+        {
+            Key = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3'
+            ValueName = 'MinLevel'
+            ValueType = 'Dword'
+            ValueData = '0x00010000'
+            Ensure = 'Present'
+            DependsOn = '[Computer]JoinDomain'
+        }
+
+        Registry ModifyCurrentLevelZone3
+        {
+            Key = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3'
+            ValueName = 'CurrentLevel'
+            ValueType = 'Dword'
+            ValueData = '0x00010000'
+            Ensure = 'Present'
+            DependsOn = '[Computer]JoinDomain'
+        }
+
+        Registry ModifyRecommendedLevelZone3
+        {
+            Key = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3'
+            ValueName = 'RecommendedLevel'
+            ValueType = 'Dword'
+            ValueData = '0x00010000'
+            Ensure = 'Present'
+            DependsOn = '[Computer]JoinDomain'
+        }
+
         xMpPreference DefenderSettings
         {
             Name = 'DefenderSettings'
@@ -148,7 +189,8 @@ Configuration SetupVictimPc
 				else {
 					return $false
 				}
-			}
+            }
+            DependsOn = '[Registry]DisableSmartScreen'
 		}
 
 		Package InstallAipClient
@@ -193,7 +235,7 @@ Configuration SetupVictimPc
 					return $false
 				}
             }
-            DependsOn = '[xMpPreference]DefenderSettings'
+            DependsOn = @('[xMpPreference]DefenderSettings', '[Registry]DisableSmartScreen')
         }
         
         Script DownloadPowerSploit
@@ -228,6 +270,7 @@ Configuration SetupVictimPc
                     return $false
                 }
             }
+            DependsOn = @('[xMpPreference]DefenderSettings', '[Registry]DisableSmartScreen', '[Registry]ModifyCurrentLevelZone3')
         }
 
         Script DownloadNetSess
