@@ -251,7 +251,8 @@ Configuration SetupVictimPc
             }    
             GetScript = 
             {
-                if ((Test-Path 'C:\Tools\NetSess.zip') -and (Test-Path 'C:\Tools\PowerSploit.zip') -and (Test-Path 'C:\Tools\Mimikatz_20190512.zip')){                    return @{
+                if ((Test-Path 'C:\Tools\NetSess.zip') -and (Test-Path 'C:\Tools\PowerSploit.zip') -and (Test-Path 'C:\Tools\Mimikatz_20190512.zip')){
+                    return @{
                         result = $true
                     }
                 }
@@ -263,14 +264,11 @@ Configuration SetupVictimPc
             }
             TestScript = 
             {
-                if ((Test-Path 'C:\Tools\NetSess.zip') -and (Test-Path 'C:\Tools\PowerSploit.zip') -and (Test-Path 'C:\Tools\Mimikatz_20190512.zip')){                    return @{
-                        result = $true
-                    }
+                if ((Test-Path 'C:\Tools\NetSess.zip') -and (Test-Path 'C:\Tools\PowerSploit.zip') -and (Test-Path 'C:\Tools\Mimikatz_20190512.zip')){
+                    return $true
                 }
                 else {
-                    return @{
-                        result = $false
-                    }
+                    return $false
                 }
             }
             DependsOn = @('[xMpPreference]DefenderSettings', '[Registry]DisableSmartScreen', '[Script]ExecuteZone3Override')

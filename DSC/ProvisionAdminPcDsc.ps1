@@ -197,7 +197,6 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
 					return $false
 				}
             }
-            DependsOn = '[Registry]DisableSmartScreen'
 		}
 
 		Package InstallAipClient
