@@ -15,7 +15,10 @@ The above chart also shows the Primary owner of the respective lab, as well as t
 ### Documentation
 | Who | What | Status | Helpful resources|
 |-----|------|--------|------------------|
-|Kevin|Lift and Shift current documentation to new platform|Exploring|  |
+|Kevin|Lift and Shift AIP|Exploring|  |
+|Kevin|Lift and Shift MCAS| Exploring| |
+|Kevin/Andrew|Lift and Shift AATP|Exploring| |
+|Kevin|Lift and Shift ASC|Exploring| |
 
 ### Common Lab Environment (CLE)
 
@@ -44,3 +47,11 @@ The above chart also shows the Primary owner of the respective lab, as well as t
 |Andrew| Make AipScanner service account a domain account | COMPLETE | Need AAD Connect to work else need PowerShell workaround |
 |Andrew| Install SQL Express (as Aip Service Account) | Need more info | |
 |Andrew|AdminPC gets AIP scanner installed|COMPLETE| |
+
+## Validation Testing
+|Who|What|Status|Date Status Updated
+|---|----|------|-------------------|
+|Andrew/Gershon/Brandon|AATP|  |N/A|
+|Kevin|AIP| |N/A|
+|Sebastien|MCAS| |N/A|
+|Kara/ChrisB|ASC| |N/A|
