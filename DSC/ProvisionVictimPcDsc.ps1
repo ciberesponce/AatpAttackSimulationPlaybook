@@ -17,13 +17,17 @@ Configuration SetupVictimPc
         [ValidateNotNullOrEmpty()]
         [PSCredential]$AdminCred
     )
+    #region COE
     Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity
 
     $Interface = Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
     $InterfaceAlias = $($Interface.Name)
-
-    $AipProductId = "48A06F18-951C-42CA-86F1-3046AF06D15E"
     [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCred.UserName)", $AdminCred.Password)
+    #endregion
+
+    #region AIP stuff
+    $AipProductId = "48A06F18-951C-42CA-86F1-3046AF06D15E"
+    #endregion
 
     Node localhost
     {
@@ -236,7 +240,7 @@ Configuration SetupVictimPc
             SetScript = 
             {
                 if ((Test-Path -PathType Container -LiteralPath 'C:\Tools') -ne $true){
-                    New-Item -Path 'C:\Tools\' -ItemType Directory
+                    New-Item -Path 'C:\Tools\' -ItemType Directory | Out-Null
                 }
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
