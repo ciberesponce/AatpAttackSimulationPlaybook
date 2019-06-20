@@ -29,7 +29,7 @@ Configuration SetupAdminPc
         # AIP: used to install SqlServer in context of AIP Admin
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
-        [PsCredential]$AipAdminCred
+        [PsCredential]$AipServiceCred
 
     )
     #region COE

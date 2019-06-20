@@ -487,6 +487,10 @@
                 "SamiraACred": {
                   "UserName": "SamiraA",
                   "Password": "[parameters('SamiraAPassword')]"
+                },
+                "AipServiceCred": {
+                  "UserName": "[variables('AipDomainServiceAccount')]",
+                  "Password": "[variables('AipDomainServiceAccountPassword')]"
                 }
               }
             }
