@@ -98,8 +98,8 @@
     "AipVmName": "Client01",
     "AipDomainServiceAccount":"AipScanner",
     "AipDomainServiceAccountPassword": "Somepass1",
-    "AipClientDscName": "AipDsc",
-    "AipDscUrl": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionAipClient.zip?raw=true"
+    "Client01DscName": "AipDsc",
+    "Client01DscUrl": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionClient01.zip?raw=true"
   },
   "resources": [
     {
@@ -547,7 +547,7 @@
         {
           "type": "extensions",
           "apiVersion": "2018-10-01",
-          "name": "[variables('AipClientDscName')]",
+          "name": "[variables('Client01DscName')]",
           "location": "[resourceGroup().location]",
           "dependsOn": [
             "[resourceId('Microsoft.Compute/virtualMachines', variables('AipVmName'))]",
@@ -560,7 +560,7 @@
             "typeHandlerVersion": "2.77",
             "settings": {
               "configuration": {
-                "url": "[variables('AipDscUrl')]",
+                "url": "[variables('Client01DscUrl')]",
                 "script": "ProvisionClient01.ps1",
                 "function": "SetupAipScannerCore"
               },
