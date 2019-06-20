@@ -557,7 +557,7 @@
             "settings": {
               "configuration": {
                 "url": "[variables('AipDscUrl')]",
-                "script": "ProvisionAipClient.ps1",
+                "script": "ProvisionClient01.ps1",
                 "function": "SetupAipScannerCore"
               },
               "configurationArguments": {

@@ -235,7 +235,8 @@ Configuration SetupVictimPc
 			DependsOn = @('[Script]DownloadAipMsi','[Computer]JoinDomain')
         }
         
-        Script HackTools
+        #region HackTools
+        Script DownloadHackTools
         {
             SetScript = 
             {
@@ -277,5 +278,27 @@ Configuration SetupVictimPc
             }
             DependsOn = @('[xMpPreference]DefenderSettings', '[Registry]DisableSmartScreen', '[Script]ExecuteZone3Override')
         }
+        Archive UnzipMimikatz
+        {
+            Path = 'C:\Tools\Mimikatz_20190512.zip'
+            Destination = 'C:\Tools\Mimikatz'
+            Ensure = 'Present'
+            DependsOn = '[Script]HackTools'
+        }
+        Archive UnzipPowerSploit
+        {
+            Path = 'C:\Tools\PowerSploit.zip'
+            Destination = 'C:\Tools\PowerSploit'
+            Ensure = 'Present'
+            DependsOn = '[Script]HackTools'
+        }
+        Archive UnzipNetSess
+        {
+            Path = 'C:\Tools\NetSess.zip'
+            Destination = 'C:\Tools\NetSess'
+            Ensure = 'Present'
+            DependsOn = '[Script]HackTools'
+        }
+        #endregion
     }
 }
