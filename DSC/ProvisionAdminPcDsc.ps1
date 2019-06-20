@@ -233,7 +233,7 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
 			Path = 'C:\LabTools\aip_installer.msi'
 			ProductId = $AipProductId
 			Arguments = '/quiet'
-			DependsOn = @('[Script]DownloadAipMsi','[Computer]JoinDomain')
+			DependsOn = @('[Script]DownloadAipStuff','[Computer]JoinDomain')
         }
         #endregion
     }
