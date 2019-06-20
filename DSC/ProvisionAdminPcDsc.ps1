@@ -1,17 +1,17 @@
 Configuration SetupAdminPc
 {
     param(
-        # COE
+        # COE: Domain's name
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
         [string]$DomainName,
         
-        # COE
+        # COE: Domain's NetBios
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
         [string]$NetBiosName,
 
-        # COE
+        # COE: ensures DNS properly set by OS before domain join
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
         [string]$DnsServer,
@@ -60,6 +60,7 @@ Configuration SetupAdminPc
             ActionAfterReboot = 'ContinueConfiguration'
         }
 
+        #region COE
 		DnsServerAddress DnsServerAddress 
 		{
 			Address        = $DnsServer
@@ -134,7 +135,9 @@ Configuration SetupAdminPc
             Ensure = 'Present'
             DependsOn = '[Computer]JoinDomain'
         }
+        #endregion
 
+        #region AATP
         Registry AuditModeSamr
         {
             Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa'
@@ -182,7 +185,9 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
             StartWhenAvailable = $true
             DependsOn = @('[Computer]JoinDomain','[File]ScheduledTaskFile')
         }
+        #endregion
 
+        #region AIP
         Script DownloadAipStuff
 		{
 			SetScript = 
@@ -230,5 +235,6 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
 			Arguments = '/quiet'
 			DependsOn = @('[Script]DownloadAipMsi','[Computer]JoinDomain')
         }
+        #endregion
     }
 }
