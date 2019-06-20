@@ -1,35 +1,45 @@
 Configuration SetupAdminPc
 {
     param(
+        # COE
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
         [string]$DomainName,
         
+        # COE
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
         [string]$NetBiosName,
 
+        # COE
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
         [string]$DnsServer,
 
+        # COE: used to domain join
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
         [PSCredential]$AdminCred,
 
+        # AATP: used to do Scheduled Task
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
-        [PsCredential]$SamiraACred
+        [PsCredential]$SamiraACred,
+
+        # AIP: used to install SqlServer in context of AIP Admin
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [PsCredential]$AipAdminCred
 
     )
     #region COE
-    Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity
+    Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity, SqlServerDsc
 
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
     $InterfaceAlias=$($Interface.Name)
 
     [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCred.UserName)", $AdminCred.Password)
-
+    
     #region ScheduledTask-AATP
     $SamiraASmbScriptLocation = [string]'C:\ScheduledTasks\SamiraASmbSimulation.ps1'
     [PSCredential]$SamiraADomainCred = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($SamiraACred.UserName)", $SamiraACred.Password)
@@ -173,13 +183,16 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
             DependsOn = @('[Computer]JoinDomain','[File]ScheduledTaskFile')
         }
 
-        Script DownloadAipMsi
+        Script DownloadAipStuff
 		{
 			SetScript = 
             {
                 if ((Test-Path -PathType Container -LiteralPath 'C:\LabTools\') -ne $true){
 					New-Item -Path 'C:\LabTools\' -ItemType Directory
-				}
+                }
+                $tools = @(
+                    ('https://go.microsoft.com/fwlink/?linkid=853017', 'C:\LabTools\SqlExpress.msi')
+                )
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
                 Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzInfoProtection_MSI_for_central_deployment.msi?raw=true' -Outfile 'C:\LabTools\aip_installer.msi'
