@@ -1,21 +1,30 @@
 Configuration SetupVictimPc
 {
     param(
+        # COE
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$DomainName = "Contoso.Azure",
             
+        # COE
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$NetBiosName = "Contoso",
 
+        # COE
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$DnsServer,
 
+        # COE
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [PSCredential]$AdminCred
+        [PSCredential]$AdminCred,
+
+        # AATP: Used to expose RonHD cred to machine
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [PSCredential]$RonHdCred
     )
     #region COE
     Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity
@@ -23,6 +32,10 @@ Configuration SetupVictimPc
     $Interface = Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
     $InterfaceAlias = $($Interface.Name)
     [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCred.UserName)", $AdminCred.Password)
+    #endregion
+
+    #region AATP stuff
+    [PSCredential]$RonHdDomainCred = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($RonHdCred.UserName)", $RonHdCred.Password)
     #endregion
 
     #region AIP stuff
@@ -39,6 +52,7 @@ Configuration SetupVictimPc
             ActionAfterReboot = 'ContinueConfiguration'
         }
 
+        #region COE
         DnsServerAddress DnsServerAddress 
         {
             Address        = $DnsServer
@@ -100,6 +114,26 @@ Configuration SetupVictimPc
             ValueData = '1'
             Force = $true
             Ensure = 'Present'
+            DependsOn = '[Computer]JoinDomain'
+        }
+        #endregion
+
+        #region AATP
+        # every 10 minutes open up a new CMD.exe as RonHD
+        ScheduledTask RonHd
+        {
+            TaskName = 'SimulateRonHdProcess'
+            ScheduleType = 'Once'
+            Description = 'Simulates RonHD exposing his account via an interactive or scheduled task manner.  In this case, we use scheduled task. This mimics the machine being managed.'
+            Ensure = 'Present'
+            Enable = $true
+            TaskPath = '\AatpScheduledTasks'
+            ExecuteAsCredential = $RonHdDomainCred
+            ActionExecutable = 'cmd.exe'
+            Priority = 9
+            DisallowHardTerminate = $false
+            RepeatInterval = '00:10:00'
+            RepetitionDuration = 'Indefinitely'
             DependsOn = '[Computer]JoinDomain'
         }
 
@@ -188,6 +222,7 @@ Configuration SetupVictimPc
             DisableRealtimeMonitoring = $true
             DisableArchiveScanning = $true
         }
+        #endregion
 
         Script DownloadAipMsi
 		{
