@@ -39,6 +39,7 @@ The above chart also shows the Primary owner of the respective lab, as well as t
 |Andrew|AdminPC Scheduled Task-SamiraA activity| COMPLETE| |
 |Andrew|VictimPC Download HackTools|COMPLETE| |
 |Andrew|VictimPC Unzip HackTools|COMPLETE| |
+|Andrew|Ensure VMs can ping each other| Exploring| |
 
 ### AIP
 
