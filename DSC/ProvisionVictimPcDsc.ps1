@@ -134,6 +134,7 @@ Configuration SetupVictimPc
             DisallowHardTerminate = $false
             RepeatInterval = '00:10:00'
             RepetitionDuration = 'Indefinitely'
+            StartWhenAvailable = $true
             DependsOn = '[Computer]JoinDomain'
         }
 

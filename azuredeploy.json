@@ -400,7 +400,7 @@
                   "UserName": "[parameters('builtinAdministratorAccount')]",
                   "Password": "[parameters('builtinAdministratorPassword')]"
                 },
-                "RonHdCreds": {
+                "RonHdCred": {
                   "UserName": "RonHD",
                   "Password": "[parameters('RonHdPassword')]"
                 }
