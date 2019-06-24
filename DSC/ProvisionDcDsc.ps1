@@ -138,84 +138,7 @@ Configuration CreateADForest
             Ensure = 'Present'
 			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
 		}
-		        #region enable Network Discovery for Domain Firewall profile
-        # had to use Get-NetFirewallRule to get real name of predefined rules, not just displayname
-        
-        #LLMNR-UDP-In
-        Firewall EnableNetworkDiscoveryLLMNR
-        {
-            Name = '{29B0772A-CEFB-49AD-BCF8-3CD60E4ED26C}'
-            Enabled = 'True'
-            Ensure = 'Present'
-            Profile = 'Domain'
-        }
-        #NB-Datagram-In
-        Firewall EnableNetworkDiscoveryNBDatagram
-        {
-            Name = '{24644562-E54C-4E3C-8790-AB6196E89C40}'
-            Enabled = 'True'
-            Ensure = 'Present'
-            Profile = 'Domain'
-        }
-        #NB-Name-In
-        Firewall EnableNetworkDiscoveryNBName
-        {
-            Name = '{BB81B632-81A5-4CE1-810C-A8D7ADF1AEE3}'
-            Enabled = 'True'
-            Ensure = 'Present'
-            Profile = 'Domain'
-        }
-        #WSD EventSecure-In
-        Firewall EnableNetworkDiscoveryWSDEventSecure
-        {
-            Name = '{B90C5364-961F-4D25-A940-57FC33EE7C84}'
-            Enabled = 'True'
-            Ensure = 'Present'
-            Profile = 'Domain'
-        }
-        #Pub-WSD-In
-        Firewall EnableNetworkDiscoveryPubWSD
-        {
-            Name = '{02E25160-C1B7-4D3A-926B-080E70646752}'
-            Enabled = 'True'
-            Ensure = 'Present'
-            Profile = 'Domain'
-        }
-        #WSD-In
-        Firewall EnableNetworkDiscoveryWSD
-        {
-            Name = '{39D4888F-3936-4F03-970C-AA2D8F5B8F2C}'
-            Enabled = 'True'
-            Ensure = 'Present'
-            Profile = 'Domain'
-        }
-        #SSDP-In
-        Firewall EnableNetworkDiscoverySSDP
-        {
-            Name = '{6B9347C6-E7F7-466B-960B-975119FED771}'
-            Enabled = 'True'
-            Ensure = 'Present'
-            Profile = 'Domain'
-        }
-        #UPnP-In
-        Firewall EnableNetworkDiscoveryUPnP
-        {
-            Name = '{DC81C2E8-B535-4234-9D12-2655D03D5930}'
-            Enabled = 'True'
-            Ensure = 'Present'
-            Profile = 'Domain'
-        }
-        #WSD Events-In
-        Firewall EnableNetworkDiscoveryWSDEvents
-        {
-            Name = '{AFAC157E-7F7A-4091-AE1A-1F70C4A51FCB}'
-            Enabled = 'True'
-            Ensure = 'Present'
-            Profile = 'Domain'
-        }
-        #endregion
-
-
+		        
         Registry HideInitialServerManager
         {
             Key = 'HKLM:\SOFTWARE\Microsoft\ServerManager\Oobe'
@@ -259,6 +182,7 @@ Configuration CreateADForest
 					return $false
 				}
 			}
+			DependsOn = '[WindowsFeature]DNS'
 		}
 
 		Package InstallAadConnect
