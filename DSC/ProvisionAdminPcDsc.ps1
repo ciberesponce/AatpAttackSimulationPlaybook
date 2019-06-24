@@ -147,30 +147,32 @@ Configuration SetupAdminPc
             GetScript = 
             {
                 $fwRules = Get-NetFirewallRule -DisplayGroup 'Network Discovery'
-                foreach ($rule in $fw){
+                $result = $true
+                foreach ($rule in $fwRules){
                     if ($rule.Enabled -eq 'False'){
-                        return @{
-                            result = $false
-                        }
+                        $result = $false
+                        break
                     }
                 }
                 return @{
-                    result = $true
+                    result = $result
                 }
             }
             TestScript = 
             {
                 $fwRules = Get-NetFirewallRule -DisplayGroup 'Network Discovery'
-                foreach ($rule in $fw){
+                $result = $true
+                foreach ($rule in $fwRules){
                     if ($rule.Enabled -eq 'False'){
-                        return $false
+                        $result = $false
+                        break
                     }
                 }
-                return $true
+                return $result
             }
             DependsOn = '[Computer]JoinDomain'
         }
-        
+
         Registry AuditModeSamr
         {
             Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa'
@@ -228,9 +230,6 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
                 if ((Test-Path -PathType Container -LiteralPath 'C:\LabTools\') -ne $true){
 					New-Item -Path 'C:\LabTools\' -ItemType Directory
                 }
-                $tools = @(
-                    ('https://go.microsoft.com/fwlink/?linkid=853017', 'C:\LabTools\SqlExpress.msi')
-                )
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
                 Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzInfoProtection_MSI_for_central_deployment.msi?raw=true' -Outfile 'C:\LabTools\aip_installer.msi'

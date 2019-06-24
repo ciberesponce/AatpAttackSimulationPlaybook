@@ -158,26 +158,28 @@ Configuration SetupVictimPc
             GetScript = 
             {
                 $fwRules = Get-NetFirewallRule -DisplayGroup 'Network Discovery'
-                foreach ($rule in $fw){
+                $result = $true
+                foreach ($rule in $fwRules){
                     if ($rule.Enabled -eq 'False'){
-                        return @{
-                            result = $false
-                        }
+                        $result = $false
+                        break
                     }
                 }
                 return @{
-                    result = $true
+                    result = $result
                 }
             }
             TestScript = 
             {
                 $fwRules = Get-NetFirewallRule -DisplayGroup 'Network Discovery'
-                foreach ($rule in $fw){
+                $result = $true
+                foreach ($rule in $fwRules){
                     if ($rule.Enabled -eq 'False'){
-                        return $false
+                        $result = $false
+                        break
                     }
                 }
-                return $true
+                return $result
             }
             DependsOn = '[Computer]JoinDomain'
         }

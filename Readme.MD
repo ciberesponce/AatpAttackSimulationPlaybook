@@ -58,3 +58,10 @@ The above chart also shows the Primary owner of the respective lab, as well as t
 |Kevin|AIP| |N/A|
 |Sebastien|MCAS| |N/A|
 |Kara/ChrisB|ASC| |N/A|
+
+## Phases
+|Phase|Status|Last Updated|
+|-----|------|------------|
+|Phase 0|Ongoing|---------|
+|Phase 1|Exploring|-------|
+|Phase 2|    |------------|
