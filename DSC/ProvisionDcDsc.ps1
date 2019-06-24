@@ -42,7 +42,7 @@ Configuration CreateADForest
 	)
 
 	Import-DscResource -ModuleName PSDesiredStateConfiguration, xActiveDirectory, xPendingReboot, `
-		NetworkingDsc, xStorage, xDefender
+		xNetworking, xStorage, xDefender
 
 	$Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
 	$InterfaceAlias=$($Interface.Name)
@@ -64,7 +64,7 @@ Configuration CreateADForest
 			Name = 'DNS'
 		}
 		
-		DnsServerAddress DnsServerAddress 
+		xDnsServerAddress DnsServerAddress 
 		{ 
 			Address        = '127.0.0.1'
 			InterfaceAlias = $InterfaceAlias
