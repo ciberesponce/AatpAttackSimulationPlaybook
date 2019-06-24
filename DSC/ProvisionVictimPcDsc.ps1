@@ -183,6 +183,41 @@ Configuration SetupVictimPc
             }
             DependsOn = '[Computer]JoinDomain'
         }
+        
+        Script TurnOnFileSharing
+        {
+            SetScript = 
+            {
+                Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing' | Set-NetFirewallRule -Profile 'Domain' -Enabled true
+            }
+            GetScript = 
+            {
+                $fwRules = Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing'
+                $result = $true
+                foreach ($rule in $fwRules){
+                    if ($rule.Enabled -eq 'False'){
+                        $result = $false
+                        break
+                    }
+                }
+                return @{
+                    result = $result
+                }
+            }
+            TestScript = 
+            {
+                $fwRules = Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing'
+                $result = $true
+                foreach ($rule in $fwRules){
+                    if ($rule.Enabled -eq 'False'){
+                        $result = $false
+                        break
+                    }
+                }
+                return $result
+            }
+            DependsOn = '[Computer]JoinDomain'
+        }
 
         Registry DisableSmartScreen
         {
