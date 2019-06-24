@@ -1,0 +1,46 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {},
+  "variables": {
+    "PrivateIpAddressesArray": {
+      "type": "array",
+      "Ip": [
+        "10.0.24.4",
+        "10.0.24.10",
+        "10.0.24.11",
+        "10.0.24.12"
+      ]
+    },
+    "DeploymentVnetDnsName": "vNetDnsSettingsDeployment",
+    "vNetAddressPrefix": "10.0.24.0/24",
+    "vNetName": "AzureSec-vNet",
+    "vNetSubnetName": "Subnet",
+
+    "GenericNicName": "Nic",
+    "GenericPublicIpAddressName": "PublicIp",
+
+    "DcVmName": "ContosoDc",
+    "DcPromoteDcDscName": "DcPromoDsc",
+
+    "VictimVmName": "VictimPc",
+    "VictimDscName": "VictimDsc",
+
+    "AdminPcVmName": "AdminPc",
+    "AdminPcDscName": "AdminPcDsc",
+
+    "AipVmName": "Client01",
+    "AipDomainServiceAccount":"AipScanner",
+    "AipDomainServiceAccountPassword": "Somepass1",
+    "Client01DscName": "AipDsc"
+
+  },
+  "resources": [
+    {
+      "apiVersion": "2019-04-01",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[variables('DcVmName')]"
+    }
+  ],
+  "outputs": {}
+}

@@ -11,7 +11,10 @@ This is used to build out the lab for C+AI Security products.  These products ar
 
 The above chart also shows the Primary owner of the respective lab, as well as the secondary/backup.
 
+# Phase 0
+
 ## ToDo
+
 ### Documentation
 | Who | What | Status | Helpful resources|
 |-----|------|--------|------------------|
