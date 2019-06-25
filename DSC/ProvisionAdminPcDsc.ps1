@@ -173,6 +173,35 @@ Configuration SetupAdminPc
             DependsOn = '[Computer]JoinDomain'
         }
 
+        Script EnsureTempFolder
+        {
+            SetScript = 
+            {
+                New-Item -Path 'C:\Temp\' -ItemType Directory
+            }
+            GetScript = 
+            {
+                if (Test-Path -PathType Container -LiteralPath 'C:\Temp'){
+					return @{
+						result = $true
+					}
+				}
+				else {
+					return @{
+						result = $false
+					}
+				}
+            }
+            TestScript = {
+                if(Test-Path -PathType Container -LiteralPath 'C:\Temp'){
+                    return $true
+                }
+                else {
+                    return $false
+                }
+            }
+        }
+
         Script TurnOnFileSharing
         {
             SetScript = 
@@ -222,7 +251,7 @@ Configuration SetupAdminPc
         xMpPreference DefenderSettings
         {
             Name = 'DefenderSettings'
-            ExclusionPath = 'C:\Temp'
+            ExclusionPath = 'C:\Tools'
             DisableRealtimeMonitoring = $true
         }
 

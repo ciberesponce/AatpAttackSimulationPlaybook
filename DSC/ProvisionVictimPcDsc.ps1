@@ -219,6 +219,35 @@ Configuration SetupVictimPc
             DependsOn = '[Computer]JoinDomain'
         }
 
+        Script EnsureTempFolder
+        {
+            SetScript = 
+            {
+                New-Item -Path 'C:\Temp\' -ItemType Directory
+            }
+            GetScript = 
+            {
+                if (Test-Path -PathType Container -LiteralPath 'C:\Temp'){
+					return @{
+						result = $true
+					}
+				}
+				else {
+					return @{
+						result = $false
+					}
+				}
+            }
+            TestScript = {
+                if(Test-Path -PathType Container -LiteralPath 'C:\Temp'){
+                    return $true
+                }
+                else {
+                    return $false
+                }
+            }
+        }
+
         Registry DisableSmartScreen
         {
             Key = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer'
@@ -289,7 +318,7 @@ Configuration SetupVictimPc
         xMpPreference DefenderSettings
         {
             Name = 'DefenderSettings'
-            ExclusionPath = 'C:\Temp'
+            ExclusionPath = 'C:\Tools'
             DisableRealtimeMonitoring = $true
             DisableArchiveScanning = $true
         }
@@ -354,7 +383,8 @@ Configuration SetupVictimPc
                 $tools = @(
                     ('https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20190512/mimikatz_trunk.zip', 'C:\Tools\Mimikatz_20190512.zip'),
                     ('https://github.com/PowerShellMafia/PowerSploit/archive/master.zip', 'C:\Tools\PowerSploit.zip'),
-                    ('https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/NetSess.zip?raw=true', 'C:\Tools\NetSess.zip')
+                    ('https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/NetSess.zip?raw=true', 'C:\Tools\NetSess.zip'),
+                    ('https://download.sysinternals.com/files/PSTools.zip', 'C:\Tools\SysInternals.zip')
                 )
                 foreach ($tool in $tools){
                     Invoke-WebRequest -Uri $tool[0] -OutFile $tool[1]
@@ -402,6 +432,13 @@ Configuration SetupVictimPc
         {
             Path = 'C:\Tools\NetSess.zip'
             Destination = 'C:\Tools\NetSess'
+            Ensure = 'Present'
+            DependsOn = '[Script]DownloadHackTools'
+        }
+        Archive UnzipSysInternals
+        {
+            Path = 'C:\Tools\SysInternals.zip'
+            Destination = 'C:\Tools\SysInteranls'
             Ensure = 'Present'
             DependsOn = '[Script]DownloadHackTools'
         }
