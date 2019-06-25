@@ -38,3 +38,13 @@ foreach ($vm in $vms){
         -ResourceGroupName 'andrew-images'
     Write-Host "[+] $($vm.Name):`tSuccessfully converted @ $($osDisk.Id)" -ForegroundColor Green
 }
+
+Write-Host "[+] Moving to proper Storage Account/containers"
+$images = Get-AzImage -ResourceGroupName $DestinationResourceGroupName
+$destStorageContext = New-AzStorageContext -StorageAccountName $StorageAccount -StorageAccountKey $StorageAccessKey
+
+foreach ($image in $images){
+    $sas = Grant-AzDiskAccess -ResourceGroupName $DestinationResourceGroupName `
+        -DiskName $image.Name `
+        -DurationInSecond 3600 -Access Read
+}

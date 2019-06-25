@@ -70,7 +70,8 @@
         "10.0.24.4",
         "10.0.24.10",
         "10.0.24.11",
-        "10.0.24.12"
+        "10.0.24.12",
+        "10.0.24.50"
       ]
     },
     "DeploymentVnetDnsName": "vNetDnsSettingsDeployment",
@@ -143,7 +144,7 @@
       "name": "[concat(variables('GenericStorageAccountName'), copyIndex())]",
       "location": "[resourceGroup().location]",
       "copy": {
-        "count": 4,
+        "count": 5,
         "name": "GenericStorageAccountLoop"
       },
       "sku": {
@@ -159,7 +160,7 @@
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "NicLoop",
-        "count": 4
+        "count": 5
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('GenericPublicIpAddressName'), copyIndex()))]",
