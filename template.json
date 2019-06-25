@@ -39,8 +39,38 @@
     {
       "apiVersion": "2019-04-01",
       "type": "Microsoft.Network/virtualNetworks",
-      "name": "[variables('DcVmName')]"
-    }
+      "name": "[variables('DcVmName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [ "[variables('vNetAddressPrefix')]"]
+        },
+        "subnets": [
+          {
+            "name": "[variables('vNetSubnetName')]",
+            "properties": {
+              "addressPrefix": "[variables('vNetAddressPrefix')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2018-12-01",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[concat(variables('GenericPublicIpAddressName'), copyIndex())]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "count": 4,
+        "name": "GenericPublicIpAddressLoop"
+      },
+      "sku": {
+        "name": "Basic"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      }
+    },
   ],
   "outputs": {}
 }
