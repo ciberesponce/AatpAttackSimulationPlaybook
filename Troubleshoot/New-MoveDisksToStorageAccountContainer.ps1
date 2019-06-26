@@ -20,14 +20,14 @@ param(
     $StorageAccessKey = 'MHCknrQZRBfqzv1mB+UgN7s1pinKp+buIDVmeZM2BLDTbwtrxMxh/85MjggBpEi+FHwTb3kmQR9Sd4dBjVheow=='
 )
 
-Write-Host "[+] Moving to proper Storage Account/containers"
+Write-Host "[!] Moving to proper Storage Account/containers" -ForegroundColor Yellow
 $disks = Get-AzDisk -ResourceGroupName $ResourceGroupName
 $destStorageContext = New-AzStorageContext -StorageAccountName $StorageAccount -StorageAccountKey $StorageAccessKey
 
 foreach ($disk in $disks){
     $name = ($disk.Id).Split('/') | Select-Object -last 1
 
-    Write-Host "[ ] Moving $name disk to Storage Account..." -ForegroundColor Cyan
+    Write-Host "`t[ ] Moving $name disk to Storage Account..." -ForegroundColor Cyan
     $sas = Grant-AzDiskAccess -ResourceGroupName $ResourceGroupName `
         -DiskName $disk.Name `
         -DurationInSecond 3600 -Access Read
