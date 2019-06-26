@@ -57,6 +57,13 @@ Configuration CreateADForest
 		{
 			RebootNodeIfNeeded = $true
 		}
+
+		Service DisableWindowsUpdate
+        {
+            Name = 'wuauserv'
+            State = 'Stopped'
+            StartupType = 'Disabled'
+        }
 		
 		WindowsFeature DNS
 		{

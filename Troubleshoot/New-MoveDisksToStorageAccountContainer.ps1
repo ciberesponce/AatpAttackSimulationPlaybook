@@ -25,7 +25,7 @@ $disks = Get-AzDisk -ResourceGroupName $ResourceGroupName
 $destStorageContext = New-AzStorageContext -StorageAccountName $StorageAccount -StorageAccountKey $StorageAccessKey
 
 foreach ($disk in $disks){
-    $name = ($disk.ManagedBy).Split('/') | select -last 1
+    $name = ($disk.Id).Split('/') | Select-Object -last 1
 
     Write-Host "[ ] Moving $name disk to Storage Account..." -ForegroundColor Cyan
     $sas = Grant-AzDiskAccess -ResourceGroupName $ResourceGroupName `

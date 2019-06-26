@@ -32,6 +32,7 @@ Configuration SetupAipScannerCore
 
     Node localhost
     {
+        #region COE
 		DnsServerAddress DnsServerAddress 
 		{
 			Address        = $DnsServer
@@ -50,6 +51,13 @@ Configuration SetupAipScannerCore
         {
             UserRole = 'Users'
             IsEnabled = $false
+        }
+
+        Service DisableWindowsUpdate
+        {
+            Name = 'wuauserv'
+            State = 'Stopped'
+            StartupType = 'Disabled'
         }
 
         Computer JoinDomain
@@ -100,6 +108,7 @@ Configuration SetupAipScannerCore
             Ensure = 'Present'
             DependsOn = '[Computer]JoinDomain'
         }
+        #endregion
 
         Script DownloadAipMsi
 		{

@@ -53,6 +53,13 @@ Configuration SetupVictimPc
         }
 
         #region COE
+        Service DisableWindowsUpdate
+        {
+            Name = 'wuauserv'
+            State = 'Stopped'
+            StartupType = 'Disabled'
+        }
+
         DnsServerAddress DnsServerAddress 
         {
             Address        = $DnsServer

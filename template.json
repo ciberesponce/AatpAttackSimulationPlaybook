@@ -1,108 +1,68 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {
-    "builtinAdministratorAccount":{
-      "type": "string",
-      "defaultValue": "ContosoAdmin",
-      "metadata": { "description": "Builtin\\Administrator account's name for the Virtual Machines. This is not a domain account." }
-    },
-    "builtinAdministratorPassword":{
-      "type": "securestring",
-      "defaultValue": "Password123!@#",
-      "metadata": { "description": "Password for the Builtin Administrator account. Default is 'Password123!@#'" }
-    },
-    "UserPrincipalName":{
-      "type": "string",
-      "defaultValue": "seccxp.ninja",
-      "metadata": { 
-        "description": "The UPN for users who will be provisioned in Active Directory.  Useful when later using AAD Connect" 
-      }
-    },
-    "DomainName":{
-      "type": "string",
-      "defaultValue": "Contoso.Azure",
-      "metadata": {
-        "description": "This is the FQDN of the Active Directory domain"
-      }
-    },
-    "NetBiosName":{
-      "type": "string",
-      "defaultValue": "CONTOSO",
-      "metadata": {
-        "description:": "NetBIOS name for the Forest"
-      }
-    },
-    "JeffLPassword":{
-      "type": "securestring",
-      "defaultValue": "Password$fun",
-      "metadata": {
-        "description": "Password for JeffL. Default is 'Password$fun'  JeffL is admin on VictimPC (but no other domain credentials)."
-      }
-    },
-    "SamiraAPassword":{
-      "type": "securestring",
-      "defaultValue": "NinjaCat123!@#",
-      "metadata": {
-        "description": "SamiraA password. Default is 'NinjaCat123!@#'  SamiraA is Domain Admin."
-      }
-    },
-    "RonHdPassword":{
-      "type": "securestring",
-      "defaultValue": "FightingTiger$",
-      "metadata": {
-        "description": "RonHD's password. Default is FightingTiger$. RonHD is member of Helpdesk."
-      }
-    },
-    "LisaVPassword":{
-      "type": "securestring",
-      "defaultValue": "HightImpactUser1!",
-      "metadata": {
-        "description": "LisaV's password. By default it is 'HightImpactUser1!'  LisaV has access to High Impact data and will be used in future labs."
-      }
-    }
-
-  },
+  "parameters": {  },
   "variables": {
-    "PrivateIpAddressesArray": {
-      "type": "array",
-      "Ip": [
-        "10.0.24.4",
-        "10.0.24.10",
-        "10.0.24.11",
-        "10.0.24.12"
-      ]
-    },
-
-    "ImportedDisks": {
-      "type": "array",
-      "Disk": [
-        "<DC>",
-        "<AdminPC>",
-        "<VictimPC>",
-        "Client01"
-      ]
-    },
+    "StagedDate": "20190625",
 
     "DeploymentVnetDnsName": "vNetDnsSettingsDeployment",
  
     "vNetAddressPrefix": "10.0.24.0/24",
-    "vNetName": "AatpSaPlaybook-vNet",
+    "vNetName": "M365-vNet",
     "vNetSubnetName": "Subnet",
     "vSubnetRefId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNetName'), variables('vNetSubnetName'))]",
 
     "GenericNicName": "Nic",
     "GenericPublicIpAddressName": "PublicIp",
-    "GenericStorageAccountName": "[concat(uniqueString(resourceGroup().id), 'sa')]",
+    "GenericDiskName": "[concat(uniqueString(resourceGroup().id), 'd')]",
 
     "DcVmName": "ContosoDc",
-    "DcPromoteDcDscName": "DcPromoDsc",
+    "DcVmType": "Windows",
+    "DcPrivateIp": "10.0.24.4",
+    "DcVhdUri": "[concat('https://caiseclabdev.blob.core.windows.net/assets/ContosoDc', variables('StagedDate'), '.vhd')]",
 
     "VictimVmName": "VictimPc",
+    "VictimVmType": "Windows",
+    "VictimPrivateIp": "10.0.24.10",
+    "VictimVhdUri": "[concat('https://caiseclabdev.blob.core.windows.net/assets/Victim', variables('StagedDate'), '.vhd')]",
 
     "AdminPcVmName": "AdminPc",
+    "AdminVmType": "Windows",
+    "AdminPrivateIp": "10.0.24.11",
+    "AdminVhdUri": "[concat('https://caiseclabdev.blob.core.windows.net/assets/AdminPc', variables('StagedDate'), '.vhd')]",
 
-    "AipVmName": "Client01"
+    "AipVmName": "Client01",
+    "AipVmType": "Windows",
+    "AipPrivateIp": "10.0.24.12",
+    "AipVhdUri": "[concat('https://caiseclabdev.blob.core.windows.net/assets/Client01', variables('StagedDate'), '.vhd')]",
+
+    "RepeatConfigurations": {
+      "type": "array",
+      "VmName": [
+        "[variables('DcVmName')]",
+        "[variables('VictimVmName')]",
+        "[variables('AdminPcVmName')]",
+        "[variables('AipVmName')]"
+      ],
+      "DiskUris": [
+        "[variables('DcVhdUri')]",
+        "[variables('VictimVhdUri')]",
+        "[variables('AdminVhdUri')]",
+        "[variables('AipVhdUri')]"
+      ],
+      "PrivateIp": [
+        "[variables('DcPrivateIp')]",
+        "[variables('VictimPrivateIp')]",
+        "[variables('AdminPrivateIp')]",
+        "[variables('AipPrivateIp')]"
+      ],
+      "OsType": [
+        "[variables('DcVmType')]",
+        "[variables('VictimVmType')]",
+        "[variables('AdminVmType')]",
+        "[variables('AipVmType')]"
+      ]
+    }
   },
   "resources": [
     {
@@ -141,22 +101,27 @@
       }
     },
     {
-      "type": "Microsoft.Storage/storageAccounts",
-      "apiVersion": "2018-02-01",
-      "name": "[concat(variables('GenericStorageAccountName'), copyIndex())]",
+      "type": "Microsoft.Compute/disks",
+      "apiVersion": "2018-09-30",
+      "name": "[concat(variables('GenericDiskName'), copyIndex())]",
       "location": "[resourceGroup().location]",
       "copy": {
         "count": 4,
-        "name": "GenericStorageAccountLoop"
+        "name": "DiskLoop"
       },
       "sku": {
-        "name": "Standard_LRS"
+        "name": "Premium_LRS"
       },
-      "kind": "StorageV2",
-      "properties": {}
+      "properties": {
+        "creationData": {
+          "createOption": "Import",
+          "sourceUri": "[variables('RepeatConfigurations').DiskUris[copyIndex('DiskLoop')]]"
+        },
+        "osType": "[variables('RepeatConfigurations').OsType[copyIndex('DiskLoop')]]"
+      }
     },
     {
-      "apiVersion": "2017-09-01",
+      "apiVersion": "2019-04-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(variables('GenericNicName'), copyIndex())]",
       "location": "[resourceGroup().location]",
@@ -174,7 +139,7 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[variables('PrivateIpAddressesArray').Ip[copyIndex('NicLoop')]]",
+              "privateIPAddress": "[variables('RepeatConfigurations').PrivateIp[copyIndex('NicLoop')]]",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('GenericPublicIpAddressName'), copyIndex()))]"
               },
@@ -193,31 +158,22 @@
       "location": "[resourceGroup().location]",
       "dependsOn": [ 
         "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 0))]",
-        "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),0))]"
+        "[resourceId('Microsoft.Compute/disks', concat(variables('GenericDiskName'),0))]"
       ],
       "properties":{
         "hardwareProfile": {
           "vmSize": "Standard_D4_v3"
         },
-        "osProfile": {
-          "computerName": "[variables('DcVmName')]",
-          "adminUsername": "[parameters('builtinAdministratorAccount')]",
-          "adminPassword": "[parameters('builtinAdministratorPassword')]"
-        },
         "storageProfile":{
-          "imageReference": {
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "2016-Datacenter",
-            "version": "latest"
-          },
-          "osDisk":{
-            "name": "[concat(variables('GenericStorageAccountName'), 0)]",
-            "caching": "ReadWrite",
-            "createOption": "FromImage"
+          "osDisk": {
+            "osType": "[variables('RepeatConfigurations').OsType[0]]",
+            "createOption": "Attach",
+            "managedDisk": {
+              "id": "[resourceId('Microsoft.Compute/disks', concat(variables('GenericDiskName'),0))]"
+            }
           }
         },
-        "licenseType": "Windows_Server",
+        "licenseType": "Windows_Server",        
         "networkProfile":{
           "networkInterfaces":[
             {
@@ -237,7 +193,7 @@
       "apiVersion": "2017-05-10",
       "name": "[variables('DeploymentVnetDnsName')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('DcVmName'), variables('DcPromoteDcDscName'))]"
+        "[resourceId('Microsoft.Compute/virtualMachines', variables('DcVmName'))]"
       ],
       "properties":{
         "mode": "Incremental",
@@ -250,7 +206,7 @@
             "value": "[variables('vNetName')]"
           },
           "dnsServers":{
-            "value": "[array(variables('PrivateIpAddressesArray').Ip[0])]"
+            "value": "[array(variables('DcPrivateIp'))]"
           },
           "addressPrefix": {
             "value": "[variables('vNetAddressPrefix')]"
@@ -271,130 +227,34 @@
     {
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2018-10-01",
-      "name": "[variables('VictimVmName')]",
+      "name": "[concat(variables('RepeatConfigurations').VmName[copyIndex('VmLoop', 1)])]",
       "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "VmLoop",
+        "count": 3
+      },
       "dependsOn": [ 
-        "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 1))]",
-        "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),1))]"
-      ],
-      "properties":{
-        "hardwareProfile": {
-          "vmSize": "Standard_D2_v3"
-        },
-        "osProfile": {
-          "computerName": "[variables('VictimVmName')]",
-          "adminUsername": "[parameters('builtinAdministratorAccount')]",
-          "adminPassword": "[parameters('builtinAdministratorPassword')]"
-        },
-        "storageProfile":{
-          "imageReference":{
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "2016-Datacenter",
-            "version": "latest"
-          },
-          "osDisk":{
-            "name": "[concat(variables('GenericStorageAccountName'), 1)]",
-            "caching": "ReadWrite",
-            "createOption": "Attach"
-          }
-        },
-        "licenseType": "Windows_Server",
-        "networkProfile":{
-          "networkInterfaces":[
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 1))]"
-            }
-          ]
-        },
-        "diagnosticsProfile":{
-          "bootDiagnostics":{
-            "enabled": false
-          }
-        }
-      }
-    },
-    {
-      "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2018-10-01",
-      "name": "[variables('AdminPcVmName')]",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [ 
-        "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 2))]",
-        "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),2))]"
+        "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), copyIndex('VmLoop', 1)))]",
+        "[resourceId('Microsoft.Compute/disks', concat(variables('GenericDiskName'), copyIndex('VmLoop', 1)))]"
       ],
       "properties":{
         "hardwareProfile": {
           "vmSize": "Standard_D4_v3"
         },
-        "osProfile": {
-          "computerName": "[variables('AdminPcVmName')]",
-          "adminUsername": "[parameters('builtinAdministratorAccount')]",
-          "adminPassword": "[parameters('builtinAdministratorPassword')]"
-        },
         "storageProfile":{
-          "imageReference":{
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "2016-Datacenter",
-            "version": "latest"
-          },
-          "osDisk":{
-            "name": "[concat(variables('GenericStorageAccountName'), 2)]",
-            "caching": "ReadWrite",
-            "createOption": "Attach"
-          }
-        },
-        "licenseType": "Windows_Server",
-        "networkProfile":{
-          "networkInterfaces":[
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 2))]"
-            }
-          ]
-        },
-        "diagnosticsProfile":{
-          "bootDiagnostics":{
-            "enabled": false
-          }
-        }
-      }
-    },
-    {
-      "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2018-10-01",
-      "name": "[variables('AipVmName')]",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [ 
-        "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 3))]",
-        "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),3))]"
-      ],
-      "properties":{
-        "hardwareProfile": {
-          "vmSize": "Standard_D2_v3"
-        },
-        "storageProfile":{
-          "imageReference":{
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "2016-Datacenter",
-            "version": "latest"
-          },
-          "osDisk":{
-            "name": "[concat(variables('GenericStorageAccountName'), 3)]",
-            "caching": "ReadWrite",
+          "osDisk": {
+            "osType": "[variables('RepeatConfigurations').OsType[copyIndex('VmLoop', 1)]]",
             "createOption": "Attach",
-            "osType": "Windows",
-            "vhd":{
-              "uri": ""
+            "managedDisk": {
+              "id": "[resourceId('Microsoft.Compute/disks', concat(variables('GenericDiskName'), copyIndex('VmLoop', 1)))]"
             }
           }
         },
-        "licenseType": "Windows_Server",
+        "licenseType": "Windows_Server",        
         "networkProfile":{
           "networkInterfaces":[
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 3))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), copyIndex('VmLoop', 1)))]"
             }
           ]
         },

@@ -22,14 +22,14 @@ param(
 
     # Force stop?
     [Parameter(Mandatory=$false)]
-    [switch]
-    $ForceVmStop = $true
+    [bool]
+    $StopVm = $true
 )
 $vms = Get-AzVm -ResourceGroupName andrew-test
 $date = Get-Date -Format yyyyMMdd
 
 # stop VMs
-if ($ForceVmStop){
+if ($StopVm){
     Write-Host "`t[ ] Stopping VMs to prepare them to be Snapshotted" -Foreground Cyan
     $vms | Stop-AzVm -Force
     Write-Host "[+] VMs successfully stopped" -ForegroundColor Green
