@@ -19,22 +19,22 @@
     "DcVmName": "ContosoDc",
     "DcVmType": "Windows",
     "DcPrivateIp": "10.0.24.4",
-    "DcVhdUri": "[concat('https://caiseclabdev.blob.core.windows.net/assets/ContosoDc', variables('StagedDate'), '.vhd')]",
+    "DcVhdUri": "[concat('https://caiseclabdev.blob.core.windows.net/assets/ContosoDc', variables('StagedDate'), 'd.vhd')]",
 
     "VictimVmName": "VictimPc",
     "VictimVmType": "Windows",
     "VictimPrivateIp": "10.0.24.10",
-    "VictimVhdUri": "[concat('https://caiseclabdev.blob.core.windows.net/assets/Victim', variables('StagedDate'), '.vhd')]",
+    "VictimVhdUri": "[concat('https://caiseclabdev.blob.core.windows.net/assets/Victim', variables('StagedDate'), 'd.vhd')]",
 
     "AdminPcVmName": "AdminPc",
     "AdminVmType": "Windows",
     "AdminPrivateIp": "10.0.24.11",
-    "AdminVhdUri": "[concat('https://caiseclabdev.blob.core.windows.net/assets/AdminPc', variables('StagedDate'), '.vhd')]",
+    "AdminVhdUri": "[concat('https://caiseclabdev.blob.core.windows.net/assets/AdminPc', variables('StagedDate'), 'd.vhd')]",
 
     "AipVmName": "Client01",
     "AipVmType": "Windows",
     "AipPrivateIp": "10.0.24.12",
-    "AipVhdUri": "[concat('https://caiseclabdev.blob.core.windows.net/assets/Client01', variables('StagedDate'), '.vhd')]",
+    "AipVhdUri": "[concat('https://caiseclabdev.blob.core.windows.net/assets/Client01', variables('StagedDate'), 'd.vhd')]",
 
     "RepeatConfigurations": {
       "type": "array",
