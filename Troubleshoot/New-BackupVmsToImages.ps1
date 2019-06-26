@@ -1,3 +1,9 @@
+###
+# Shouldn't be used until images are better handled with SAS and can be moved...
+# Images are better in that they take all Disks of a Machine...
+# Author: aharri@microsoft.com
+##
+
 param(
     [Parameter(Mandatory=$false)]
     [string]
@@ -11,22 +17,7 @@ param(
     # DestingationResourceGroup
     [Parameter(Mandatory=$false)]
     [string]
-    $DestinationResourceGroupName = 'andrew-images',
-
-    # StorageAccount
-    [Parameter(Mandatory=$false)]
-    [string]
-    $StorageAccount = 'caiseclabdev',
-
-    # Container to save Images in storage account
-    [Parameter(Mandatory=$false)]
-    [string]
-    $AssetsContainer = 'assets',
-
-    # StorageAccount Key
-    [Parameter(Mandatory=$false)]
-    [string]
-    $StorageAccessKey = 'MHCknrQZRBfqzv1mB+UgN7s1pinKp+buIDVmeZM2BLDTbwtrxMxh/85MjggBpEi+FHwTb3kmQR9Sd4dBjVheow=='
+    $DestinationResourceGroupName = 'andrew-images'
 )
 
 $vms = Get-AzVm -ResourceGroupName $ResourceGroupName

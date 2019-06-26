@@ -1,7 +1,68 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {},
+  "parameters": {
+    "builtinAdministratorAccount":{
+      "type": "string",
+      "defaultValue": "ContosoAdmin",
+      "metadata": { "description": "Builtin\\Administrator account's name for the Virtual Machines. This is not a domain account." }
+    },
+    "builtinAdministratorPassword":{
+      "type": "securestring",
+      "defaultValue": "Password123!@#",
+      "metadata": { "description": "Password for the Builtin Administrator account. Default is 'Password123!@#'" }
+    },
+    "UserPrincipalName":{
+      "type": "string",
+      "defaultValue": "seccxp.ninja",
+      "metadata": { 
+        "description": "The UPN for users who will be provisioned in Active Directory.  Useful when later using AAD Connect" 
+      }
+    },
+    "DomainName":{
+      "type": "string",
+      "defaultValue": "Contoso.Azure",
+      "metadata": {
+        "description": "This is the FQDN of the Active Directory domain"
+      }
+    },
+    "NetBiosName":{
+      "type": "string",
+      "defaultValue": "CONTOSO",
+      "metadata": {
+        "description:": "NetBIOS name for the Forest"
+      }
+    },
+    "JeffLPassword":{
+      "type": "securestring",
+      "defaultValue": "Password$fun",
+      "metadata": {
+        "description": "Password for JeffL. Default is 'Password$fun'  JeffL is admin on VictimPC (but no other domain credentials)."
+      }
+    },
+    "SamiraAPassword":{
+      "type": "securestring",
+      "defaultValue": "NinjaCat123!@#",
+      "metadata": {
+        "description": "SamiraA password. Default is 'NinjaCat123!@#'  SamiraA is Domain Admin."
+      }
+    },
+    "RonHdPassword":{
+      "type": "securestring",
+      "defaultValue": "FightingTiger$",
+      "metadata": {
+        "description": "RonHD's password. Default is FightingTiger$. RonHD is member of Helpdesk."
+      }
+    },
+    "LisaVPassword":{
+      "type": "securestring",
+      "defaultValue": "HightImpactUser1!",
+      "metadata": {
+        "description": "LisaV's password. By default it is 'HightImpactUser1!'  LisaV has access to High Impact data and will be used in future labs."
+      }
+    }
+
+  },
   "variables": {
     "PrivateIpAddressesArray": {
       "type": "array",
@@ -12,43 +73,51 @@
         "10.0.24.12"
       ]
     },
+
+    "ImportedDisks": {
+      "type": "array",
+      "Disk": [
+        "<DC>",
+        "<AdminPC>",
+        "<VictimPC>",
+        "Client01"
+      ]
+    },
+
     "DeploymentVnetDnsName": "vNetDnsSettingsDeployment",
+ 
     "vNetAddressPrefix": "10.0.24.0/24",
-    "vNetName": "AzureSec-vNet",
+    "vNetName": "AatpSaPlaybook-vNet",
     "vNetSubnetName": "Subnet",
+    "vSubnetRefId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNetName'), variables('vNetSubnetName'))]",
 
     "GenericNicName": "Nic",
     "GenericPublicIpAddressName": "PublicIp",
+    "GenericStorageAccountName": "[concat(uniqueString(resourceGroup().id), 'sa')]",
 
     "DcVmName": "ContosoDc",
     "DcPromoteDcDscName": "DcPromoDsc",
 
     "VictimVmName": "VictimPc",
-    "VictimDscName": "VictimDsc",
 
     "AdminPcVmName": "AdminPc",
-    "AdminPcDscName": "AdminPcDsc",
 
-    "AipVmName": "Client01",
-    "AipDomainServiceAccount":"AipScanner",
-    "AipDomainServiceAccountPassword": "Somepass1",
-    "Client01DscName": "AipDsc"
-
+    "AipVmName": "Client01"
   },
   "resources": [
     {
-      "apiVersion": "2019-04-01",
+      "apiVersion": "2018-12-01",
       "type": "Microsoft.Network/virtualNetworks",
-      "name": "[variables('DcVmName')]",
+      "name": "[variables('vNetName')]",
       "location": "[resourceGroup().location]",
       "properties": {
-        "addressSpace": {
-          "addressPrefixes": [ "[variables('vNetAddressPrefix')]"]
+        "addressSpace": { 
+          "addressPrefixes": [ "[variables('vNetAddressPrefix')]" ] 
         },
         "subnets": [
           {
             "name": "[variables('vNetSubnetName')]",
-            "properties": {
+            "properties": { 
               "addressPrefix": "[variables('vNetAddressPrefix')]"
             }
           }
@@ -65,12 +134,276 @@
         "name": "GenericPublicIpAddressLoop"
       },
       "sku": {
-        "name": "Basic"
+        "name":"Basic"
       },
       "properties": {
         "publicIPAllocationMethod": "Dynamic"
       }
     },
-  ],
-  "outputs": {}
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2018-02-01",
+      "name": "[concat(variables('GenericStorageAccountName'), copyIndex())]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "count": 4,
+        "name": "GenericStorageAccountLoop"
+      },
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {}
+    },
+    {
+      "apiVersion": "2017-09-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(variables('GenericNicName'), copyIndex())]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "NicLoop",
+        "count": 4
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('GenericPublicIpAddressName'), copyIndex()))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vNetName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[variables('PrivateIpAddressesArray').Ip[copyIndex('NicLoop')]]",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('GenericPublicIpAddressName'), copyIndex()))]"
+              },
+              "subnet": {
+                "id": "[variables('vSubnetRefId')]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2018-10-01",
+      "name": "[variables('DcVmName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [ 
+        "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 0))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),0))]"
+      ],
+      "properties":{
+        "hardwareProfile": {
+          "vmSize": "Standard_D4_v3"
+        },
+        "osProfile": {
+          "computerName": "[variables('DcVmName')]",
+          "adminUsername": "[parameters('builtinAdministratorAccount')]",
+          "adminPassword": "[parameters('builtinAdministratorPassword')]"
+        },
+        "storageProfile":{
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2016-Datacenter",
+            "version": "latest"
+          },
+          "osDisk":{
+            "name": "[concat(variables('GenericStorageAccountName'), 0)]",
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          }
+        },
+        "licenseType": "Windows_Server",
+        "networkProfile":{
+          "networkInterfaces":[
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 0))]"
+            }
+          ]
+        },
+        "diagnosticsProfile":{
+          "bootDiagnostics":{
+            "enabled": false
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2017-05-10",
+      "name": "[variables('DeploymentVnetDnsName')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('DcVmName'), variables('DcPromoteDcDscName'))]"
+      ],
+      "properties":{
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/Nested/VNetConfiguration.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters":{
+          "virtualNetworkName": {
+            "value": "[variables('vNetName')]"
+          },
+          "dnsServers":{
+            "value": "[array(variables('PrivateIpAddressesArray').Ip[0])]"
+          },
+          "addressPrefix": {
+            "value": "[variables('vNetAddressPrefix')]"
+          },
+          "subnets":{
+            "value": [
+              {
+                "name": "[variables('vNetSubnetName')]",
+                "properties":{
+                  "addressPrefix": "[variables('vNetAddressPrefix')]"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2018-10-01",
+      "name": "[variables('VictimVmName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [ 
+        "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 1))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),1))]"
+      ],
+      "properties":{
+        "hardwareProfile": {
+          "vmSize": "Standard_D2_v3"
+        },
+        "osProfile": {
+          "computerName": "[variables('VictimVmName')]",
+          "adminUsername": "[parameters('builtinAdministratorAccount')]",
+          "adminPassword": "[parameters('builtinAdministratorPassword')]"
+        },
+        "storageProfile":{
+          "imageReference":{
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2016-Datacenter",
+            "version": "latest"
+          },
+          "osDisk":{
+            "name": "[concat(variables('GenericStorageAccountName'), 1)]",
+            "caching": "ReadWrite",
+            "createOption": "Attach"
+          }
+        },
+        "licenseType": "Windows_Server",
+        "networkProfile":{
+          "networkInterfaces":[
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 1))]"
+            }
+          ]
+        },
+        "diagnosticsProfile":{
+          "bootDiagnostics":{
+            "enabled": false
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2018-10-01",
+      "name": "[variables('AdminPcVmName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [ 
+        "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 2))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),2))]"
+      ],
+      "properties":{
+        "hardwareProfile": {
+          "vmSize": "Standard_D4_v3"
+        },
+        "osProfile": {
+          "computerName": "[variables('AdminPcVmName')]",
+          "adminUsername": "[parameters('builtinAdministratorAccount')]",
+          "adminPassword": "[parameters('builtinAdministratorPassword')]"
+        },
+        "storageProfile":{
+          "imageReference":{
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2016-Datacenter",
+            "version": "latest"
+          },
+          "osDisk":{
+            "name": "[concat(variables('GenericStorageAccountName'), 2)]",
+            "caching": "ReadWrite",
+            "createOption": "Attach"
+          }
+        },
+        "licenseType": "Windows_Server",
+        "networkProfile":{
+          "networkInterfaces":[
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 2))]"
+            }
+          ]
+        },
+        "diagnosticsProfile":{
+          "bootDiagnostics":{
+            "enabled": false
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2018-10-01",
+      "name": "[variables('AipVmName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [ 
+        "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 3))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),3))]"
+      ],
+      "properties":{
+        "hardwareProfile": {
+          "vmSize": "Standard_D2_v3"
+        },
+        "storageProfile":{
+          "imageReference":{
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2016-Datacenter",
+            "version": "latest"
+          },
+          "osDisk":{
+            "name": "[concat(variables('GenericStorageAccountName'), 3)]",
+            "caching": "ReadWrite",
+            "createOption": "Attach",
+            "osType": "Windows",
+            "vhd":{
+              "uri": ""
+            }
+          }
+        },
+        "licenseType": "Windows_Server",
+        "networkProfile":{
+          "networkInterfaces":[
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 3))]"
+            }
+          ]
+        },
+        "diagnosticsProfile":{
+          "bootDiagnostics":{
+            "enabled": false
+          }
+        }
+      }
+    }
+  ]
 }

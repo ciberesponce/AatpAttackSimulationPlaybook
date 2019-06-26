@@ -70,7 +70,8 @@
         "10.0.24.4",
         "10.0.24.10",
         "10.0.24.11",
-        "10.0.24.12"
+        "10.0.24.12",
+        "10.0.24.50"
       ]
     },
     "DeploymentVnetDnsName": "vNetDnsSettingsDeployment",
@@ -99,10 +100,132 @@
     "AipDomainServiceAccount":"AipScanner",
     "AipDomainServiceAccountPassword": "Somepass1",
     "Client01DscName": "AipDsc",
-    "Client01DscUrl": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionClient01.zip?raw=true"
+    "Client01DscUrl": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionClient01.zip?raw=true",
 
+    "LinuxAscVm": "Linux-0",
+    "omsWorkspaceName": "[concat('ASC-Workspace-',uniqueString(subscription().subscriptionId))]",
+    "omsSolutions": {
+      "Security": {
+          "name": "SecurityCenterFree",
+          "solutionName": "[concat('SecurityCenterFree', '(', variables('omsWorkspaceName'), ')')]",
+          "publisher": "Microsoft"
+      }
+    },
+    "omsSKU": "PerGB2018"
   },
   "resources": [
+    {
+      "apiVersion": "2015-11-01-preview",
+      "location": "[resourceGroup().location]",
+      "name": "[variables('omsWorkspaceName')]",
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "properties": {
+        "sku": {
+          "name": "[variables('omsSKU')]"
+        }
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-11-01-preview",
+          "type": "dataSources",
+          "name": "System",
+          "dependsOn": [
+            "[resourceId('Microsoft.OperationalInsights/workspaces', variables('omsWorkspaceName'))]"
+          ],
+          "kind": "WindowsEvent",
+          "properties": {
+            "eventLogName": "System",
+            "eventTypes": [
+              {
+                "eventType": "Error"
+              },
+              {
+                "eventType": "Warning"
+              }
+            ]
+          }
+        },
+        {
+          "apiVersion": "2015-11-01-preview",
+          "type": "dataSources",
+          "name": "Application",
+          "dependsOn": [
+            "[resourceId('Microsoft.OperationalInsights/workspaces', variables('omsWorkspaceName'))]"
+          ],
+          "kind": "WindowsEvent",
+          "properties": {
+            "eventLogName": "Application",
+            "eventTypes": [
+              {
+                "eventType": "Error"
+              },
+              {
+                "eventType": "Warning"
+              }
+            ]
+          }
+        },
+        {
+          "apiVersion": "2015-11-01-preview",
+          "type": "dataSources",
+          "name": "Syslog",
+          "dependsOn": [
+            "[resourceId('Microsoft.OperationalInsights/workspaces', variables('omsWorkspaceName'))]"
+          ],
+          "kind": "LinuxSyslog",
+          "properties": {
+              "syslogName": "syslog",
+              "syslogSeverities": [
+                  {
+                      "severity": "emerg"
+                  },
+                  {
+                      "severity": "alert"
+                  },
+                  {
+                      "severity": "crit"
+                  },
+                  {
+                      "severity": "err"
+                  },
+                  {
+                      "severity": "warning"
+                  }
+              ]
+          }
+      },
+      {
+          "apiVersion": "2015-11-01-preview",
+          "type": "dataSources",
+          "name": "SyslogCollection",
+          "dependsOn": [
+            "[resourceId('Microsoft.OperationalInsights/workspaces', variables('omsWorkspaceName'))]"
+          ],
+          "kind": "LinuxSyslogCollection",
+          "properties": {
+              "state": "Enabled"
+          }
+      }        
+      ]
+    },
+    {
+      "name": "[variables('omsSolutions').Security.solutionName]",
+      "type": "Microsoft.OperationsManagement/solutions",
+      "apiVersion": "2015-11-01-preview",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('omsWorkspaceName'))]"
+      ],
+      "plan": {
+          "name": "[variables('omsSolutions').Security.solutionName]",
+          "product": "[concat('OMSGallery/', variables('omsSolutions').Security.name)]",
+          "publisher": "[variables('omsSolutions').Security.publisher]",
+          "promotionCode": ""
+      },
+      "properties": {
+          "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('omsWorkspaceName'))]"
+      }
+  },
     {
       "apiVersion": "2018-12-01",
       "type": "Microsoft.Network/virtualNetworks",
@@ -128,7 +251,7 @@
       "name": "[concat(variables('GenericPublicIpAddressName'), copyIndex())]",
       "location": "[resourceGroup().location]",
       "copy": {
-        "count": 4,
+        "count": 5,
         "name": "GenericPublicIpAddressLoop"
       },
       "sku": {
@@ -144,7 +267,7 @@
       "name": "[concat(variables('GenericStorageAccountName'), copyIndex())]",
       "location": "[resourceGroup().location]",
       "copy": {
-        "count": 4,
+        "count": 5,
         "name": "GenericStorageAccountLoop"
       },
       "sku": {
@@ -160,7 +283,7 @@
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "NicLoop",
-        "count": 4
+        "count": 5
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('GenericPublicIpAddressName'), copyIndex()))]",
@@ -587,6 +710,65 @@
                 }
               }
             }
+          }
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2018-10-01",
+      "name": "[variables('LinuxAscVm')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [ 
+        "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 4))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('GenericStorageAccountName'),4))]"
+      ],
+      "properties":{
+        "hardwareProfile": {
+          "vmSize": "Standard_D2_v3"
+        },
+        "osProfile": {
+          "computerName": "[variables('LinuxAscVm')]",
+          "adminUsername": "[parameters('builtinAdministratorAccount')]",
+          "adminPassword": "[parameters('builtinAdministratorPassword')]"
+        },
+        "storageProfile":{
+          "imageReference":{
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "16.04-LTS",
+            "version": "latest"
+          },
+          "osDisk":{
+            "name": "[concat(variables('GenericStorageAccountName'), 4)]",
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile":{
+          "networkInterfaces":[
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 4))]"
+            }
+          ]
+        },
+        "diagnosticsProfile":{
+          "bootDiagnostics":{
+            "enabled": false
+          }
+        }
+      },
+      "resources": [
+        {
+          "apiVersion": "2017-03-30",
+          "location": "[resourceGroup().location]",
+          "name": "[concat(variables('LinuxAscVm'), '/OMS')]",
+          "type": "extensions",
+          "properties":{
+            "publisher": "Microsoft.Azure.Extensions",
+            "type": "",
+            "autoUpgradeMinorVersion": true,
+            "typeHandlerVersion": "1.4"
           }
         }
       ]
