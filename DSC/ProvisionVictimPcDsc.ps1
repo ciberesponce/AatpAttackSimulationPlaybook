@@ -381,10 +381,10 @@ Configuration SetupVictimPc
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
                 $tools = @(
-                    ('https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20190512/mimikatz_trunk.zip', 'C:\Tools\Mimikatz_20190512.zip'),
+                    ('https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20190512/mimikatz_trunk.zip', 'C:\Tools\Mimikatz.zip'),
                     ('https://github.com/PowerShellMafia/PowerSploit/archive/master.zip', 'C:\Tools\PowerSploit.zip'),
                     ('https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/NetSess.zip?raw=true', 'C:\Tools\NetSess.zip'),
-                    ('https://download.sysinternals.com/files/PSTools.zip', 'C:\Tools\SysInternals.zip')
+                    ('https://download.sysinternals.com/files/SysinternalsSuite.zip', 'C:\Tools\SysInternalsSuite.zip')
                 )
                 foreach ($tool in $tools){
                     Invoke-WebRequest -Uri $tool[0] -OutFile $tool[1]
@@ -392,7 +392,7 @@ Configuration SetupVictimPc
             }    
             GetScript = 
             {
-                if ((Test-Path 'C:\Tools\NetSess.zip') -and (Test-Path 'C:\Tools\PowerSploit.zip') -and (Test-Path 'C:\Tools\Mimikatz_20190512.zip')){
+                if ((Test-Path 'C:\Tools\NetSess.zip') -and (Test-Path 'C:\Tools\PowerSploit.zip') -and (Test-Path 'C:\Tools\Mimikatz.zip') -and (Test-Path 'C:\Tools\SysInternalsSuite.zip')){
                     return @{
                         result = $true
                     }
@@ -405,7 +405,7 @@ Configuration SetupVictimPc
             }
             TestScript = 
             {
-                if ((Test-Path 'C:\Tools\NetSess.zip') -and (Test-Path 'C:\Tools\PowerSploit.zip') -and (Test-Path 'C:\Tools\Mimikatz_20190512.zip')){
+                if ((Test-Path 'C:\Tools\NetSess.zip') -and (Test-Path 'C:\Tools\PowerSploit.zip') -and (Test-Path 'C:\Tools\Mimikatz.zip') -and (Test-Path 'C:\Tools\SysInternalsSuite.zip')){
                     return $true
                 }
                 else {
@@ -416,7 +416,7 @@ Configuration SetupVictimPc
         }
         Archive UnzipMimikatz
         {
-            Path = 'C:\Tools\Mimikatz_20190512.zip'
+            Path = 'C:\Tools\Mimikatz.zip'
             Destination = 'C:\Tools\Mimikatz'
             Ensure = 'Present'
             DependsOn = '[Script]DownloadHackTools'
@@ -437,8 +437,8 @@ Configuration SetupVictimPc
         }
         Archive UnzipSysInternals
         {
-            Path = 'C:\Tools\SysInternals.zip'
-            Destination = 'C:\Tools\SysInteranls'
+            Path = 'C:\Tools\SysInternalsSuite.zip'
+            Destination = 'C:\Tools\SysInternalsSuite'
             Ensure = 'Present'
             DependsOn = '[Script]DownloadHackTools'
         }
