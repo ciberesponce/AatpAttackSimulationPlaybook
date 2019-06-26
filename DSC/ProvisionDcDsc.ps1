@@ -157,6 +157,42 @@ Configuration CreateADForest
 			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
 		}
 
+		Script TurnOnNetworkDiscovery
+        {
+            SetScript = 
+            {
+                Get-NetFirewallRule -DisplayGroup 'Network Discovery' | Set-NetFirewallRule -Profile 'Domain' -Enabled true
+            }
+            GetScript = 
+            {
+                $fwRules = Get-NetFirewallRule -DisplayGroup 'Network Discovery'
+                $result = $true
+                foreach ($rule in $fwRules){
+                    if ($rule.Enabled -eq 'False'){
+                        $result = $false
+                        break
+                    }
+                }
+                return @{
+                    result = $result
+                }
+            }
+            TestScript = 
+            {
+                $fwRules = Get-NetFirewallRule -DisplayGroup 'Network Discovery'
+                $result = $true
+                foreach ($rule in $fwRules){
+                    if ($rule.Enabled -eq 'False'){
+                        $result = $false
+                        break
+                    }
+                }
+                return $result
+            }
+			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
+        }
+        
+
 		Script DownloadAadMsi
 		{
 			SetScript = 

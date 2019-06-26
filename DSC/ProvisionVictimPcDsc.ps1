@@ -160,7 +160,7 @@ Configuration SetupVictimPc
         {
             SetScript = 
             {
-                Get-NetFirewallRule -DisplayGroup 'Network Discovery' | Set-NetFirewallRule -Profile 'Domain' -Enabled true
+                Get-NetFirewallRule -DisplayGroup 'Network Discovery' | Set-NetFirewallRule -Profile 'Domain, Private' -Enabled true
             }
             GetScript = 
             {
@@ -195,7 +195,7 @@ Configuration SetupVictimPc
         {
             SetScript = 
             {
-                Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing' | Set-NetFirewallRule -Profile 'Domain' -Enabled true
+                Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing' | Set-NetFirewallRule -Profile 'Domain, Private' -Enabled true
             }
             GetScript = 
             {

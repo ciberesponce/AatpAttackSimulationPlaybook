@@ -87,6 +87,76 @@ Configuration SetupAipScannerCore
             DependsOn = '[Computer]JoinDomain'
         }
 
+        Script TurnOnNetworkDiscovery
+        {
+            SetScript = 
+            {
+                Get-NetFirewallRule -DisplayGroup 'Network Discovery' | Set-NetFirewallRule -Profile 'Domain, Private' -Enabled true
+            }
+            GetScript = 
+            {
+                $fwRules = Get-NetFirewallRule -DisplayGroup 'Network Discovery'
+                $result = $true
+                foreach ($rule in $fwRules){
+                    if ($rule.Enabled -eq 'False'){
+                        $result = $false
+                        break
+                    }
+                }
+                return @{
+                    result = $result
+                }
+            }
+            TestScript = 
+            {
+                $fwRules = Get-NetFirewallRule -DisplayGroup 'Network Discovery'
+                $result = $true
+                foreach ($rule in $fwRules){
+                    if ($rule.Enabled -eq 'False'){
+                        $result = $false
+                        break
+                    }
+                }
+                return $result
+            }
+            DependsOn = '[Computer]JoinDomain'
+        }
+        
+        Script TurnOnFileSharing
+        {
+            SetScript = 
+            {
+                Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing' | Set-NetFirewallRule -Profile 'Domain, Private' -Enabled true
+            }
+            GetScript = 
+            {
+                $fwRules = Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing'
+                $result = $true
+                foreach ($rule in $fwRules){
+                    if ($rule.Enabled -eq 'False'){
+                        $result = $false
+                        break
+                    }
+                }
+                return @{
+                    result = $result
+                }
+            }
+            TestScript = 
+            {
+                $fwRules = Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing'
+                $result = $true
+                foreach ($rule in $fwRules){
+                    if ($rule.Enabled -eq 'False'){
+                        $result = $false
+                        break
+                    }
+                }
+                return $result
+            }
+            DependsOn = '[Computer]JoinDomain'
+        }
+
         Registry HideInitialServerManager
         {
             Key = 'HKLM:\SOFTWARE\Microsoft\ServerManager\Oobe'
