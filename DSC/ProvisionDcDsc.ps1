@@ -165,7 +165,8 @@ Configuration CreateADForest
         cChocoPackageInstaller InstallSysInternals
         {
             Name = 'sysinternals'
-            Ensure = 'Present'
+			Ensure = 'Present'
+			AutoUpgrade = $false
             DependsOn = '[cChocoInstaller]InstallChoco'
 		}
 		
@@ -210,7 +211,7 @@ Configuration CreateADForest
             ValueName = 'BgInfo'
             ValueData = 'C:\ProgramData\chocolatey\lib\sysinternals\tools\Bginfo.exe "C:\BgInfo\BgInfo.bgi" "/timer:00 /accepteula /silent /all"'
             ValueType = 'ExpandString'
-            DependsOn = @('[script]DownloadBginfo', '[cChocoPackageInstaller]InstallSysInternals]')
+            DependsOn = @('[script]DownloadBginfo', '[cChocoPackageInstaller]InstallSysInternals')
         }
 
 		Script TurnOnNetworkDiscovery

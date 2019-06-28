@@ -4,6 +4,7 @@ param(
     [string]
     $ResourceGroupName = 'andrew-test'
 )
+
 $Ips = Get-AzNetworkInterface -ResourceGroupName $ResourceGroupName
 $vmDetails = New-Object "System.Collections.Generic.List[psobject]"
 foreach ($instance in $Ips){
