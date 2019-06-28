@@ -156,6 +156,7 @@ Configuration SetupVictimPc
             DependsOn = '[Computer]JoinDomain'
         }
 
+        #region Choco
         cChocoInstaller InstallChoco
         {
             InstallDir = "C:\choco"
@@ -168,6 +169,52 @@ Configuration SetupVictimPc
             Ensure = 'Present'
             DependsOn = '[cChocoInstaller]InstallChoco'
         }
+
+        Script DownloadBginfo
+        {
+            SetScript =
+            {
+                if ((Test-Path -PathType Container -LiteralPath 'C:\BgInfo\') -ne $true){
+					New-Item -Path 'C:\BgInfo\' -ItemType Directory
+				}
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
+                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/BgInfo/victimpc.bgi?raw=true' -Outfile 'C:\BgInfo\BgInfo.bgi'
+            }
+            GetScript =
+            {
+                if (Test-Path -LiteralPath 'C:\BgInfo\BgInfo.bgi' -PathType Leaf){
+                    return @{
+                        result = $true
+                    }
+                }
+                else {
+                    return @{
+                        result = $false
+                    }
+                }
+            }
+            TestScript = 
+            {
+                if (Test-Path -LiteralPath 'C:\BgInfo\BgInfo.bgi' -PathType Leaf){
+                    return $true
+                }
+                else {
+                    return $false
+                }
+            }
+        }
+
+        Registry AutoStartBgInfo
+        {
+            Key = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run'
+            ValueName = 
+            ValueData = 'C:\ProgramData\chocolatey\lib\sysinternals\tools\Bginfo.exe "C:\BgInfo\BgInfo.bgi" "/timer:00 /accepteula /silent /all"'
+            ValueType = 
+            DependsOn = @('[script]DownloadBginfo', '[cChocoPackageInstaller]InstallSysInternals]')
+        }
+
+        #endregion
 
         Script TurnOnNetworkDiscovery
         {
