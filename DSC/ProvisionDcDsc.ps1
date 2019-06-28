@@ -166,6 +166,7 @@ Configuration CreateADForest
         {
             Name = 'sysinternals'
 			Ensure = 'Present'
+
 			AutoUpgrade = $false
             DependsOn = '[cChocoInstaller]InstallChoco'
 		}
@@ -179,7 +180,11 @@ Configuration CreateADForest
 				}
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
-                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/BgInfo/contosodc.bgi?raw=true' -Outfile 'C:\BgInfo\BgInfo.bgi'
+				Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/BgInfo/contosodc.bgi?raw=true' -Outfile 'C:\BgInfo\BgInfo.bgi'
+				
+                $execute = 'c:\choco\bin\Bginfo64.exe c:\BgInfo\BgInfo.bgi /NOLICPROMPT /TIMER:00'
+				Invoke-Expression $execute
+
             }
             GetScript =
             {
@@ -202,14 +207,15 @@ Configuration CreateADForest
                 else {
                     return $false
                 }
-            }
+			}
+			DependsOn = '[cChocoPackageInstaller]InstallSysInternals'
         }
 
         Registry AutoStartBgInfo
         {
             Key = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run'
             ValueName = 'BgInfo'
-            ValueData = 'C:\ProgramData\chocolatey\lib\sysinternals\tools\Bginfo.exe "C:\BgInfo\BgInfo.bgi" "/timer:00 /accepteula /silent /all"'
+            ValueData = 'c:\choco\bin\Bginfo64.exe c:\BgInfo\BgInfo.bgi /NOLICPROMPT /TIMER:00'
             ValueType = 'ExpandString'
             DependsOn = @('[script]DownloadBginfo', '[cChocoPackageInstaller]InstallSysInternals')
         }
