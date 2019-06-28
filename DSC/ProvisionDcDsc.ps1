@@ -207,9 +207,9 @@ Configuration CreateADForest
         Registry AutoStartBgInfo
         {
             Key = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run'
-            ValueName = 
+            ValueName = 'BgInfo'
             ValueData = 'C:\ProgramData\chocolatey\lib\sysinternals\tools\Bginfo.exe "C:\BgInfo\BgInfo.bgi" "/timer:00 /accepteula /silent /all"'
-            ValueType = 
+            ValueType = 'ExpandString'
             DependsOn = @('[script]DownloadBginfo', '[cChocoPackageInstaller]InstallSysInternals]')
         }
 
