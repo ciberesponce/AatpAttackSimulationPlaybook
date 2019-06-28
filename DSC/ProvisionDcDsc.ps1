@@ -42,7 +42,7 @@ Configuration CreateADForest
 	)
 
 	Import-DscResource -ModuleName PSDesiredStateConfiguration, xActiveDirectory, xPendingReboot, `
-		xNetworking, xStorage, xDefender
+		xNetworking, xStorage, xDefender, cChoco
 
 	$Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
 	$InterfaceAlias=$($Interface.Name)
@@ -156,6 +156,18 @@ Configuration CreateADForest
             Ensure = 'Present'
 			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
 		}
+
+		cChocoInstaller InstallChoco
+        {
+            InstallDir = "C:\choco"
+        }
+
+        cChocoPackageInstaller InstallSysInternals
+        {
+            Name = 'sysinternals'
+            Ensure = 'Present'
+            DependsOn = '[cChocoInstaller]InstallChoco'
+        }
 
 		Script TurnOnNetworkDiscovery
         {

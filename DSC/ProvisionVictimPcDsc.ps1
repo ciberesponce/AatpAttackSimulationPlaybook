@@ -27,7 +27,7 @@ Configuration SetupVictimPc
         [PSCredential]$RonHdCred
     )
     #region COE
-    Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity
+    Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity, cChoco
 
     $Interface = Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
     $InterfaceAlias = $($Interface.Name)
@@ -156,18 +156,17 @@ Configuration SetupVictimPc
             DependsOn = '[Computer]JoinDomain'
         }
 
-        Script BgInfo
+        cChocoInstaller InstallChoco
         {
-            SetScript = 
-            {
-                if ((Test-Path -PathType Container -LiteralPath 'C:\BgInfo\') -ne $true){
-					New-Item -Path 'C:\BgInfo\' -ItemType Directory
-				}
-                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
-                Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/Downloads/Zone3.reg' -Outfile 'C:\LabTools\RegkeyZone3.reg'
-         
-            }
+            InstallDir = "C:\choco"
+            DependsOn = '[Computer]JoinDomain'
+        }
+
+        cChocoPackageInstaller InstallSysInternals
+        {
+            Name = 'sysinternals'
+            Ensure = 'Present'
+            DependsOn = '[cChocoInstaller]InstallChoco'
         }
 
         Script TurnOnNetworkDiscovery
@@ -404,8 +403,7 @@ Configuration SetupVictimPc
                 $tools = @(
                     ('https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20190512/mimikatz_trunk.zip', 'C:\Tools\Mimikatz.zip'),
                     ('https://github.com/PowerShellMafia/PowerSploit/archive/master.zip', 'C:\Tools\PowerSploit.zip'),
-                    ('https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/NetSess.zip?raw=true', 'C:\Tools\NetSess.zip'),
-                    ('https://download.sysinternals.com/files/SysinternalsSuite.zip', 'C:\Tools\SysInternalsSuite.zip')
+                    ('https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/NetSess.zip?raw=true', 'C:\Tools\NetSess.zip')
                 )
                 foreach ($tool in $tools){
                     Invoke-WebRequest -Uri $tool[0] -OutFile $tool[1]
@@ -453,13 +451,6 @@ Configuration SetupVictimPc
         {
             Path = 'C:\Tools\NetSess.zip'
             Destination = 'C:\Tools\NetSess'
-            Ensure = 'Present'
-            DependsOn = '[Script]DownloadHackTools'
-        }
-        Archive UnzipSysInternals
-        {
-            Path = 'C:\Tools\SysInternalsSuite.zip'
-            Destination = 'C:\Tools\SysInternalsSuite'
             Ensure = 'Present'
             DependsOn = '[Script]DownloadHackTools'
         }

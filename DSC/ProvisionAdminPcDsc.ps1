@@ -33,7 +33,7 @@ Configuration SetupAdminPc
 
     )
     #region COE
-    Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity, SqlServerDsc
+    Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity, SqlServerDsc, cChoco
 
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
     $InterfaceAlias=$($Interface.Name)
@@ -207,6 +207,19 @@ Configuration SetupAdminPc
                     return $false
                 }
             }
+        }
+
+        cChocoInstaller InstallChoco
+        {
+            InstallDir = "C:\choco"
+            DependsOn = '[Computer]JoinDomain'
+        }
+
+        cChocoPackageInstaller InstallSysInternals
+        {
+            Name = 'sysinternals'
+            Ensure = 'Present'
+            DependsOn = '[cChocoInstaller]InstallChoco'
         }
 
         Script TurnOnFileSharing
