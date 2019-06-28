@@ -156,6 +156,20 @@ Configuration SetupVictimPc
             DependsOn = '[Computer]JoinDomain'
         }
 
+        Script BgInfo
+        {
+            SetScript = 
+            {
+                if ((Test-Path -PathType Container -LiteralPath 'C:\BgInfo\') -ne $true){
+					New-Item -Path 'C:\BgInfo\' -ItemType Directory
+				}
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
+                Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/Downloads/Zone3.reg' -Outfile 'C:\LabTools\RegkeyZone3.reg'
+         
+            }
+        }
+
         Script TurnOnNetworkDiscovery
         {
             SetScript = 

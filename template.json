@@ -1,66 +1,68 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {  },
+  "parameters": {},
   "variables": {
     "StagedDate": "20190625",
-
     "DeploymentVnetDnsName": "vNetDnsSettingsDeployment",
- 
     "vNetAddressPrefix": "10.0.24.0/24",
     "vNetName": "M365-vNet",
     "vNetSubnetName": "Subnet",
     "vSubnetRefId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNetName'), variables('vNetSubnetName'))]",
-
     "GenericNicName": "Nic",
     "GenericPublicIpAddressName": "PublicIp",
     "GenericDiskName": "[concat(uniqueString(resourceGroup().id), 'd')]",
-
+    "workspaceName": "[concat('AzureSecurityCenter', uniqueString(subscription().id))]",
+    "securitySettings": "On",
     "DcVmName": "ContosoDc",
     "DcVmType": "Windows",
     "DcPrivateIp": "10.0.24.4",
     "DcVhdUri": "[concat('https://caiseclabdev.blob.core.windows.net/assets/ContosoDc', variables('StagedDate'), 'd.vhd')]",
-
     "VictimVmName": "VictimPc",
     "VictimVmType": "Windows",
     "VictimPrivateIp": "10.0.24.10",
     "VictimVhdUri": "[concat('https://caiseclabdev.blob.core.windows.net/assets/VictimPc', variables('StagedDate'), 'd.vhd')]",
-
     "AdminPcVmName": "AdminPc",
     "AdminVmType": "Windows",
     "AdminPrivateIp": "10.0.24.11",
     "AdminVhdUri": "[concat('https://caiseclabdev.blob.core.windows.net/assets/AdminPc', variables('StagedDate'), 'd.vhd')]",
-
     "AipVmName": "Client01",
     "AipVmType": "Windows",
     "AipPrivateIp": "10.0.24.12",
     "AipVhdUri": "[concat('https://caiseclabdev.blob.core.windows.net/assets/Client01', variables('StagedDate'), 'd.vhd')]",
-
+    "AscLinuxVhdUri": "",
+    "AscLinuxPrivateIp": "10.0.24.50",
+    "AscLinuxVmName": "Linux-Ubuntu",
+    "AscLinuxOsType": "Linux",
     "RepeatConfigurations": {
       "type": "array",
       "VmName": [
         "[variables('DcVmName')]",
         "[variables('VictimVmName')]",
         "[variables('AdminPcVmName')]",
-        "[variables('AipVmName')]"
+        "[variables('AipVmName')]",
+        "[variables('AscLinuxVmName')]"
       ],
       "DiskUris": [
         "[variables('DcVhdUri')]",
         "[variables('VictimVhdUri')]",
         "[variables('AdminVhdUri')]",
-        "[variables('AipVhdUri')]"
+        "[variables('AipVhdUri')]",
+        "[variables('AscLinuxVhdUri')]"
       ],
       "PrivateIp": [
         "[variables('DcPrivateIp')]",
         "[variables('VictimPrivateIp')]",
         "[variables('AdminPrivateIp')]",
-        "[variables('AipPrivateIp')]"
+        "[variables('AipPrivateIp')]",
+        "[variables('AscLinuxPrivateIp')]"
       ],
       "OsType": [
         "[variables('DcVmType')]",
         "[variables('VictimVmType')]",
         "[variables('AdminVmType')]",
-        "[variables('AipVmType')]"
+        "[variables('AipVmType')]",
+        "[variables('AscLinuxOsType')]"
       ]
     }
   },
@@ -71,13 +73,15 @@
       "name": "[variables('vNetName')]",
       "location": "[resourceGroup().location]",
       "properties": {
-        "addressSpace": { 
-          "addressPrefixes": [ "[variables('vNetAddressPrefix')]" ] 
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('vNetAddressPrefix')]"
+          ]
         },
         "subnets": [
           {
             "name": "[variables('vNetSubnetName')]",
-            "properties": { 
+            "properties": {
               "addressPrefix": "[variables('vNetAddressPrefix')]"
             }
           }
@@ -94,7 +98,7 @@
         "name": "GenericPublicIpAddressLoop"
       },
       "sku": {
-        "name":"Basic"
+        "name": "Basic"
       },
       "properties": {
         "publicIPAllocationMethod": "Dynamic"
@@ -156,15 +160,15 @@
       "apiVersion": "2018-10-01",
       "name": "[variables('DcVmName')]",
       "location": "[resourceGroup().location]",
-      "dependsOn": [ 
+      "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 0))]",
         "[resourceId('Microsoft.Compute/disks', concat(variables('GenericDiskName'),0))]"
       ],
-      "properties":{
+      "properties": {
         "hardwareProfile": {
           "vmSize": "Standard_B4ms"
         },
-        "storageProfile":{
+        "storageProfile": {
           "osDisk": {
             "osType": "[variables('RepeatConfigurations').OsType[0]]",
             "createOption": "Attach",
@@ -173,16 +177,16 @@
             }
           }
         },
-        "licenseType": "Windows_Server",        
-        "networkProfile":{
-          "networkInterfaces":[
+        "licenseType": "Windows_Server",
+        "networkProfile": {
+          "networkInterfaces": [
             {
               "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 0))]"
             }
           ]
         },
-        "diagnosticsProfile":{
-          "bootDiagnostics":{
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
             "enabled": false
           }
         }
@@ -195,27 +199,27 @@
       "dependsOn": [
         "[resourceId('Microsoft.Compute/virtualMachines', variables('DcVmName'))]"
       ],
-      "properties":{
+      "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/Nested/VNetConfiguration.json",
           "contentVersion": "1.0.0.0"
         },
-        "parameters":{
+        "parameters": {
           "virtualNetworkName": {
             "value": "[variables('vNetName')]"
           },
-          "dnsServers":{
+          "dnsServers": {
             "value": "[array(variables('DcPrivateIp'))]"
           },
           "addressPrefix": {
             "value": "[variables('vNetAddressPrefix')]"
           },
-          "subnets":{
+          "subnets": {
             "value": [
               {
                 "name": "[variables('vNetSubnetName')]",
-                "properties":{
+                "properties": {
                   "addressPrefix": "[variables('vNetAddressPrefix')]"
                 }
               }
@@ -233,15 +237,15 @@
         "name": "VmLoop",
         "count": 3
       },
-      "dependsOn": [ 
+      "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), copyIndex('VmLoop', 1)))]",
         "[resourceId('Microsoft.Compute/disks', concat(variables('GenericDiskName'), copyIndex('VmLoop', 1)))]"
       ],
-      "properties":{
+      "properties": {
         "hardwareProfile": {
           "vmSize": "Standard_B4ms"
         },
-        "storageProfile":{
+        "storageProfile": {
           "osDisk": {
             "osType": "[variables('RepeatConfigurations').OsType[copyIndex('VmLoop', 1)]]",
             "createOption": "Attach",
@@ -250,20 +254,163 @@
             }
           }
         },
-        "licenseType": "Windows_Server",        
-        "networkProfile":{
-          "networkInterfaces":[
+        "licenseType": "Windows_Server",
+        "networkProfile": {
+          "networkInterfaces": [
             {
               "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), copyIndex('VmLoop', 1)))]"
             }
           ]
         },
-        "diagnosticsProfile":{
-          "bootDiagnostics":{
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
             "enabled": false
           }
         }
       }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2018-10-01",
+      "name": "[concat(variables('RepeatConfigurations').VmName[4])]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 4))]",
+        "[resourceId('Microsoft.Compute/disks', concat(variables('GenericDiskName'), 4))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_B4ms"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "osType": "[variables('RepeatConfigurations').OsType[4]]",
+            "createOption": "Attach",
+            "managedDisk": {
+              "id": "[resourceId('Microsoft.Compute/disks', concat(variables('GenericDiskName'), 4))]"
+            }
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 4))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": false
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-11-01-preview",
+      "location": "[resourceGroup().location]",
+      "name": "[variables('workspaceName')]",
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "properties": {
+        "sku": {
+          "name": "PerGB2018",
+          "retentionInDays": 7
+        }
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-11-01-preview",
+          "type": "dataSources",
+          "name": "System",
+          "dependsOn": [
+            "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
+          ],
+          "kind": "WindowsEvent",
+          "properties": {
+            "eventLogName": "System",
+            "eventTypes": [
+              {
+                "eventType": "Error"
+              },
+              {
+                "eventType": "Warning"
+              }
+            ]
+          }
+        },
+        {
+          "apiVersion": "2015-11-01-preview",
+          "type": "dataSources",
+          "name": "Application",
+          "dependsOn": [
+            "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
+          ],
+          "kind": "WindowsEvent",
+          "properties": {
+            "eventLogName": "Application",
+            "eventTypes": [
+              {
+                "eventType": "Error"
+              },
+              {
+                "eventType": "Warning"
+              }
+            ]
+          }
+        },
+        {
+          "apiVersion": "2015-11-01-preview",
+          "type": "datasources",
+          "name": "Syslog",
+          "dependsOn": [
+            "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
+          ],
+          "kind": "LinuxSyslog",
+          "properties": {
+            "syslogName": "syslog",
+            "syslogSeverities": [
+              {
+                "severity": "emerg"
+              },
+              {
+                "severity": "alert"
+              },
+              {
+                "severity": "crit"
+              },
+              {
+                "severity": "err"
+              },
+              {
+                "severity": "warning"
+              }
+            ]
+          }
+        },
+        {
+          "apiVersion": "2015-11-01-preview",
+          "type": "dataSources",
+          "name": "SyslogCollection",
+          "dependsOn": [
+            "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
+          ],
+          "kind": "LinuxSyslogCollection",
+          "properties": {
+            "state": "Enabled"
+          }
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.Security/workspaceSettings",
+      "apiVersion": "2017-08-01-preview",
+      "name": "default",
+      "properties": {
+        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]",
+        "scope": "[subscription().id]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
+      ]
     }
   ]
 }
