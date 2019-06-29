@@ -183,7 +183,7 @@ Configuration SetupVictimPc
                 Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/BgInfo/victimpc.bgi?raw=true' -Outfile 'C:\BgInfo\BgInfo.bgi'
 
                 $batchLocation = 'c:\ScheduledTasks\BgInfo.bat'
-				Invoke-Expression $batchLocation
+				Start-Process -FilePath $batchLocation -Wait
             }
             GetScript =
             {
