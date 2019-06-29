@@ -208,7 +208,7 @@ Configuration CreateADForest
                     return $false
                 }
 			}
-			DependsOn = @('[cChocoPackageInstaller]InstallSysInternals', '[File]BgInfoBatch')
+			DependsOn = @('[cChocoPackageInstaller]InstallSysInternals', '[File]BgInfoBatch','[xADForestProperties]ForestProps','[xWaitForADDomain]DscForestWait')
 		}
 		
 		File BgInfoBatch
@@ -233,7 +233,7 @@ c:\choco\bin\Bginfo64.exe c:\BgInfo\BgInfo.bgi /NOLICPROMPT /TIMER:00
             ActionExecutable = 'c:\ScheduledTasks\BgInfo.bat'
             Priority = 9
             StartWhenAvailable = $true
-            DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals','[File]BgInfoBatch')
+			DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals', '[File]BgInfoBatch')
         }
 
 		Script TurnOnNetworkDiscovery
