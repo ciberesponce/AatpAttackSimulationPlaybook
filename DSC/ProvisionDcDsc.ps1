@@ -211,13 +211,20 @@ Configuration CreateADForest
 			DependsOn = '[cChocoPackageInstaller]InstallSysInternals'
         }
 
-        Registry AutoStartBgInfo
+
+        ScheduledTask BgInfo
         {
-            Key = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run'
-            ValueName = 'BgInfo'
-            ValueData = 'c:\choco\bin\Bginfo64.exe c:\BgInfo\BgInfo.bgi /NOLICPROMPT /TIMER:00'
-            ValueType = 'ExpandString'
-            DependsOn = @('[script]DownloadBginfo', '[cChocoPackageInstaller]InstallSysInternals')
+            TaskName = 'BgInfo'
+            ScheduleType = 'AtLogOn'
+            Description = 'Apply color-specific bginfo'
+            Ensure = 'Present'
+            Enable = $true
+            TaskPath = '\CoeScheduledTask'
+            ActionExecutable = 'cmd.exe'
+            ActionArguments = 'c:\choco\bin\Bginfo64.exe c:\BgInfo\BgInfo.bgi /NOLICPROMPT /TIMER:00'
+            Priority = 9
+            StartWhenAvailable = $true
+            DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
         }
 
 		Script TurnOnNetworkDiscovery
