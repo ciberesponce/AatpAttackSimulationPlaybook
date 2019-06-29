@@ -234,8 +234,8 @@ Configuration SetupAdminPc
                 $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
                 Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/BgInfo/adminpc.bgi?raw=true' -Outfile 'C:\BgInfo\BgInfo.bgi'
 
-                $execute = 'c:\choco\bin\Bginfo64.exe c:\BgInfo\BgInfo.bgi /NOLICPROMPT /TIMER:00'
-				Invoke-Expression $execute
+                $batchLocation = 'c:\ScheduledTasks\BgInfo.bat'
+				Invoke-Expression $batchLocation
             }
             GetScript =
             {
@@ -259,21 +259,33 @@ Configuration SetupAdminPc
                     return $false
                 }
             }
+            DependsOn = @('[cChocoPackageInstaller]InstallSysInternals', '[File]BgInfoBatch')
+
+        }
+
+		File BgInfoBatch
+        {
+            DestinationPath = 'c:\ScheduledTasks\BgInfo.bat'
+            Ensure = 'Present'
+            Contents = 
+@'
+c:\choco\bin\Bginfo64.exe c:\BgInfo\BgInfo.bgi /NOLICPROMPT /TIMER:00
+'@
+            Type = 'File'
         }
 
         ScheduledTask BgInfo
         {
             TaskName = 'BgInfo'
-            ScheduleType = 'AtLogOn'
+            ScheduleType =
             Description = 'Apply color-specific bginfo'
             Ensure = 'Present'
             Enable = $true
             TaskPath = '\CoeScheduledTask'
-            ActionExecutable = 'cmd.exe'
-            ActionArguments = 'c:\choco\bin\Bginfo64.exe c:\BgInfo\BgInfo.bgi /NOLICPROMPT /TIMER:00'
+            ActionExecutable = 'c:\ScheduledTasks\BgInfo.bat'
             Priority = 9
             StartWhenAvailable = $true
-            DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
+            DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals','[File]BgInfoBatch')
         }
 
         Script TurnOnFileSharing
