@@ -224,8 +224,8 @@ c:\choco\bin\Bginfo64.exe c:\BgInfo\BgInfo.bgi /NOLICPROMPT /TIMER:00
         ScheduledTask BgInfo
         {
             TaskName = 'BgInfo'
-            ScheduleType =
-            Description = 'Apply color-specific bginfo'
+            ScheduleType = 'AtLogOn'
+			Description = 'Always show BgInfo at startup'
             Ensure = 'Present'
             Enable = $true
             TaskPath = '\CoeScheduledTask'
