@@ -216,11 +216,10 @@ Configuration SetupVictimPc
             Ensure = 'Present'
             Contents = 
 @'
-c:\choco\bin\Bginfo64.exe c:\BgInfo\BgInfo.bgi /NOLICPROMPT /TIMER:00
+"c:\choco\bin\Bginfo64.exe" "c:\BgInfo\BgInfo.bgi" /NOLICPROMPT /TIMER:00 /ALL
 '@
             Type = 'File'
         }
-
         ScheduledTask BgInfo
         {
             TaskName = 'BgInfo'
