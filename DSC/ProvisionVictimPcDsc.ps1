@@ -180,10 +180,9 @@ Configuration SetupVictimPc
 				}
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
-                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/BgInfo/victimpc.bgi?raw=true' -Outfile 'C:\BgInfo\BgInfo.bgi'
+                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/BgInfo/adminpc.bgi?raw=true' -Outfile 'C:\BgInfo\BgInfo.bgi'
 
-                $batchLocation = 'c:\ScheduledTasks\BgInfo.bat'
-				Start-Process -FilePath $batchLocation -Wait
+                Invoke-Expression 'bginfo64.exe "c:\bginfo\bginfo.bgi" /nolicprompt /timer:0 /all /silent'
             }
             GetScript =
             {
@@ -208,18 +207,9 @@ Configuration SetupVictimPc
                 }
             }
             DependsOn = @('[cChocoPackageInstaller]InstallSysInternals', '[File]BgInfoBatch')
+
         }
 
-		File BgInfoBatch
-        {
-            DestinationPath = 'c:\ScheduledTasks\BgInfo.bat'
-            Ensure = 'Present'
-            Contents = 
-@'
-"c:\choco\bin\Bginfo64.exe" "c:\BgInfo\BgInfo.bgi" /nolicprompt /timer:0 /all /silent
-'@
-            Type = 'File'
-        }
         ScheduledTask BgInfo
         {
             TaskName = 'BgInfo'
@@ -228,10 +218,11 @@ Configuration SetupVictimPc
             Ensure = 'Present'
             Enable = $true
             TaskPath = '\CoeScheduledTask'
-            ActionExecutable = 'c:\ScheduledTasks\BgInfo.bat'
+            ActionExecutable = 'bginfo64.exe'
+            ActionArguments = '"c:\bginfo\bginfo.bgi" /nolicprompt /timer:0 /all /silent'
             Priority = 9
             StartWhenAvailable = $true
-            DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals','[File]BgInfoBatch')
+            DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
         }
 
         #endregion
