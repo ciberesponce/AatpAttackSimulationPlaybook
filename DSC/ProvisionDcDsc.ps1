@@ -217,7 +217,7 @@ Configuration CreateADForest
             Ensure = 'Present'
             Contents = 
 @'
-"c:\choco\bin\Bginfo64.exe" "c:\BgInfo\BgInfo.bgi" /NOLICPROMPT /TIMER:00 /ALL
+"c:\choco\bin\Bginfo64.exe" "c:\BgInfo\BgInfo.bgi" /nolicprompt /timer:0 /all /silent
 '@
             Type = 'File'
         }
