@@ -33,7 +33,8 @@ Configuration SetupAdminPc
 
     )
     #region COE
-    Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity, SqlServerDsc, cChoco
+    Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, `
+        xSystemSecurity, SqlServerDsc, cChoco
 
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
     $InterfaceAlias=$($Interface.Name)
@@ -233,8 +234,6 @@ Configuration SetupAdminPc
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
                 Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/BgInfo/adminpc.bgi?raw=true' -Outfile 'C:\BgInfo\BgInfo.bgi'
-
-                Invoke-Expression 'bginfo64.exe "c:\bginfo\bginfo.bgi" /nolicprompt /timer:0 /all /silent'
             }
             GetScript =
             {
@@ -271,7 +270,7 @@ Configuration SetupAdminPc
             Enable = $true
             TaskPath = '\CoeScheduledTask'
             ActionExecutable = 'bginfo64.exe'
-            ActionArguments = '"c:\bginfo\bginfo.bgi" /nolicprompt /timer:0 /all /silent'
+            ActionArguments = '"c:\bginfo\bginfo.bgi" /nolicprompt /timer:0'
             Priority = 9
             StartWhenAvailable = $true
             DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')

@@ -181,8 +181,6 @@ Configuration SetupVictimPc
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
                 Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/BgInfo/adminpc.bgi?raw=true' -Outfile 'C:\BgInfo\BgInfo.bgi'
-
-                Invoke-Expression 'bginfo64.exe "c:\bginfo\bginfo.bgi" /nolicprompt /timer:0 /all /silent'
             }
             GetScript =
             {
@@ -214,14 +212,16 @@ Configuration SetupVictimPc
         {
             TaskName = 'BgInfo'
             ScheduleType = 'AtLogOn'
-			Description = 'Always show BgInfo at startup'
+            LogonType = 'Interactive'
+			Description = 'Always show BgInfo at login'
             Ensure = 'Present'
             Enable = $true
             TaskPath = '\CoeScheduledTask'
-            ActionExecutable = 'bginfo64.exe'
-            ActionArguments = '"c:\bginfo\bginfo.bgi" /nolicprompt /timer:0 /all /silent'
+            ActionExecutable = 'c:\choco\bin\bginfo64.exe'
+            ActionArguments = '"c:\bginfo\bginfo.bgi" /nolicprompt /timer:0'
             Priority = 9
             StartWhenAvailable = $true
+            RunLevel = 'Highest'
             DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
         }
 
