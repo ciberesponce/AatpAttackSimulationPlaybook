@@ -166,7 +166,6 @@ Configuration CreateADForest
         {
             Name = 'sysinternals'
 			Ensure = 'Present'
-
 			AutoUpgrade = $false
             DependsOn = '[cChocoInstaller]InstallChoco'
 		}
@@ -206,7 +205,7 @@ Configuration CreateADForest
                     return $false
                 }
             }
-            DependsOn = @('[cChocoPackageInstaller]InstallSysInternals', '[File]BgInfoBatch')
+            DependsOn = @('[cChocoPackageInstaller]InstallSysInternals')
 
         }
 

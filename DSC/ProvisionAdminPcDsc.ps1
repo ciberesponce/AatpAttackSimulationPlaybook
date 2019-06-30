@@ -258,7 +258,7 @@ Configuration SetupAdminPc
                     return $false
                 }
             }
-            DependsOn = @('[cChocoPackageInstaller]InstallSysInternals', '[File]BgInfoBatch')
+            DependsOn = @('[cChocoPackageInstaller]InstallSysInternals')
 
         }
 

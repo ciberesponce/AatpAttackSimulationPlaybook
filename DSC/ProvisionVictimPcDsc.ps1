@@ -206,7 +206,7 @@ Configuration SetupVictimPc
                     return $false
                 }
             }
-            DependsOn = @('[cChocoPackageInstaller]InstallSysInternals', '[File]BgInfoBatch')
+            DependsOn = @('[cChocoPackageInstaller]InstallSysInternals')
 
         }
 
