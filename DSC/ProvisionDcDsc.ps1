@@ -170,7 +170,7 @@ Configuration CreateADForest
 			AutoUpgrade = $false
             DependsOn = '[cChocoInstaller]InstallChoco'
 		}
-		
+	
         Script DownloadBginfo
         {
             SetScript =
@@ -180,12 +180,11 @@ Configuration CreateADForest
 				}
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
-                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/BgInfo/contosodc.bgi?raw=true' -Outfile 'C:\BgInfo\BgInfo.bgi'
-				Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/Downloads/BgInfo/bginfo.cmd' -Outfile 'C:\BgInfo\BgInfo.cmd'
+                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/BgInfo/contosodc.bgi?raw=true' -Outfile 'C:\BgInfo\BgInfoConfig.bgi'
 			}
             GetScript =
             {
-                if ((Test-Path -LiteralPath 'C:\BgInfo\BgInfo.bgi' -PathType Leaf) -and (Test-Path -LiteralPath 'C:\BgInfo\BgInfo.cmd' -PathType Leaf)){
+                if (Test-Path -LiteralPath 'C:\BgInfo\BgInfo.bgi' -PathType Leaf){
                     return @{
                         result = $true
                     }
@@ -198,7 +197,7 @@ Configuration CreateADForest
             }
             TestScript = 
             {
-                if ((Test-Path -LiteralPath 'C:\BgInfo\BgInfo.bgi' -PathType Leaf) -and (Test-Path -LiteralPath 'C:\BgInfo\BgInfo.cmd' -PathType Leaf)){
+                if (Test-Path -LiteralPath 'C:\BgInfo\BgInfo.bgi' -PathType Leaf){
                     return $true
                 }
                 else {
@@ -208,25 +207,14 @@ Configuration CreateADForest
 			DependsOn = @('[xADForestProperties]ForestProps', '[xWaitForADDomain]DscForestWait')
 		}
 
-        ScheduledTask BgInfo
-        {
-			TaskName = 'BgInfo'
-            TaskPath = '\M365Security\Coe'
-            Description = 'Ensure BgInfo is alwyas running'
-            ActionExecutable = 'C:\BgInfo\BgInfo.cmd'
-            ScheduleType = 'Once'
-            RunOnlyIfIdle = $false
-            Ensure = 'Present'
-            Enable = $true
-            Hidden = $true
-            RunLevel = 'Highest'
-            Priority = 7
-            RepeatInterval = '00:05:00'
-            RepetitionDuration = 'Indefinitely'
-            DisallowHardTerminate = $false
-            StartWhenAvailable = $true
-            DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
-        }
+		Registry BgInfoRun
+		{
+			Key = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run'
+			ValueType = 'String'
+			ValueName = 'BgInfo'
+			ValueData = 'BgInfo64 C:\BgInfo\BgInfoConfig.bgi /accepteula /timer:0'
+			DependsOn = '[Script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals'
+		}
 
 		Script TurnOnNetworkDiscovery
         {
