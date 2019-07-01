@@ -267,14 +267,16 @@ Configuration SetupAdminPc
             Ensure = 'Present'
             Contents = 
 @'
-Invoke-Expression 'bginfo64.exe C:\BgInfo\BgInfo.bgi /nolicprompt /timer:0'
+Invoke-Expression 'bginfo64.exe C:\BgInfo\BgInfo.bgi /nolicprompt /timer:0 /all'
 '@            
         }
 
         ScheduledTask BgInfo
         {
             TaskName = 'BgInfo'
-            ScheduleType = 'AtLogOn'
+			ScheduleType = 'AtLogOn'
+			LogonType = 'Interactive'
+			RunLevel = 'Highest'
 			Description = 'Always show BgInfo at startup'
             Ensure = 'Present'
             Enable = $true
