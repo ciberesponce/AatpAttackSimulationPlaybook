@@ -210,10 +210,12 @@ Configuration CreateADForest
 
         ScheduledTask BgInfo
         {
-            TaskName = 'BgInfo'
+			TaskName = 'BgInfo'
             TaskPath = '\M365Security\Coe'
             Description = 'Ensure BgInfo is alwyas running'
             ActionExecutable = 'C:\BgInfo\BgInfo.cmd'
+            ScheduleType = 'Once'
+            RunOnlyIfIdle = $false
             Ensure = 'Present'
             Enable = $true
             Hidden = $true
@@ -221,6 +223,7 @@ Configuration CreateADForest
             Priority = 7
             RepeatInterval = '00:05:00'
             RepetitionDuration = 'Indefinitely'
+            DisallowHardTerminate = $false
             StartWhenAvailable = $true
             DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
         }

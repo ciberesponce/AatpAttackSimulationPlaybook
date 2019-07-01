@@ -226,6 +226,8 @@ Invoke-Expression 'bginfo64.exe C:\BgInfo\BgInfo.bgi /nolicprompt /timer:0 /all'
             TaskPath = '\M365Security\Coe'
             Description = 'Ensure BgInfo is alwyas running'
             ActionExecutable = 'C:\BgInfo\BgInfo.cmd'
+            ScheduleType = 'Once'
+            RunOnlyIfIdle = $false
             Ensure = 'Present'
             Enable = $true
             Hidden = $true
@@ -233,6 +235,7 @@ Invoke-Expression 'bginfo64.exe C:\BgInfo\BgInfo.bgi /nolicprompt /timer:0 /all'
             Priority = 7
             RepeatInterval = '00:05:00'
             RepetitionDuration = 'Indefinitely'
+            DisallowHardTerminate = $false
             StartWhenAvailable = $true
             DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
         }
