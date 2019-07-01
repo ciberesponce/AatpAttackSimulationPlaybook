@@ -265,15 +265,16 @@ Configuration SetupAdminPc
         {
             TaskName = 'BgInfo'
             TaskPath = '\M365Security\Coe'
+            Description = 'Ensure BgInfo is alwyas running'
             ActionExecutable = 'C:\BgInfo\BgInfo.cmd'
             Ensure = 'Present'
             Enable = $true
             Hidden = $true
-            Priority = 4
             RunLevel = 'Highest'
-            ScheduleType = 'AtLogOn'
-            Description = 'Ensure BgInfo on at logon'
-            LogonType = 'Interactive'
+            Priority = 7
+            RepeatInterval = '00:05:00'
+            RepetitionDuration = 'Indefinitely'
+            StartWhenAvailable = $true
             DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
         }
 
