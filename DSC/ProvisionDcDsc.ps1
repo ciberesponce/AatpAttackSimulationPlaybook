@@ -159,7 +159,8 @@ Configuration CreateADForest
 
 		cChocoInstaller InstallChoco
         {
-            InstallDir = @('C:\choco', '[xADForestProperties]ForestProps', '[xWaitForADDomain]DscForestWait')
+			InstallDir = 'C:\choco'
+			DependsOn = @('[xADForestProperties]ForestProps', '[xWaitForADDomain]DscForestWait')
         }
 
         cChocoPackageInstaller InstallSysInternals
