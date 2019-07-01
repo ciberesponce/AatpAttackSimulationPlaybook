@@ -159,7 +159,7 @@ Configuration CreateADForest
 
 		cChocoInstaller InstallChoco
         {
-            InstallDir = "C:\choco"
+            InstallDir = @('C:\choco', '[xADForestProperties]ForestProps', '[xWaitForADDomain]DscForestWait')
         }
 
         cChocoPackageInstaller InstallSysInternals
@@ -203,8 +203,7 @@ Configuration CreateADForest
                     return $false
                 }
             }
-            DependsOn = @('[cChocoPackageInstaller]InstallSysInternals')
-
+			DependsOn = @('[cChocoPackageInstaller]InstallSysInternals', '[xADForestProperties]ForestProps', '[xWaitForADDomain]DscForestWait')
         }
 
         ScheduledTask BgInfo
