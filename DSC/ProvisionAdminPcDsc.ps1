@@ -237,7 +237,7 @@ Configuration SetupAdminPc
 			}
             GetScript =
             {
-                if (Test-Path -LiteralPath 'C:\BgInfo\BgInfo.bgi' -PathType Leaf){
+                if (Test-Path -LiteralPath 'C:\BgInfo\BgInfoConfig.bgi' -PathType Leaf){
                     return @{
                         result = $true
                     }
@@ -250,7 +250,7 @@ Configuration SetupAdminPc
             }
             TestScript = 
             {
-                if (Test-Path -LiteralPath 'C:\BgInfo\BgInfo.bgi' -PathType Leaf){
+                if (Test-Path -LiteralPath 'C:\BgInfo\BgInfoConfig.bgi' -PathType Leaf){
                     return $true
                 }
                 else {
