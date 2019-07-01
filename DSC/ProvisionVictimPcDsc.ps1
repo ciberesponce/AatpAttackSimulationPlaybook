@@ -204,7 +204,7 @@ Configuration SetupVictimPc
                     return $false
                 }
 			}
-            DependsOn = '[Computer]JoinDomain'
+            DependsOn = '[cChocoPackageInstaller]InstallSysInternals'
 		}
 
         #endregion

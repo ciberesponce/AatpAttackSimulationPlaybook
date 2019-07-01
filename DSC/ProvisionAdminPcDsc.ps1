@@ -257,7 +257,7 @@ Configuration SetupAdminPc
                     return $false
                 }
 			}
-            DependsOn = '[Computer]JoinDomain'
+            DependsOn = '[cChocoPackageInstaller]InstallSysInternals'
 		}
 
         Script TurnOnFileSharing
