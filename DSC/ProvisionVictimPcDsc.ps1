@@ -460,7 +460,7 @@ Configuration SetupVictimPc
             }    
             GetScript = 
             {
-                if ((Test-Path 'C:\Tools\NetSess.zip') -and (Test-Path 'C:\Tools\PowerSploit.zip') -and (Test-Path 'C:\Tools\Mimikatz.zip') -and (Test-Path 'C:\Tools\SysInternalsSuite.zip')){
+                if ((Test-Path 'C:\Tools\NetSess.zip') -and (Test-Path 'C:\Tools\PowerSploit.zip') -and (Test-Path 'C:\Tools\Mimikatz.zip')){
                     return @{
                         result = $true
                     }
@@ -473,7 +473,7 @@ Configuration SetupVictimPc
             }
             TestScript = 
             {
-                if ((Test-Path 'C:\Tools\NetSess.zip') -and (Test-Path 'C:\Tools\PowerSploit.zip') -and (Test-Path 'C:\Tools\Mimikatz.zip') -and (Test-Path 'C:\Tools\SysInternalsSuite.zip')){
+                if ((Test-Path 'C:\Tools\NetSess.zip') -and (Test-Path 'C:\Tools\PowerSploit.zip') -and (Test-Path 'C:\Tools\Mimikatz.zip')){
                     return $true
                 }
                 else {

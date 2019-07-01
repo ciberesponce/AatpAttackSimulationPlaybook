@@ -49,6 +49,8 @@ Configuration SetupAdminPc
 
     #region AIP stuff
     $AipProductId = "48A06F18-951C-42CA-86F1-3046AF06D15E"
+    [PSCredential]$AipDomainAccount = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AipServiceCred.UserName)", $AipServiceCred.Password)
+
     #end region
 
     Node localhost
@@ -109,7 +111,7 @@ Configuration SetupAdminPc
         Group AddAdmins
         {
             GroupName = 'Administrators'
-            MembersToInclude = "$NetBiosName\Helpdesk"
+            MembersToInclude = @("$NetBiosName\Helpdesk", "$NetBiosName\$($AipServiceCred.UserName)")
             Ensure = 'Present'
             DependsOn = '[Computer]JoinDomain'
         }
@@ -143,6 +145,44 @@ Configuration SetupAdminPc
             Ensure = 'Present'
             DependsOn = '[Computer]JoinDomain'
         }
+
+        Script MSSqlFirewall
+        {
+            SetScript = 
+            {
+                New-NetFirewallRule -DisplayName "MSSQL ENGINE TCP" -Direction Inbound -LocalPort 1433 -Protocol TCP -Action Allow
+            }
+            GetScript = 
+            {
+                try{
+                    $firewallStuff = Get-NetFirewallRule -DisplayName "MSQL ENGINE TCP"
+                    if ($firewallStuff -ne $null){
+                        return @{ result = $true}
+                    }
+                    else {
+                        return @{ result = $false }
+                    }
+                }
+                #error; no group name so need to make it
+                catch{
+                    return @{ result = $false }
+                }
+            }
+            TestScript = 
+            {
+                try{
+                    $firewallStuff = Get-NetFirewallRule -DisplayName "MSQL ENGINE TCP"
+                    if ($firewallStuff -ne $null){
+                        return $true
+                    }
+                }
+                #error; no group name so need to make it
+                catch{
+                    return $false
+                }
+            }
+        }
+
         #endregion
 
         #region AATP

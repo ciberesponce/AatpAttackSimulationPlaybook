@@ -18,10 +18,10 @@ The above chart also shows the Primary owner of the respective lab, as well as t
 ### Documentation
 | Who | What | Status | Helpful resources|
 |-----|------|--------|------------------|
-|Kevin|Lift and Shift AIP|Exploring|  |
-|Kevin|Lift and Shift MCAS| Exploring| |
-|Kevin/Andrew|Lift and Shift AATP|Exploring| |
-|Kevin|Lift and Shift ASC|Exploring| |
+|Kevin|Lift and Shift AIP| Exploring|  |
+|Kevin|Lift and Shift MCAS| Complete| |
+|Kevin/Andrew|Lift and Shift AATP| Complete| |
+|Kevin|Lift and Shift ASC| Complete| |
 
 ### Common Lab Environment (CLE)
 
