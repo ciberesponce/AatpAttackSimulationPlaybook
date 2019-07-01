@@ -258,6 +258,7 @@ Configuration SetupAdminPc
                     return $false
                 }
             }
+            DependsOn = '[Computer]JoinDomain'
         }
 
         ScheduledTask BgInfo

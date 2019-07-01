@@ -185,7 +185,7 @@ Configuration CreateADForest
 			}
             GetScript =
             {
-                if (Test-Path -LiteralPath 'C:\BgInfo\BgInfo.bgi' -PathType Leaf){
+                if ((Test-Path -LiteralPath 'C:\BgInfo\BgInfo.bgi' -PathType Leaf) -and (Test-Path -LiteralPath 'C:\BgInfo\BgInfo.cmd' -PathType Leaf)){
                     return @{
                         result = $true
                     }
@@ -205,6 +205,7 @@ Configuration CreateADForest
                     return $false
                 }
 			}
+			DependsOn = @('[xADForestProperties]ForestProps', '[xWaitForADDomain]DscForestWait')
         }
 
         ScheduledTask BgInfo

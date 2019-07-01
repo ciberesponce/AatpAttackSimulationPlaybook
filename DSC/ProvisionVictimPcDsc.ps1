@@ -206,6 +206,7 @@ Configuration SetupVictimPc
                     return $false
                 }
             }
+            DependsOn = '[Computer]JoinDomain'
         }
 
         # needed to get around BOM/encoding issue :|
