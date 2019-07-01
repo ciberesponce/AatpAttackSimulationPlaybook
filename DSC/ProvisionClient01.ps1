@@ -22,7 +22,7 @@ Configuration SetupAipScannerCore
         [PsCredential]$AipScannerCred
 
     )
-    Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity
+    Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity, DSCR_Shortcut, cChoco
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
     $InterfaceAlias=$($Interface.Name)
 
@@ -86,6 +86,67 @@ Configuration SetupAipScannerCore
             Ensure = 'Present'
             DependsOn = '[Computer]JoinDomain'
         }
+
+        #region Choco
+        cChocoInstaller InstallChoco
+        {
+            InstallDir = "C:\choco"
+            DependsOn = '[Computer]JoinDomain'
+        }
+
+        cChocoPackageInstaller InstallSysInternals
+        {
+            Name = 'sysinternals'
+            Ensure = 'Present'
+            AutoUpgrade = $false
+            DependsOn = '[cChocoInstaller]InstallChoco'
+        }
+
+        Script DownloadBginfo
+        {
+            SetScript =
+            {
+                if ((Test-Path -PathType Container -LiteralPath 'C:\BgInfo\') -ne $true){
+					New-Item -Path 'C:\BgInfo\' -ItemType Directory
+				}
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
+                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/BgInfo/aippc.bgi?raw=true' -Outfile 'C:\BgInfo\BgInfoConfig.bgi'
+			}
+            GetScript =
+            {
+                if (Test-Path -LiteralPath 'C:\BgInfo\BgInfoConfig.bgi' -PathType Leaf){
+                    return @{
+                        result = $true
+                    }
+                }
+                else {
+                    return @{
+                        result = $false
+                    }
+                }
+            }
+            TestScript = 
+            {
+                if (Test-Path -LiteralPath 'C:\BgInfo\BgInfoConfig.bgi' -PathType Leaf){
+                    return $true
+                }
+                else {
+                    return $false
+                }
+			}
+            DependsOn = '[cChocoPackageInstaller]InstallSysInternals'
+        }
+        
+        cShortcut BgInfo
+		{
+			Path = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\BgInfo.lnk'
+			Target = 'bginfo64.exe'
+			Arguments = 'c:\BgInfo\BgInfoConfig.bgi /accepteula /timer:0'
+            Description = 'Ensure BgInfo starts at every logon, in context of the user signing in (only way for stable use!)'
+            DependsOn = @('[Script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
+		}
+
 
         Script TurnOnNetworkDiscovery
         {
