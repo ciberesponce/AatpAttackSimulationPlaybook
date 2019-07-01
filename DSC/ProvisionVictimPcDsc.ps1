@@ -205,24 +205,31 @@ Configuration SetupVictimPc
                 }
             }
             DependsOn = @('[cChocoPackageInstaller]InstallSysInternals')
+        }
 
+        # needed to get around BOM/encoding issue :|
+        File BgInfoPowerShell
+        {
+            DestinationPath = 'C:\BgInfo\Start-BgInfo.ps1'
+            Ensure = 'Present'
+            Contents = 
+@'
+Invoke-Expression 'bginfo64.exe C:\BgInfo\BgInfo.bgi /nolicprompt /timer:0'
+'@            
         }
 
         ScheduledTask BgInfo
         {
             TaskName = 'BgInfo'
             ScheduleType = 'AtLogOn'
-            LogonType = 'Interactive'
-			Description = 'Always show BgInfo at login'
+			Description = 'Always show BgInfo at startup'
             Ensure = 'Present'
             Enable = $true
             TaskPath = '\CoeScheduledTask'
-            ActionExecutable = 'c:\choco\bin\bginfo64.exe'
-            ActionArguments = '"c:\bginfo\bginfo.bgi" /nolicprompt /timer:0'
+            ActionExecutable   = "C:\windows\system32\WindowsPowerShell\v1.0\powershell.exe"
+            ActionArguments = '-File "C:\BgInfo\Start-BgInfo.ps1"'
             Priority = 9
-            StartWhenAvailable = $true
-            RunLevel = 'Highest'
-            DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
+            DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals','[File]BgInfoPowerShell')
         }
 
         #endregion

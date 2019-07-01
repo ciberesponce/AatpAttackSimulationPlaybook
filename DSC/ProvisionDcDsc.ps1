@@ -207,6 +207,17 @@ Configuration CreateADForest
 			DependsOn = @('[cChocoPackageInstaller]InstallSysInternals', '[xADForestProperties]ForestProps', '[xWaitForADDomain]DscForestWait')
         }
 
+        # needed to get around BOM/encoding issue :|
+        File BgInfoPowerShell
+        {
+            DestinationPath = 'C:\BgInfo\Start-BgInfo.ps1'
+            Ensure = 'Present'
+            Contents = 
+@'
+Invoke-Expression 'bginfo64.exe C:\BgInfo\BgInfo.bgi /nolicprompt /timer:0'
+'@            
+        }
+
         ScheduledTask BgInfo
         {
             TaskName = 'BgInfo'
@@ -215,11 +226,10 @@ Configuration CreateADForest
             Ensure = 'Present'
             Enable = $true
             TaskPath = '\CoeScheduledTask'
-            ActionExecutable = 'bginfo64.exe'
-            ActionArguments = '"c:\bginfo\bginfo.bgi" /nolicprompt /timer:0'
+            ActionExecutable   = "C:\windows\system32\WindowsPowerShell\v1.0\powershell.exe"
+            ActionArguments = '-File "C:\BgInfo\Start-BgInfo.ps1"'
             Priority = 9
-            StartWhenAvailable = $true
-            DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
+            DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals','[File]BgInfoPowerShell')
         }
 
 		Script TurnOnNetworkDiscovery
