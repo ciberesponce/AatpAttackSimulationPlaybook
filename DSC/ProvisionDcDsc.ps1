@@ -204,7 +204,7 @@ Configuration CreateADForest
                     return $false
                 }
 			}
-			DependsOn = @('[xADForestProperties]ForestProps', '[xWaitForADDomain]DscForestWait')
+			DependsOn = @('[xWaitForADDomain]DscForestWait')
 		}
 
 		Registry BgInfoRun
