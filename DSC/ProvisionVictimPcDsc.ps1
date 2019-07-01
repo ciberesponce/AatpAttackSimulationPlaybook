@@ -137,7 +137,7 @@ Configuration SetupVictimPc
             TaskPath = '\AatpScheduledTasks'
             ExecuteAsCredential = $RonHdDomainCred
             ActionExecutable = 'cmd.exe'
-            Priority = 9
+            Priority = 7
             DisallowHardTerminate = $false
             RepeatInterval = '00:10:00'
             RepetitionDuration = 'Indefinitely'
@@ -181,6 +181,8 @@ Configuration SetupVictimPc
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
                 Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/BgInfo/victimpc.bgi?raw=true' -Outfile 'C:\BgInfo\BgInfo.bgi'
+                Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/Downloads/BgInfo/bginfo.cmd' -Outfile 'C:\BgInfo\BgInfo.cmd'
+
             }
             GetScript =
             {
@@ -197,14 +199,14 @@ Configuration SetupVictimPc
             }
             TestScript = 
             {
-                if (Test-Path -LiteralPath 'C:\BgInfo\BgInfo.bgi' -PathType Leaf){
+                if ((Test-Path -LiteralPath 'C:\BgInfo\BgInfo.bgi' -PathType Leaf) -and (Test-Path -LiteralPath 'C:\BgInfo\BgInfo.cmd' -PathType Leaf)){
                     return $true
                 }
                 else {
                     return $false
                 }
             }
-            DependsOn = @('[cChocoPackageInstaller]InstallSysInternals')
+            DependsOn = '[Computer]JoinDomain'
         }
 
         # needed to get around BOM/encoding issue :|
@@ -221,17 +223,17 @@ Invoke-Expression 'bginfo64.exe C:\BgInfo\BgInfo.bgi /nolicprompt /timer:0 /all'
         ScheduledTask BgInfo
         {
             TaskName = 'BgInfo'
-			ScheduleType = 'AtLogOn'
-			LogonType = 'Interactive'
-			RunLevel = 'Highest'
-			Description = 'Always show BgInfo at startup'
+            TaskPath = '\M365Security\Coe'
+            ActionExecutable = 'C:\BgInfo\BgInfo.cmd'
             Ensure = 'Present'
             Enable = $true
-            TaskPath = '\CoeScheduledTask'
-            ActionExecutable   = "C:\windows\system32\WindowsPowerShell\v1.0\powershell.exe"
-            ActionArguments = '-File "C:\BgInfo\Start-BgInfo.ps1"'
-            Priority = 9
-            DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals','[File]BgInfoPowerShell')
+            Hidden = $true
+            Priority = 4
+            RunLevel = 'Highest'
+            ScheduleType = 'AtLogOn'
+            Description = 'Ensure BgInfo on at logon'
+            LogonType = 'Interactive'
+            DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
         }
 
         #endregion

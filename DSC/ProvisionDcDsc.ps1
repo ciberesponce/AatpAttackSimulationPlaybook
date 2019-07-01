@@ -181,7 +181,8 @@ Configuration CreateADForest
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
                 Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/BgInfo/contosodc.bgi?raw=true' -Outfile 'C:\BgInfo\BgInfo.bgi'
-            }
+				Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/Downloads/BgInfo/bginfo.cmd' -Outfile 'C:\BgInfo\BgInfo.cmd'
+			}
             GetScript =
             {
                 if (Test-Path -LiteralPath 'C:\BgInfo\BgInfo.bgi' -PathType Leaf){
@@ -197,26 +198,17 @@ Configuration CreateADForest
             }
             TestScript = 
             {
-                if (Test-Path -LiteralPath 'C:\BgInfo\BgInfo.bgi' -PathType Leaf){
+                if ((Test-Path -LiteralPath 'C:\BgInfo\BgInfo.bgi' -PathType Leaf) -and (Test-Path -LiteralPath 'C:\BgInfo\BgInfo.cmd' -PathType Leaf)){
                     return $true
                 }
                 else {
                     return $false
                 }
             }
-			DependsOn = @('[cChocoPackageInstaller]InstallSysInternals', '[xADForestProperties]ForestProps', '[xWaitForADDomain]DscForestWait')
+			DependsOn = @('[xADForestProperties]ForestProps', '[xWaitForADDomain]DscForestWait')
         }
 
-        # needed to get around BOM/encoding issue :|
-        File BgInfoPowerShell
-        {
-            DestinationPath = 'C:\BgInfo\Start-BgInfo.ps1'
-            Ensure = 'Present'
-            Contents = 
-@'
-Invoke-Expression 'bginfo64.exe C:\BgInfo\BgInfo.bgi /nolicprompt /timer:0 /all'
-'@            
-        }
+
 
         ScheduledTask BgInfo
         {
@@ -231,7 +223,7 @@ Invoke-Expression 'bginfo64.exe C:\BgInfo\BgInfo.bgi /nolicprompt /timer:0 /all'
             ActionExecutable   = "C:\windows\system32\WindowsPowerShell\v1.0\powershell.exe"
             ActionArguments = '-File "C:\BgInfo\Start-BgInfo.ps1"'
             Priority = 9
-            DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals','[File]BgInfoPowerShell')
+            DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
         }
 
 		Script TurnOnNetworkDiscovery
