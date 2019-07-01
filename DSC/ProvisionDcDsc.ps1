@@ -208,8 +208,6 @@ Configuration CreateADForest
 			DependsOn = @('[xADForestProperties]ForestProps', '[xWaitForADDomain]DscForestWait')
         }
 
-
-
         ScheduledTask BgInfo
         {
             TaskName = 'BgInfo'
@@ -224,7 +222,7 @@ Configuration CreateADForest
             ActionArguments = '-File "C:\BgInfo\Start-BgInfo.ps1"'
             Priority = 9
             DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
-        }
+		}
 
 		Script TurnOnNetworkDiscovery
         {
