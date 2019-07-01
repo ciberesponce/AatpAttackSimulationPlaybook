@@ -261,7 +261,6 @@ Configuration CreateADForest
 			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
         }
         
-
 		Script DownloadAadMsi
 		{
 			SetScript = 
