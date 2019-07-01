@@ -211,8 +211,8 @@ Configuration SetupVictimPc
 		{
 			Key = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run'
 			ValueType = 'String'
-			ValueName = 'BgInfo'
-			ValueData = 'BgInfo64 C:\BgInfo\BgInfoConfig.bgi /accepteula /timer:0'
+			ValueName = 'BgInfo64'
+			ValueData = 'BgInfo64.exe C:\BgInfo\BgInfoConfig.bgi /accepteula /timer:0'
 			DependsOn = '[Script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals'
 		}
 
