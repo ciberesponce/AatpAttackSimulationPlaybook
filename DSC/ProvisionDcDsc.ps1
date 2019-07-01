@@ -42,7 +42,7 @@ Configuration CreateADForest
 	)
 
 	Import-DscResource -ModuleName PSDesiredStateConfiguration, xActiveDirectory, xPendingReboot, `
-		xNetworking, xStorage, xDefender, cChoco, ComputerManagementDsc
+		xNetworking, xStorage, xDefender, cChoco, ComputerManagementDsc, DSCR_Shortcut
 
 	$Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
 	$InterfaceAlias=$($Interface.Name)
@@ -205,6 +205,14 @@ Configuration CreateADForest
                 }
 			}
 			DependsOn = @('[xWaitForADDomain]DscForestWait','[cChocoPackageInstaller]InstallSysInternals')
+		}
+
+		cShortcut BgInfo
+		{
+			Path = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\BgInfo.lnk'
+			Target = 'bginfo64.exe'
+			Arguments = 'c:\BgInfo\BgInfoConfig.bgi /accepteula /timer:0'
+			Description = 'Ensure BgInfo starts at every logon, in context of the user signing in (only way for stable use!)'
 		}
 
 		Script TurnOnNetworkDiscovery
