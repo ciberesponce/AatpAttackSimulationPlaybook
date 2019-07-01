@@ -211,16 +211,16 @@ Configuration CreateADForest
         ScheduledTask BgInfo
         {
             TaskName = 'BgInfo'
-			ScheduleType = 'AtLogOn'
-			LogonType = 'Interactive'
-			RunLevel = 'Highest'
-			Description = 'Always show BgInfo at startup'
+            TaskPath = '\M365Security\Coe'
+            ActionExecutable = 'C:\BgInfo\BgInfo.cmd'
             Ensure = 'Present'
             Enable = $true
-            TaskPath = '\CoeScheduledTask'
-            ActionExecutable   = "C:\windows\system32\WindowsPowerShell\v1.0\powershell.exe"
-            ActionArguments = '-File "C:\BgInfo\Start-BgInfo.ps1"'
-            Priority = 9
+            Hidden = $true
+            Priority = 4
+            RunLevel = 'Highest'
+            ScheduleType = 'AtLogOn'
+            Description = 'Ensure BgInfo on at logon'
+            LogonType = 'Interactive'
             DependsOn = @('[script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
 		}
 
