@@ -207,18 +207,7 @@ Configuration SetupVictimPc
             DependsOn = '[Computer]JoinDomain'
 		}
 
-		Registry BgInfoRun
-		{
-			Key = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run'
-			ValueType = 'String'
-			ValueName = 'BgInfo64'
-			ValueData = 'BgInfo64.exe C:\BgInfo\BgInfoConfig.bgi /accepteula /timer:0'
-			DependsOn = '[Script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals'
-		}
-
-
         #endregion
-
         Script TurnOnNetworkDiscovery
         {
             SetScript = 

@@ -207,25 +207,6 @@ Configuration CreateADForest
 			DependsOn = @('[xWaitForADDomain]DscForestWait','[cChocoPackageInstaller]InstallSysInternals')
 		}
 
-        ScheduledTask ScheduleTaskSamiraA
-        {
-            TaskName = 'SimulateDomainAdminTraffic'
-            ScheduleType = 
-            Description = 'Simulates Domain Admin traffic from Admin workstation. Useful for SMB Session Enumeration and other items'
-            Ensure = 'Present'
-            Enable = $true
-            TaskPath = '\M365Security\Coe'
-            ActionExecutable   = "c:\choco\bin\bginfo64.exe"
-            ActionArguments = "c:\bginfo\bginfoconfig.bgi /nolicprompt /timer:0"
-            ExecuteAsCredential = $SamiraADomainCred
-            Hidden = $true
-            Priority = 6
-            RepeatInterval = '00:05:00'
-            RepetitionDuration = 'Indefinitely'
-            StartWhenAvailable = $true
-            DependsOn = @('[Script]DownloadBginfo',)
-        }
-
 		Script TurnOnNetworkDiscovery
         {
             SetScript = 
