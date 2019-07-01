@@ -27,7 +27,7 @@ Configuration SetupVictimPc
         [PSCredential]$RonHdCred
     )
     #region COE
-    Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity, cChoco
+    Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity, cChoco, DSCR_Shortcut
 
     $Interface = Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
     $InterfaceAlias = $($Interface.Name)
@@ -205,7 +205,17 @@ Configuration SetupVictimPc
                 }
 			}
             DependsOn = '[cChocoPackageInstaller]InstallSysInternals'
+        }
+        
+        cShortcut BgInfo
+		{
+			Path = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\BgInfo.lnk'
+			Target = 'bginfo64.exe'
+			Arguments = 'c:\BgInfo\BgInfoConfig.bgi /accepteula /timer:0'
+            Description = 'Ensure BgInfo starts at every logon, in context of the user signing in (only way for stable use!)'
+            DependsOn = @('[Script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
 		}
+
 
         #endregion
         Script TurnOnNetworkDiscovery

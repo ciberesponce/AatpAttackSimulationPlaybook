@@ -212,18 +212,19 @@ Configuration CreateADForest
 			Path = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\BgInfo.lnk'
 			Target = 'bginfo64.exe'
 			Arguments = 'c:\BgInfo\BgInfoConfig.bgi /accepteula /timer:0'
-			Description = 'Ensure BgInfo starts at every logon, in context of the user signing in (only way for stable use!)'
+            Description = 'Ensure BgInfo starts at every logon, in context of the user signing in (only way for stable use!)'
+            DependsOn = @('[Script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
 		}
 
 		Script TurnOnNetworkDiscovery
         {
             SetScript = 
             {
-                Get-NetFirewallRule -DisplayGroup 'Network Discovery' | Set-NetFirewallRule -Profile 'Domain' -Enabled true
+                Get-NetFirewallRule -DisplayGroup 'Network Discovery' | Set-NetFirewallRule -Profile 'Domain,Private' -Enabled true
             }
             GetScript = 
             {
-                $fwRules = Get-NetFirewallRule -DisplayGroup 'Network Discovery'
+                $fwRules = Get-NetFirewallRule -DisplayGroup 'Network Discovery' -
                 $result = $true
                 foreach ($rule in $fwRules){
                     if ($rule.Enabled -eq 'False'){
