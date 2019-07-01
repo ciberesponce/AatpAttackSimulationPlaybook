@@ -260,27 +260,16 @@ Configuration SetupAdminPc
             DependsOn = @('[cChocoPackageInstaller]InstallSysInternals')
         }
 
-        # needed to get around BOM/encoding issue :|
-        File BgInfoPowerShell
-        {
-            DestinationPath = 'C:\BgInfo\Start-BgInfo.ps1'
-            Ensure = 'Present'
-            Contents = 
-@'
-Invoke-Expression 'bginfo64.exe C:\BgInfo\BgInfo.bgi /nolicprompt /timer:0 /all'
-'@            
-        }
-
         ScheduledTask BgInfo
         {
             TaskName = 'BgInfo'
-			ScheduleType = 'AtLogOn'
+			ScheduleType = 'AtStartup'
 			LogonType = 'Interactive'
 			RunLevel = 'Highest'
 			Description = 'Always show BgInfo at startup'
             Ensure = 'Present'
             Enable = $true
-            TaskPath = '\CoeScheduledTask'
+            TaskPath = '\M365Security\COE'
             ActionExecutable   = "C:\windows\system32\WindowsPowerShell\v1.0\powershell.exe"
             ActionArguments = '-File "C:\BgInfo\Start-BgInfo.ps1"'
             Priority = 9
@@ -358,7 +347,7 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
             Description = 'Simulates Domain Admin traffic from Admin workstation. Useful for SMB Session Enumeration and other items'
             Ensure = 'Present'
             Enable = $true
-            TaskPath = '\AatpScheduledTasks'
+            TaskPath = '\M365Security\Aatp'
             ActionExecutable   = "C:\windows\system32\WindowsPowerShell\v1.0\powershell.exe"
             ActionArguments = "-File `"$SamiraASmbScriptLocation`""
             ExecuteAsCredential = $SamiraADomainCred

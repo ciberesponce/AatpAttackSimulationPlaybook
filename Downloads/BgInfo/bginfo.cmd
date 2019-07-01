@@ -1,0 +1,1 @@
+CALL "bginfo64.exe" "C:\BgInfo\BgInfo.bgi" /nolicprompt /timer:0
