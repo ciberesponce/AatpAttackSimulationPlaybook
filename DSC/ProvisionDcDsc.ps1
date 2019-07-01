@@ -204,8 +204,7 @@ Configuration CreateADForest
                 else {
                     return $false
                 }
-            }
-			DependsOn = @('[xADForestProperties]ForestProps', '[xWaitForADDomain]DscForestWait')
+			}
         }
 
         ScheduledTask BgInfo
