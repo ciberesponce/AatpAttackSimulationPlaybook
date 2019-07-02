@@ -160,7 +160,7 @@ Configuration SetupAdminPc
             {
                 $firewallStuff = Get-NetFirewallRule -DisplayName "MSSQL ENGINE TCP" -ErrorAction SilentlyContinue
                 # if null, no rule exists with the Display Name
-                if ($firewallStuff -ne $null){
+                if ($null -ne $firewallStuff){
                     return @{ result = $true}
                 }
                 else {
@@ -171,7 +171,7 @@ Configuration SetupAdminPc
             {
                 $firewallStuff = Get-NetFirewallRule -DisplayName "MSSQL ENGINE TCP" -ErrorAction SilentlyContinue
                 # if null, no rule exists with the Display Name
-                if ($firewallStuff -ne $null){
+                if ($null -ne $firewallStuff){
                     return $true
                 }
                 else {
