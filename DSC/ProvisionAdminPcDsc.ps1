@@ -1,6 +1,9 @@
-# ADMIN PC has to have SQL Express installed.  Hard to stage SQL as its 700+ MB and we
-# can only stage files up to 100MB on GitHub
-
+####
+#
+#  Things we can't do:
+#  SQL Express; too difficult to stage install (700+MB)
+#      Needs to be installed for AIP as AIP Service account
+###
 
 Configuration SetupAdminPc
 {
@@ -149,6 +152,73 @@ Configuration SetupAdminPc
             Ensure = 'Present'
             DependsOn = '[Computer]JoinDomain'
         }
+
+        Registry DisableSmartScreen
+        {
+            Key = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer'
+            ValueName = 'SmartScreenEnable'
+            ValueType = 'String'
+            ValueData = 'Off'
+            Ensure = 'Present'
+            DependsOn = '[Computer]JoinDomain'
+        }
+
+ #region Modify IE Zone 3 Settings
+        # needed to download files via IE from GitHub and other sources
+        # can't just modify regkeys, need to export/import reg
+        # ref: https://support.microsoft.com/en-us/help/182569/internet-explorer-security-zones-registry-entries-for-advanced-users
+        Script DownloadRegkeyZone3Workaround
+        {
+            SetScript = 
+            {
+                if ((Test-Path -PathType Container -LiteralPath 'C:\LabTools\') -ne $true){
+					New-Item -Path 'C:\LabTools\' -ItemType Directory
+				}
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
+                Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/Downloads/Zone3.reg' -Outfile 'C:\LabTools\RegkeyZone3.reg'
+            }
+			GetScript = 
+            {
+				if (Test-Path 'C:\LabTools\RegkeyZone3.reg'){
+					return @{
+						result = $true
+					}
+				}
+				else {
+					return @{
+						result = $false
+					}
+				}
+            }
+            TestScript = 
+            {
+				if (Test-Path 'C:\LabTools\RegkeyZone3.reg'){
+					return $true
+				}
+				else {
+					return $false
+				}
+            }
+            DependsOn = '[Registry]DisableSmartScreen'
+        }
+        Script ExecuteZone3Override
+        {
+            SetScript = 
+            {
+                & 'reg import "C:\LabTools\RegkeyZone3.reg"'
+            }
+			GetScript = 
+            {
+				return $false
+            }
+            TestScript = 
+            {
+				return $true
+            }
+            DependsOn = '[Script]DownloadRegkeyZone3Workaround'
+        }
+        #endregion
 
         Script MSSqlFirewall
         {
@@ -393,20 +463,20 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
         #endregion
 
         #region AIP
-        Script DownloadAipStuff
+        Script DownloadAipMsi
 		{
 			SetScript = 
             {
                 if ((Test-Path -PathType Container -LiteralPath 'C:\LabTools\') -ne $true){
 					New-Item -Path 'C:\LabTools\' -ItemType Directory
-                }
+				}
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
                 Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzInfoProtection_MSI_for_central_deployment.msi?raw=true' -Outfile 'C:\LabTools\aip_installer.msi'
             }
 			GetScript = 
             {
-				if (Test-Path 'C:\LabTools\aip_installer.msi'){
+				if ((Test-Path 'C:\LabTools\aip_installer.msi') -eq $true){
 					return @{
 						result = $true
 					}
@@ -419,13 +489,14 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
             }
             TestScript = 
             {
-				if (Test-Path 'C:\LabTools\aip_installer.msi'){
+				if ((Test-Path 'C:\LabTools\aip_installer.msi') -eq $true){
 					return $true
 				}
 				else {
 					return $false
 				}
             }
+            DependsOn = @('[Registry]DisableSmartScreen','[Computer]JoinDomain', '[Script]ExecuteZone3Override')
 		}
 
 		Package InstallAipClient
@@ -435,7 +506,7 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
 			Path = 'C:\LabTools\aip_installer.msi'
 			ProductId = $AipProductId
 			Arguments = '/quiet'
-			DependsOn = @('[Script]DownloadAipStuff','[Computer]JoinDomain')
+			DependsOn = @('[Script]DownloadAipMsi','[Computer]JoinDomain')
         }
 
         xSmbShare SharePublicDocuments
@@ -445,7 +516,6 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
             FullAccess = "Everyone"
             DependsOn = '[Computer]JoinDomain'
         }
-
         
         # Stage AIP data
         Script DownloadAipData
@@ -487,7 +557,7 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
             Path = 'C:\PII\data.zip'
             Destination = 'C:\PII'
             Ensure = 'Present'
-            DependsOn = '[Script]DownloadAipData'
+			DependsOn = @('[Script]DownloadAipData','[Computer]JoinDomain')
         }
 
         Archive AipDataToPublicDocuments

@@ -2,7 +2,7 @@ param(
     # ResourceGroupName
     [Parameter(Mandatory = $false)]
     [string]
-    $resourceGroup = 'Andrew-Test'
+    $resourceGroup = 'cxe-lab-test'
 )
 #array showing VMName, DSC name
 $vmData = @(

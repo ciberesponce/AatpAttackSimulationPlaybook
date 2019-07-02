@@ -184,7 +184,7 @@ Configuration SetupVictimPc
 			}
             GetScript =
             {
-                if (Test-Path -LiteralPath 'C:\BgInfo\BgInfoConfig.bgi' -PathType Leaf){
+                if ((Test-Path -LiteralPath 'C:\BgInfo\BgInfoConfig.bgi' -PathType Leaf) -eq $true){
                     return @{
                         result = $true
                     }
@@ -197,7 +197,7 @@ Configuration SetupVictimPc
             }
             TestScript = 
             {
-                if (Test-Path -LiteralPath 'C:\BgInfo\BgInfoConfig.bgi' -PathType Leaf){
+                if ((Test-Path -LiteralPath 'C:\BgInfo\BgInfoConfig.bgi' -PathType Leaf) -eq $true){
                     return $true
                 }
                 else {
@@ -227,6 +227,10 @@ Configuration SetupVictimPc
             GetScript = 
             {
                 $fwRules = Get-NetFirewallRule -DisplayGroup 'Network Discovery'
+                if ($null -eq $fwRules)
+                {
+                    return @{result = $false}
+                }
                 $result = $true
                 foreach ($rule in $fwRules){
                     if ($rule.Enabled -eq 'False'){
@@ -241,6 +245,10 @@ Configuration SetupVictimPc
             TestScript = 
             {
                 $fwRules = Get-NetFirewallRule -DisplayGroup 'Network Discovery'
+                if ($null -eq $fwRules)
+                {
+                    return $false
+                }
                 $result = $true
                 foreach ($rule in $fwRules){
                     if ($rule.Enabled -eq 'False'){
@@ -406,7 +414,7 @@ Configuration SetupVictimPc
             }
 			GetScript = 
             {
-				if (Test-Path 'C:\LabTools\aip_installer.msi'){
+				if ((Test-Path 'C:\LabTools\aip_installer.msi') -eq $true){
 					return @{
 						result = $true
 					}
@@ -419,14 +427,14 @@ Configuration SetupVictimPc
             }
             TestScript = 
             {
-				if (Test-Path 'C:\LabTools\aip_installer.msi'){
+				if ((Test-Path 'C:\LabTools\aip_installer.msi') -eq $true){
 					return $true
 				}
 				else {
 					return $false
 				}
             }
-            DependsOn = '[Registry]DisableSmartScreen'
+            DependsOn = @('[Registry]DisableSmartScreen','[Computer]JoinDomain', '[Script]ExecuteZone3Override')
 		}
 
 		Package InstallAipClient

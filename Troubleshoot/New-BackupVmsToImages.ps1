@@ -7,21 +7,20 @@
 param(
     [Parameter(Mandatory=$false)]
     [string]
-    $ResourceGroupName = 'andrew-test',
+    $ResourceGroupName = 'cxe-lab-test',
 
     # location for image
     [Parameter(Mandatory=$false)]
     [string]
-    $Location = 'East US',
+    $Location = 'East US2',
 
     # DestingationResourceGroup
     [Parameter(Mandatory=$false)]
     [string]
-    $DestinationResourceGroupName = 'andrew-images'
+    $DestinationResourceGroupName = 'cxe-lab-images'
 )
 
 $vms = Get-AzVm -ResourceGroupName $ResourceGroupName
-$location = 'East US'
 
 Write-Host "[+] Starting to backup Images for $($vms.Count) VMs..." -ForegroundColor Yellow
 

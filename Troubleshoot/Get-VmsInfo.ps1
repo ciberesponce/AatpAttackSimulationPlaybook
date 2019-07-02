@@ -2,7 +2,7 @@ param(
     # resource group name; defaults to andrew-test
     [Parameter(Mandatory=$false)]
     [string]
-    $ResourceGroupName = 'andrew-test'
+    $ResourceGroupName = 'cxe-lab-test'
 )
 
 $Ips = Get-AzNetworkInterface -ResourceGroupName $ResourceGroupName

@@ -2,12 +2,12 @@ param(
     # resourceGroupName
     [Parameter(Mandatory=$false)]
     [string]
-    $ResourceGroupName = 'andrew-images',
+    $ResourceGroupName = 'cxe-lab-images',
 
     # StorageAccount
     [Parameter(Mandatory=$false)]
     [string]
-    $StorageAccount = 'caiseclabdev',
+    $StorageAccount = 'caiseclabimages',
 
     # Container to save Images in storage account
     [Parameter(Mandatory=$false)]
@@ -17,7 +17,7 @@ param(
     # StorageAccount Key
     [Parameter(Mandatory=$false)]
     [string]
-    $StorageAccessKey = 'MHCknrQZRBfqzv1mB+UgN7s1pinKp+buIDVmeZM2BLDTbwtrxMxh/85MjggBpEi+FHwTb3kmQR9Sd4dBjVheow=='
+    $StorageAccessKey = 'SjO7nhHhNQE/AEqc5cbs4K/acK7Diosha77m5k7V5wWTR5xLNjvQAUKhwKK6drMQRsdAsus2gku3QALAwfZVgg=='
 )
 
 Write-Host "[!] Moving to proper Storage Account/containers" -ForegroundColor Yellow

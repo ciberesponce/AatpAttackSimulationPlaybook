@@ -184,7 +184,7 @@ Configuration CreateADForest
 			}
             GetScript =
             {
-                if (Test-Path -LiteralPath 'C:\BgInfo\BgInfoConfig.bgi' -PathType Leaf){
+                if ((Test-Path -LiteralPath 'C:\BgInfo\BgInfoConfig.bgi' -PathType Leaf) -eq $true){
                     return @{
                         result = $true
                     }
@@ -197,7 +197,7 @@ Configuration CreateADForest
             }
             TestScript = 
             {
-                if (Test-Path -LiteralPath 'C:\BgInfo\BgInfoConfig.bgi' -PathType Leaf){
+                if ((Test-Path -LiteralPath 'C:\BgInfo\BgInfoConfig.bgi' -PathType Leaf) -eq $true){
                     return $true
                 }
                 else {
@@ -224,7 +224,10 @@ Configuration CreateADForest
             }
             GetScript = 
             {
-                $fwRules = Get-NetFirewallRule -DisplayGroup 'Network Discovery' -
+				$fwRules = Get-NetFirewallRule -DisplayGroup 'Network Discovery' -ErrorAction SilentlyContinue
+				if ($null -eq $fwRules){
+					return @{ result = $false }
+				}
                 $result = $true
                 foreach ($rule in $fwRules){
                     if ($rule.Enabled -eq 'False'){
@@ -238,7 +241,10 @@ Configuration CreateADForest
             }
             TestScript = 
             {
-                $fwRules = Get-NetFirewallRule -DisplayGroup 'Network Discovery'
+				$fwRules = Get-NetFirewallRule -DisplayGroup 'Network Discovery' -ErrorAction SilentlyContinue
+				if ($null -eq $fwRules){
+					return @{ result = $false }
+				}
                 $result = $true
                 foreach ($rule in $fwRules){
                     if ($rule.Enabled -eq 'False'){
@@ -263,7 +269,7 @@ Configuration CreateADForest
             }
 			GetScript = 
             {
-				if (Test-Path -LiteralPath 'C:\LabTools\aadconnect.msi'){
+				if ((Test-Path -LiteralPath 'C:\LabTools\aadconnect.msi') -eq $true){
 					return @{
 						result = $true
 					}
@@ -276,7 +282,7 @@ Configuration CreateADForest
             }
             TestScript = 
             {
-				if (Test-Path -LiteralPath 'C:\LabTools\aadconnect.msi'){
+				if ((Test-Path -LiteralPath 'C:\LabTools\aadconnect.msi') -eq $true){
 					return $true
 				}
 				else {
@@ -381,6 +387,73 @@ Configuration CreateADForest
 			Ensure = 'Present'
 			DependsOn = @("[xADUser]RonHD","[xWaitForADDomain]DscForestWait")
 		}
+
+		Registry DisableSmartScreen
+        {
+            Key = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer'
+            ValueName = 'SmartScreenEnable'
+            ValueType = 'String'
+            ValueData = 'Off'
+            Ensure = 'Present'
+            DependsOn = '[xWaitForADDomain]DscForestWait'
+        }
+
+		 #region Modify IE Zone 3 Settings
+        # needed to download files via IE from GitHub and other sources
+        # can't just modify regkeys, need to export/import reg
+        # ref: https://support.microsoft.com/en-us/help/182569/internet-explorer-security-zones-registry-entries-for-advanced-users
+        Script DownloadRegkeyZone3Workaround
+        {
+            SetScript = 
+            {
+                if ((Test-Path -PathType Container -LiteralPath 'C:\LabTools\') -ne $true){
+					New-Item -Path 'C:\LabTools\' -ItemType Directory
+				}
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
+                Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ciberesponce/AatpAttackSimulationPlaybook/master/Downloads/Zone3.reg' -Outfile 'C:\LabTools\RegkeyZone3.reg'
+            }
+			GetScript = 
+            {
+				if (Test-Path 'C:\LabTools\RegkeyZone3.reg'){
+					return @{
+						result = $true
+					}
+				}
+				else {
+					return @{
+						result = $false
+					}
+				}
+            }
+            TestScript = 
+            {
+				if (Test-Path 'C:\LabTools\RegkeyZone3.reg'){
+					return $true
+				}
+				else {
+					return $false
+				}
+            }
+            DependsOn = '[Registry]DisableSmartScreen'
+        }
+        Script ExecuteZone3Override
+        {
+            SetScript = 
+            {
+                & 'reg import "C:\LabTools\RegkeyZone3.reg"'
+            }
+			GetScript = 
+            {
+				return $false
+            }
+            TestScript = 
+            {
+				return $true
+            }
+            DependsOn = '[Script]DownloadRegkeyZone3Workaround'
+        }
+        #endregion
 
 		xMpPreference DefenderSettings
 		{

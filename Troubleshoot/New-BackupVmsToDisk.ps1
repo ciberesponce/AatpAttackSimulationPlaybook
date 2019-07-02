@@ -8,41 +8,42 @@ param(
     # resourceGroupName
     [Parameter(Mandatory=$false)]
     [string]
-    $ResourceGroupName = 'andrew-test',
+    $ResourceGroupName = 'cxe-lab-test',
 
     # Destination RG; where snapshots/images will be placed
     [Parameter(Mandatory=$false)]
     [string]
-    $DestinationResourceGroupName = 'andrew-images',
+    $DestinationResourceGroupName = 'cxe-lab-images',
 
     # location
     [Parameter(Mandatory=$false)]
     [string]
-    $Location = 'East US',
+    $Location = 'East US2',
 
     # Force stop?
     [Parameter(Mandatory=$false)]
     [bool]
     $StopVm = $true
 )
-$vms = Get-AzVm -ResourceGroupName andrew-test
+$vms = Get-AzVm -ResourceGroupName $ResourceGroupName
 $date = Get-Date -Format yyyyMMdd
 
 # stop VMs
 if ($StopVm){
-    Write-Host "`t[ ] Stopping VMs to prepare them to be Snapshotted" -Foreground Cyan
+    Write-Host "`[ ] Stopping VMs to prepare them to be Snapshotted" -Foreground Yellow
     $vms | Stop-AzVm -Force
-    Write-Host "[+] VMs successfully stopped" -ForegroundColor Green
+    Write-Host "`t[+] VMs successfully stopped" -ForegroundColor Green
 }
 else {
-    Write-Host "[ ] Continuing to build snapshots without turning off VMs; use -ForceVmStop if want them stopped first" -Foreground Cyan
+    Write-Host "[ ] Continuing to build snapshots without turning off VMs; use -ForceVmStop if want them stopped first" -Foreground Yellow
 }
 
-Write-Host "[ ] Taking snapshots of $($vms.Count) VMs" -ForegroundColor Cyan
+Write-Host "[ ] Taking snapshots of $($vms.Count) VMs" -ForegroundColor Yellow
 foreach ($vm in $vms){
-    Write-Host "[ ] Taking snapshot of $($vm.Name)" -ForegroundColor Cyan
+    Write-Host "`t[$($vm.Name)] Taking snapshot" -ForegroundColor Cyan
     $snapshotName = "$($vm.Name)$date"
     $disk = Get-AzDisk -ResourceGroupName $ResourceGroupName -DiskName $vm.StorageProfile.OsDisk.Name
+
     $snapshotConfig = New-AzSnapshotConfig -SourceUri $disk.Id `
         -OsType $disk.OsType `
         -CreateOption Copy `
@@ -51,11 +52,11 @@ foreach ($vm in $vms){
         -EncryptionSettingsEnabled $false `
         -DiskSizeGB $disk.DiskSizeGB
     $snapshot = New-AzSnapshot -Snapshot $snapshotConfig -SnapshotName $snapshotName -ResourceGroupName $DestinationResourceGroupName
-    Write-Host "[+] $($vm.Name):`tSnapshot complete" -ForegroundColor Green
+    Write-Host "`t[$($vm.Name)]` Snapshot complete" -ForegroundColor Green
 
-    Write-Host "[ ] $($vm.Name):`tConverting to disk" -ForegroundColor Cyan
+    Write-Host "`t[$($vm.Name)]` Converting snapshot to disk" -ForegroundColor Cyan
     $osDisk = New-AzDisk -DiskName "${snapshotName}d" `
         -Disk (New-AzDiskConfig -Location $Location -CreateOption Copy -SourceResourceId $snapshot.Id) `
         -ResourceGroupName $DestinationResourceGroupName
-    Write-Host "[+] $($vm.Name):`tSuccessfully converted @ $($osDisk.Id)" -ForegroundColor Green
+    Write-Host "[+] [$($vm.Name)]`t Successfully converted @ $($osDisk.Id)" -ForegroundColor Green
 }
