@@ -198,7 +198,7 @@
           "vmSize": "Standard_D4_v3"
         },
         "osProfile": {
-          "computerName": "[variables('DcVmName')]",
+          "computerName": "d[variables('DcVmName')]",
           "adminUsername": "[parameters('builtinAdministratorAccount')]",
           "adminPassword": "[parameters('builtinAdministratorPassword')]"
         },
