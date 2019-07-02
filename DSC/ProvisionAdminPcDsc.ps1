@@ -293,8 +293,8 @@ Configuration SetupAdminPc
 
         Archive AipDataToPublicDocuments
         {
-            Path = 'C:\Users\Public\Documents'
-            Destination = 'C:\PII'
+            Path = 'C:\PII\data.zip'
+            Destination = 'C:\Users\Public\Documents'
             Ensure = 'Present'
             DependsOn = '[Script]DownloadAipData'
         }
