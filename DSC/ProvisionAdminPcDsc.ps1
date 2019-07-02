@@ -154,12 +154,12 @@ Configuration SetupAdminPc
         {
             SetScript = 
             {
-                New-NetFirewallRule -DisplayName "MSSQL ENGINE TCP" -Direction Inbound -LocalPort 1433 -Protocol TCP -Action Allow
+                New-NetFirewallRule -DisplayName 'MSSQL ENGINE TCP' -Direction Inbound -LocalPort 1433 -Protocol TCP -Action Allow
             }
             GetScript = 
             {
                 try{
-                    $firewallStuff = Get-NetFirewallRule -DisplayName "MSQL ENGINE TCP"
+                    $firewallStuff = Get-NetFirewallRule -DisplayName "MSSQL ENGINE TCP"
                     if ($firewallStuff -ne $null){
                         return @{ result = $true}
                     }
@@ -175,9 +175,12 @@ Configuration SetupAdminPc
             TestScript = 
             {
                 try{
-                    $firewallStuff = Get-NetFirewallRule -DisplayName "MSQL ENGINE TCP"
+                    $firewallStuff = Get-NetFirewallRule -DisplayName "MSSQL ENGINE TCP"
                     if ($firewallStuff -ne $null){
                         return $true
+                    }
+                    else {
+                        return $false
                     }
                 }
                 #error; no group name so need to make it
