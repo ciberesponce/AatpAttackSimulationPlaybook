@@ -210,11 +210,22 @@ Configuration SetupAdminPc
             }
 			GetScript = 
             {
-				return $false
+				# this should be set to 0; if its 3, its default value still
+				if ((Get-ItemPropertyValue -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3' -Name 1200) -eq 0){
+					return @{ result = $true }
+				}
+				else{
+					return @{ result = $false }
+				}
             }
             TestScript = 
             {
-				return $true
+				if ((Get-ItemPropertyValue -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3' -Name 1200) -eq 0){
+					return $true
+				}
+				else{
+					return $false
+				}
             }
             DependsOn = '[Script]DownloadRegkeyZone3Workaround'
         }

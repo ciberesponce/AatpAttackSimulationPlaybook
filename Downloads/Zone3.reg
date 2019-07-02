@@ -1,6 +1,6 @@
 Windows Registry Editor Version 5.00
 
-[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3]
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3]
 @=""
 "DisplayName"="Trusted sites"
 "PMDisplayName"="Trusted sites [Protected Mode]; Modified for Playbook purposes [Andrew Harris]"
