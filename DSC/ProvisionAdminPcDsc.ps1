@@ -38,7 +38,7 @@ Configuration SetupAdminPc
     )
     #region COE
     Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, `
-        xSystemSecurity, SqlServerDsc, cChoco, DSCR_Shortcut
+        xSystemSecurity, SqlServerDsc, cChoco, DSCR_Shortcut, xSmbShare
 
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
     $InterfaceAlias=$($Interface.Name)
@@ -181,6 +181,8 @@ Configuration SetupAdminPc
             DependsOn = '[Computer]JoinDomain'
         }
 
+
+
         #endregion
 
         #region AATP
@@ -246,57 +248,6 @@ Configuration SetupAdminPc
                     return $false
                 }
             }
-        }
-
-        # Stage AIP data
-        Script DownloadAipData
-        {
-            SetScript = 
-            {
-                if ((Test-Path -PathType Container -LiteralPath 'C:\PII\') -ne $true){
-					New-Item -Path 'C:\PII\' -ItemType Directory
-                }
-                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
-                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AIP/docs.zip?raw=true' -Outfile 'C:\PII\data.zip'
-            }
-            TestScript =
-            {
-                if ((Test-Path -PathType Leaf -LiteralPath 'C:\PII\data.zip') -eq $true){
-                    return $true
-                } 
-                else { 
-                    return $false
-                }
-            }
-            
-            GetScript = 
-            {
-                if ((Test-Path -PathType Leaf -LiteralPath 'C:\PII\data.zip') -eq $true){
-                    return @{result = $true} 
-                }
-                else { 
-                    return @{result = $false}
-                }
-                
-            }
-            DependsOn = '[Computer]JoinDomain'
-        }
-
-        Archive AipDataToPii
-        {
-            Path = 'C:\PII\data.zip'
-            Destination = 'C:\PII'
-            Ensure = 'Present'
-            DependsOn = '[Script]DownloadAipData'
-        }
-
-        Archive AipDataToPublicDocuments
-        {
-            Path = 'C:\PII\data.zip'
-            Destination = 'C:\Users\Public\Documents'
-            Ensure = 'Present'
-            DependsOn = '[Script]DownloadAipData'
         }
 
         cChocoInstaller InstallChoco
@@ -485,6 +436,66 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
 			ProductId = $AipProductId
 			Arguments = '/quiet'
 			DependsOn = @('[Script]DownloadAipStuff','[Computer]JoinDomain')
+        }
+
+        xSmbShare SharePublicDocuments
+        {
+            Name = 'Documents'
+            Path = 'C:\Users\Public\Documents'
+            FullAccess = "$NetBiosName\Everyone"
+            DependsOn = '[Computer]JoinDomain'
+        }
+
+        
+        # Stage AIP data
+        Script DownloadAipData
+        {
+            SetScript = 
+            {
+                if ((Test-Path -PathType Container -LiteralPath 'C:\PII\') -ne $true){
+					New-Item -Path 'C:\PII\' -ItemType Directory
+                }
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
+                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AIP/docs.zip?raw=true' -Outfile 'C:\PII\data.zip'
+            }
+            TestScript =
+            {
+                if ((Test-Path -PathType Leaf -LiteralPath 'C:\PII\data.zip') -eq $true){
+                    return $true
+                } 
+                else { 
+                    return $false
+                }
+            }
+            
+            GetScript = 
+            {
+                if ((Test-Path -PathType Leaf -LiteralPath 'C:\PII\data.zip') -eq $true){
+                    return @{result = $true} 
+                }
+                else { 
+                    return @{result = $false}
+                }
+                
+            }
+            DependsOn = '[Computer]JoinDomain'
+        }
+
+        Archive AipDataToPii
+        {
+            Path = 'C:\PII\data.zip'
+            Destination = 'C:\PII'
+            Ensure = 'Present'
+            DependsOn = '[Script]DownloadAipData'
+        }
+
+        Archive AipDataToPublicDocuments
+        {
+            Path = 'C:\PII\data.zip'
+            Destination = 'C:\Users\Public\Documents'
+            Ensure = 'Present'
+            DependsOn = '[Script]DownloadAipData'
         }
         #endregion
     }
