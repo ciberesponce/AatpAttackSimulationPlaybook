@@ -1,3 +1,7 @@
+# ADMIN PC has to have SQL Express installed.  Hard to stage SQL as its 700+ MB and we
+# can only stage files up to 100MB on GitHub
+
+
 Configuration SetupAdminPc
 {
     param(
@@ -47,7 +51,7 @@ Configuration SetupAdminPc
     #endregion
     #endregion
 
-    #region AIP stuffq
+    #region AIP stuff
     $AipProductId = "48A06F18-951C-42CA-86F1-3046AF06D15E"
     [PSCredential]$AipDomainAccount = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AipServiceCred.UserName)", $AipServiceCred.Password)
 
@@ -260,7 +264,7 @@ Configuration SetupAdminPc
                 }
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
-                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzInfoProtection_MSI_for_central_deployment.msi?raw=true' -Outfile 'C:\PII\data.zip'
+                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AIP/docs.zip?raw=true' -Outfile 'C:\PII\data.zip'
             }
             TestScript =
             {
@@ -283,6 +287,22 @@ Configuration SetupAdminPc
                 
             }
             DependsOn = '[Computer]JoinDomain'
+        }
+
+        Archive AipDataToPii
+        {
+            Path = 'C:\PII\data.zip'
+            Destination = 'C:\PII'
+            Ensure = 'Present'
+            DependsOn = '[Script]DownloadAipData'
+        }
+
+        Archive AipDataToPublicDocuments
+        {
+            Path = 'C:\Users\Public\Documents'
+            Destination = 'C:\PII'
+            Ensure = 'Present'
+            DependsOn = '[Script]DownloadAipData'
         }
 
         cChocoInstaller InstallChoco
