@@ -47,7 +47,7 @@ Configuration SetupAdminPc
     #endregion
     #endregion
 
-    #region AIP stuff
+    #region AIP stuffq
     $AipProductId = "48A06F18-951C-42CA-86F1-3046AF06D15E"
     [PSCredential]$AipDomainAccount = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AipServiceCred.UserName)", $AipServiceCred.Password)
 
