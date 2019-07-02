@@ -158,33 +158,23 @@ Configuration SetupAdminPc
             }
             GetScript = 
             {
-                try{
-                    $firewallStuff = Get-NetFirewallRule -DisplayName "MSSQL ENGINE TCP"
-                    if ($firewallStuff -ne $null){
-                        return @{ result = $true}
-                    }
-                    else {
-                        return @{ result = $false }
-                    }
+                $firewallStuff = Get-NetFirewallRule -DisplayName "MSSQL ENGINE TCP" -ErrorAction SilentlyContinue
+                # if null, no rule exists with the Display Name
+                if ($firewallStuff -ne $null){
+                    return @{ result = $true}
                 }
-                #error; no group name so need to make it
-                catch{
+                else {
                     return @{ result = $false }
                 }
             }
             TestScript = 
             {
-                try{
-                    $firewallStuff = Get-NetFirewallRule -DisplayName "MSSQL ENGINE TCP"
-                    if ($firewallStuff -ne $null){
-                        return $true
-                    }
-                    else {
-                        return $false
-                    }
+                $firewallStuff = Get-NetFirewallRule -DisplayName "MSSQL ENGINE TCP" -ErrorAction SilentlyContinue
+                # if null, no rule exists with the Display Name
+                if ($firewallStuff -ne $null){
+                    return $true
                 }
-                #error; no group name so need to make it
-                catch{
+                else {
                     return $false
                 }
             }
