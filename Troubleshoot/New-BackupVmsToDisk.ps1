@@ -23,7 +23,7 @@ param(
     # Force stop?
     [Parameter(Mandatory=$false)]
     [bool]
-    $StopVm = $true
+    $StopVm = $false
 )
 $vms = Get-AzVm -ResourceGroupName $ResourceGroupName
 $date = Get-Date -Format yyyyMMdd
