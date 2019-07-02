@@ -19,7 +19,7 @@ Configuration SetupAipScannerCore
 
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
-        [PsCredential]$AipScannerCred
+        [PsCredential]$LisaVCred
 
     )
     Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity, DSCR_Shortcut, cChoco
@@ -71,7 +71,7 @@ Configuration SetupAipScannerCore
         Group AddAdmins
         {
             GroupName = 'Administrators'
-            MembersToInclude = "$NetBiosName\$($AipScannerCred.UserName)"
+            MembersToInclude = "$NetBiosName\$($LisaVCred.UserName)"
             Ensure = 'Present'
             DependsOn = '[Computer]JoinDomain'
         }
@@ -315,6 +315,48 @@ Configuration SetupAipScannerCore
             DependsOn = '[Script]DownloadRegkeyZone3Workaround'
         }
         #endregion
+
+        Script DownloadMcasData
+        {
+            SetScript = 
+            {
+                if ((Test-Path -PathType Container -LiteralPath 'C:\LabData\') -ne $true){
+					New-Item -Path 'C:\LabData\' -ItemType Directory
+                }
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
+                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/MCAS/Demo%20files.zip?raw=true' -Outfile 'C:\LabData\McasData.zip'
+            }
+            TestScript =
+            {
+                if ((Test-Path -PathType Leaf -LiteralPath 'C:\LabData\McasData.zip') -eq $true){
+                    return $true
+                } 
+                else { 
+                    return $false
+                }
+            }
+            
+            GetScript = 
+            {
+                if ((Test-Path -PathType Leaf -LiteralPath 'C:\LabData\McasData.zip') -eq $true){
+                    return @{result = $true} 
+                }
+                else { 
+                    return @{result = $false}
+                }
+                
+            }
+            DependsOn = @('[Computer]JoinDomain','[Script]ExecuteZone3Override')
+        }
+
+        Archive McasDataToP
+        {
+            Path = 'C:\LabData\McasData.zip'
+            Destination = 'C:\PII'
+            Ensure = 'Present'
+			DependsOn = @('[Script]DownloadMcasData','[Computer]JoinDomain')
+        }
 
         Script DownloadAipMsi
 		{

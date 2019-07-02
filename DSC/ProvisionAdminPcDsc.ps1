@@ -549,7 +549,7 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
                 }
                 
             }
-            DependsOn = '[Computer]JoinDomain'
+            DependsOn = @('[Computer]JoinDomain','[Script]ExecuteZone3Override')
         }
 
         Archive AipDataToPii

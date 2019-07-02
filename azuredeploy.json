@@ -581,9 +581,9 @@
                   "UserName": "[parameters('builtinAdministratorAccount')]",
                   "Password": "[parameters('builtinAdministratorPassword')]"
                 },
-                "AipScannerCred": {
-                  "UserName": "[variables('AipDomainServiceAccount')]",
-                  "Password": "[variables('AipDomainServiceAccountPassword')]"
+                "LisaVCred": {
+                  "UserName": "LisaV",
+                  "Password": "[parameters('LisaVPassword')]"
                 }
               }
             }
