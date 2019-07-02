@@ -178,6 +178,7 @@ Configuration SetupAdminPc
                     return $false
                 }
             }
+            DependsOn = '[Computer]JoinDomain'
         }
 
         #endregion
@@ -261,21 +262,21 @@ Configuration SetupAdminPc
             }
             TestScript =
             {
-                if (Test-Path -PathType Leaf -LiteralPath 'C:\PII\data.zip'){
-                    return @{ result = $true }
+                if ((Test-Path -PathType Leaf -LiteralPath 'C:\PII\data.zip') -eq $true){
+                    return $true
                 } 
                 else { 
-                    return @{ result = $false }
+                    return $false
                 }
             }
             
             GetScript = 
             {
-                if (Test-Path -PathType Leaf -LiteralPath 'C:\PII\data.zip'){
-                    return = $true 
+                if ((Test-Path -PathType Leaf -LiteralPath 'C:\PII\data.zip') -eq $true){
+                    return @{result = $true} 
                 }
                 else { 
-                    return $false 
+                    return @{result = $false}
                 }
                 
             }
