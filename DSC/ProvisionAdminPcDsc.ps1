@@ -250,6 +250,41 @@ Configuration SetupAdminPc
             }
         }
 
+        # Stage AIP data
+        Script DownloadAipData
+        {
+            SetScript = 
+            {
+                if ((Test-Path -PathType Container -LiteralPath 'C:\PII\') -ne $true){
+					New-Item -Path 'C:\PII\' -ItemType Directory
+                }
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
+                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzInfoProtection_MSI_for_central_deployment.msi?raw=true' -Outfile 'C:\PII\data.zip'
+            }
+            TestScript =
+            {
+                if (Test-Path -PathType Leaf -LiteralPath 'C:\PII\data.zip'){
+                    return @{ result = $true }
+                } 
+                else { 
+                    return @{ result = $false }
+                }
+            }
+            
+            GetScript = 
+            {
+                if (Test-Path -PathType Leaf -LiteralPath 'C:\PII\data.zip'){
+                    return = $true 
+                }
+                else { 
+                    return $false 
+                }
+                
+            }
+            DependsOn = '[Computer]JoinDomain'
+        }
+
         cChocoInstaller InstallChoco
         {
             InstallDir = "C:\choco"
