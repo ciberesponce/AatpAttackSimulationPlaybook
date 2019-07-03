@@ -296,13 +296,13 @@ Configuration SetupAipScannerCore
 					return $false
 				}
             }
-            DependsOn = '[Registry]DisableSmartScreen'
+            DependsOn = @('[Registry]DisableSmartScreen', '[Computer]JoinDomain')
         }
         Script ExecuteZone3Override
         {
             SetScript = 
             {
-                reg import "C:\LabTools\RegkeyZone3.reg"
+                reg import "C:\LabTools\RegkeyZone3.reg" | Out-Null
             }
 			GetScript = 
             {
@@ -364,7 +364,7 @@ Configuration SetupAipScannerCore
         Archive McasDataToP
         {
             Path = 'C:\LabData\McasData.zip'
-            Destination = 'C:\PII'
+            Destination = 'C:\Users\LisaV\Desktop\'
             Ensure = 'Present'
 			DependsOn = @('[Script]DownloadMcasData','[Computer]JoinDomain')
         }

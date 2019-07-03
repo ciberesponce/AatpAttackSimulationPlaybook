@@ -94,10 +94,10 @@
     "AdminPcVmName": "AdminPc",
     "AdminPcDscUrl": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionAdminPcDsc.zip?raw=true",
     "AdminPcDscName": "AdminPcDsc",
-    "AipVmName": "Client01",
+    "McasVmName": "Client01",
     "AipDomainServiceAccount": "AipScanner",
     "AipDomainServiceAccountPassword": "Somepass1",
-    "Client01DscName": "AipDsc",
+    "Client01DscName": "SetupMcasClient",
     "Client01DscUrl": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionClient01.zip?raw=true"
   },
   "resources": [
@@ -506,7 +506,7 @@
     {
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2018-10-01",
-      "name": "[variables('AipVmName')]",
+      "name": "[variables('McasVmName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 3))]",
@@ -517,7 +517,7 @@
           "vmSize": "Standard_D2_v3"
         },
         "osProfile": {
-          "computerName": "[variables('AipVmName')]",
+          "computerName": "[variables('McasVmName')]",
           "adminUsername": "[parameters('builtinAdministratorAccount')]",
           "adminPassword": "[parameters('builtinAdministratorPassword')]"
         },
@@ -555,7 +555,7 @@
           "name": "[variables('Client01DscName')]",
           "location": "[resourceGroup().location]",
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', variables('AipVmName'))]",
+            "[resourceId('Microsoft.Compute/virtualMachines', variables('McasVmName'))]",
             "[resourceId('Microsoft.Resources/deployments', variables('DeploymentVnetDnsName'))]"
           ],
           "properties": {
