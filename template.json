@@ -12,8 +12,6 @@
     "GenericNicName": "Nic",
     "GenericPublicIpAddressName": "PublicIp",
     "GenericDiskName": "[concat(uniqueString(resourceGroup().id), 'd')]",
-    "workspaceName": "[concat('AzureSecurityCenter', uniqueString(subscription().id))]",
-    "securitySettings": "On",
     "DcVmName": "ContosoDc",
     "DcVmType": "Windows",
     "DcPrivateIp": "10.0.24.4",
@@ -30,39 +28,31 @@
     "AipVmType": "Windows",
     "AipPrivateIp": "10.0.24.12",
     "AipVhdUri": "[concat('https://caiseclabdev.blob.core.windows.net/assets/Client01', variables('StagedDate'), 'd.vhd')]",
-    "AscLinuxVhdUri": "",
-    "AscLinuxPrivateIp": "10.0.24.50",
-    "AscLinuxVmName": "Linux-Ubuntu",
-    "AscLinuxOsType": "Linux",
     "RepeatConfigurations": {
       "type": "array",
       "VmName": [
         "[variables('DcVmName')]",
         "[variables('VictimVmName')]",
         "[variables('AdminPcVmName')]",
-        "[variables('AipVmName')]",
-        "[variables('AscLinuxVmName')]"
+        "[variables('AipVmName')]"
       ],
       "DiskUris": [
         "[variables('DcVhdUri')]",
         "[variables('VictimVhdUri')]",
         "[variables('AdminVhdUri')]",
-        "[variables('AipVhdUri')]",
-        "[variables('AscLinuxVhdUri')]"
+        "[variables('AipVhdUri')]"
       ],
       "PrivateIp": [
         "[variables('DcPrivateIp')]",
         "[variables('VictimPrivateIp')]",
         "[variables('AdminPrivateIp')]",
-        "[variables('AipPrivateIp')]",
-        "[variables('AscLinuxPrivateIp')]"
+        "[variables('AipPrivateIp')]"
       ],
       "OsType": [
         "[variables('DcVmType')]",
         "[variables('VictimVmType')]",
         "[variables('AdminVmType')]",
-        "[variables('AipVmType')]",
-        "[variables('AscLinuxOsType')]"
+        "[variables('AipVmType')]"
       ]
     }
   },
@@ -268,149 +258,6 @@
           }
         }
       }
-    },
-    {
-      "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2018-10-01",
-      "name": "[concat(variables('RepeatConfigurations').VmName[4])]",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 4))]",
-        "[resourceId('Microsoft.Compute/disks', concat(variables('GenericDiskName'), 4))]"
-      ],
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "Standard_B4ms"
-        },
-        "storageProfile": {
-          "osDisk": {
-            "osType": "[variables('RepeatConfigurations').OsType[4]]",
-            "createOption": "Attach",
-            "managedDisk": {
-              "id": "[resourceId('Microsoft.Compute/disks', concat(variables('GenericDiskName'), 4))]"
-            }
-          }
-        },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), 4))]"
-            }
-          ]
-        },
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": false
-          }
-        }
-      }
-    },
-    {
-      "apiVersion": "2015-11-01-preview",
-      "location": "[resourceGroup().location]",
-      "name": "[variables('workspaceName')]",
-      "type": "Microsoft.OperationalInsights/workspaces",
-      "properties": {
-        "sku": {
-          "name": "PerGB2018",
-          "retentionInDays": 7
-        }
-      },
-      "resources": [
-        {
-          "apiVersion": "2015-11-01-preview",
-          "type": "dataSources",
-          "name": "System",
-          "dependsOn": [
-            "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
-          ],
-          "kind": "WindowsEvent",
-          "properties": {
-            "eventLogName": "System",
-            "eventTypes": [
-              {
-                "eventType": "Error"
-              },
-              {
-                "eventType": "Warning"
-              }
-            ]
-          }
-        },
-        {
-          "apiVersion": "2015-11-01-preview",
-          "type": "dataSources",
-          "name": "Application",
-          "dependsOn": [
-            "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
-          ],
-          "kind": "WindowsEvent",
-          "properties": {
-            "eventLogName": "Application",
-            "eventTypes": [
-              {
-                "eventType": "Error"
-              },
-              {
-                "eventType": "Warning"
-              }
-            ]
-          }
-        },
-        {
-          "apiVersion": "2015-11-01-preview",
-          "type": "datasources",
-          "name": "Syslog",
-          "dependsOn": [
-            "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
-          ],
-          "kind": "LinuxSyslog",
-          "properties": {
-            "syslogName": "syslog",
-            "syslogSeverities": [
-              {
-                "severity": "emerg"
-              },
-              {
-                "severity": "alert"
-              },
-              {
-                "severity": "crit"
-              },
-              {
-                "severity": "err"
-              },
-              {
-                "severity": "warning"
-              }
-            ]
-          }
-        },
-        {
-          "apiVersion": "2015-11-01-preview",
-          "type": "dataSources",
-          "name": "SyslogCollection",
-          "dependsOn": [
-            "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
-          ],
-          "kind": "LinuxSyslogCollection",
-          "properties": {
-            "state": "Enabled"
-          }
-        }
-      ]
-    },
-    {
-      "type": "Microsoft.Security/workspaceSettings",
-      "apiVersion": "2017-08-01-preview",
-      "name": "default",
-      "properties": {
-        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]",
-        "scope": "[subscription().id]"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
-      ]
     }
   ]
 }
