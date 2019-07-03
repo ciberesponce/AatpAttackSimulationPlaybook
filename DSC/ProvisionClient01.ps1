@@ -302,7 +302,7 @@ Configuration SetupAipScannerCore
         {
             SetScript = 
             {
-                & 'reg import "C:\LabTools\RegkeyZone3.reg"'
+                reg import "C:\LabTools\RegkeyZone3.reg"
             }
 			GetScript = 
             {
