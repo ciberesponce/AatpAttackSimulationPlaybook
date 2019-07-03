@@ -17,7 +17,7 @@ param(
     # StorageAccount Key
     [Parameter(Mandatory=$false)]
     [string]
-    $StorageAccessKey = 'SjO7nhHhNQE/AEqc5cbs4K/acK7Diosha77m5k7V5wWTR5xLNjvQAUKhwKK6drMQRsdAsus2gku3QALAwfZVgg=='
+    $StorageAccessKey = 'slM8i/Pgyqz63cfVlnJlV8Bq2ZoJe/mvbtBiNB4eFT2sv8P9o2L7s87tLVxjVcjicqeSoN+iPFl5BuzcIxMdPQ=='
 )
 
 Write-Host "[!] Moving to proper Storage Account/containers" -ForegroundColor Yellow
