@@ -35,6 +35,6 @@ foreach ($disk in $disks){
     Start-AzStorageBlobCopy -AbsoluteUri $sas.AccessSAS `
         -DestContainer $AssetsContainer `
         -DestContext $destStorageContext `
-        -DestBlob "$name.vhd"
+        -DestBlob "$name.vhd" | Out-Null
     Write-Host "`t[+] Successfully copied $name disk to Storage Account..." -ForegroundColor Green
 }

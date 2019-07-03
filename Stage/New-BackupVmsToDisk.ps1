@@ -8,7 +8,7 @@ param(
     # resourceGroupName
     [Parameter(Mandatory=$false)]
     [string]
-    $ResourceGroupName = 'cxe-lab-test',
+    $ResourceGroupName = 'cxe-lab-test2',
 
     # Destination RG; where snapshots/images will be placed
     [Parameter(Mandatory=$false)]
