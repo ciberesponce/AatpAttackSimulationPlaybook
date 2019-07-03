@@ -415,7 +415,7 @@ Configuration CreateADForest
             }
 			GetScript = 
             {
-				if (Test-Path 'C:\LabTools\RegkeyZone3.reg'){
+				if (Test-Path -Path 'C:\LabTools\RegkeyZone3.reg' -PathType Leaf){
 					return @{
 						result = $true
 					}
@@ -428,7 +428,7 @@ Configuration CreateADForest
             }
             TestScript = 
             {
-				if (Test-Path 'C:\LabTools\RegkeyZone3.reg'){
+				if (Test-Path -Path 'C:\LabTools\RegkeyZone3.reg' -PathType Leaf){
 					return $true
 				}
 				else {
