@@ -538,7 +538,7 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
                 }
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
-                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AIP/docs.zip?raw=true' -Outfile 'C:\PII\data.zip'
+                Invoke-WebRequest -Uri 'https://github.com/InfoProtectionTeam/Files/blob/master/Scripts/AIPScanner/docs.zip?raw=true' -Outfile 'C:\PII\data.zip'
             }
             TestScript =
             {
@@ -563,12 +563,47 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
             DependsOn = @('[Computer]JoinDomain','[Script]ExecuteZone3Override')
         }
 
+        # Stage AIP Scripts
+        Script DownloadAipScripts
+        {
+            SetScript = 
+            {
+                if ((Test-Path -PathType Container -LiteralPath 'C:\Scripts\') -ne $true){
+					New-Item -Path 'C:\Scripts\' -ItemType Directory
+                }
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
+                Invoke-WebRequest -Uri 'https://github.com/InfoProtectionTeam/Files/blob/master/Scripts/Scripts.zip?raw=true' -Outfile 'C:\Scripts\Scripts.zip'
+            }
+            TestScript =
+            {
+                if ((Test-Path -PathType Leaf -LiteralPath 'C:\Scripts\Scripts.zip') -eq $true){
+                    return $true
+                } 
+                else { 
+                    return $false
+                }
+            }
+            
+            GetScript = 
+            {
+                if ((Test-Path -PathType Leaf -LiteralPath 'C:\Scripts\Scripts.zip') -eq $true){
+                    return @{result = $true} 
+                }
+                else { 
+                    return @{result = $false}
+                }
+                
+            }
+            DependsOn = @('[Computer]JoinDomain','[Script]ExecuteZone3Override')
+        }
+
         Archive AipDataToPii
         {
             Path = 'C:\PII\data.zip'
             Destination = 'C:\PII'
             Ensure = 'Present'
-			DependsOn = @('[Script]DownloadAipData','[Computer]JoinDomain')
+	    DependsOn = @('[Script]DownloadAipData','[Computer]JoinDomain')
         }
 
         Archive AipDataToPublicDocuments
@@ -577,6 +612,14 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
             Destination = 'C:\Users\Public\Documents'
             Ensure = 'Present'
             DependsOn = '[Script]DownloadAipData'
+        }
+
+        Archive AipScriptsToScripts
+        {
+            Path = 'C:\Scripts\Scripts.zip'
+            Destination = 'C:\Scripts'
+            Ensure = 'Present'
+	    DependsOn = @('[Script]DownloadAipScripts','[Computer]JoinDomain')
         }
         #endregion
     }
