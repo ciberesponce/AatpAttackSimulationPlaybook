@@ -19,7 +19,7 @@
     "VictimVmName": "VictimPc",
     "VictimVmType": "Windows",
     "VictimPrivateIp": "10.0.24.10",
-    "VictimVhdUri": "[concat('https://caiseclabimages.blob.core.windows.net/assets//VictimPc', variables('StagedDate'), 'd.vhd')]",
+    "VictimVhdUri": "[concat('https://caiseclabimages.blob.core.windows.net/assets/VictimPc', variables('StagedDate'), 'd.vhd')]",
     "AdminPcVmName": "AdminPc",
     "AdminVmType": "Windows",
     "AdminPrivateIp": "10.0.24.11",
