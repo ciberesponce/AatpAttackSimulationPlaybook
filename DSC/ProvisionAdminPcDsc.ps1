@@ -619,7 +619,7 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
             Path = 'C:\Scripts\Scripts.zip'
             Destination = 'C:\Scripts'
             Ensure = 'Present'
-	    DependsOn = @('[Script]DownloadAipScripts','[Computer]JoinDomain')
+	        DependsOn = @('[Script]DownloadAipScripts','[Computer]JoinDomain')
         }
         #endregion
     }
