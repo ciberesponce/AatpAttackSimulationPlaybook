@@ -23,7 +23,7 @@ Configuration SetupAipScannerCore
 
     )
     Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity, cChoco
-    
+
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
     $InterfaceAlias=$($Interface.Name)
 
@@ -166,7 +166,7 @@ Configuration SetupAipScannerCore
             TestScript = 
             {
                 if (Test-Path -LiteralPath 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\BgInfo.lnk'){
-					return result = $true
+					return $true
 				}
 				else {
 					return $false

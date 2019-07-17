@@ -234,7 +234,7 @@ Configuration CreateADForest
             TestScript = 
             {
                 if (Test-Path -LiteralPath 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\BgInfo.lnk'){
-					return result = $true
+					return $true
 				}
 				else {
 					return $false
