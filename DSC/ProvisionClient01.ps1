@@ -22,7 +22,8 @@ Configuration SetupAipScannerCore
         [PsCredential]$LisaVCred
 
     )
-    Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity, DSCR_Shortcut, cChoco
+    Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity, cChoco
+    
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
     $InterfaceAlias=$($Interface.Name)
 
@@ -138,12 +139,39 @@ Configuration SetupAipScannerCore
             DependsOn = '[cChocoPackageInstaller]InstallSysInternals'
         }
         
-        cShortcut BgInfo
+        Script MakeShortcutForBgInfo
 		{
-			Path = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\BgInfo.lnk'
-			Target = 'bginfo64.exe'
-			Arguments = 'c:\BgInfo\BgInfoConfig.bgi /accepteula /timer:0'
-            Description = 'Ensure BgInfo starts at every logon, in context of the user signing in (only way for stable use!)'
+			SetScript = 
+			{
+				$s=(New-Object -COM WScript.Shell).CreateShortcut('C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\BgInfo.lnk')
+				$s.TargetPath='bginfo64.exe'
+				$s.Arguments = 'c:\BgInfo\BgInfoConfig.bgi /accepteula /timer:0'
+				$s.Description = 'Ensure BgInfo starts at every logon, in context of the user signing in (only way for stable use!)'
+				$s.Save()
+			}
+			GetScript = 
+            {
+                if (Test-Path -LiteralPath 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\BgInfo.lnk'){
+					return @{
+						result = $true
+					}
+				}
+				else {
+					return @{
+						result = $false
+					}
+				}
+			}
+            
+            TestScript = 
+            {
+                if (Test-Path -LiteralPath 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\BgInfo.lnk'){
+					return result = $true
+				}
+				else {
+					return $false
+				}
+            }
             DependsOn = @('[Script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
 		}
 
@@ -152,7 +180,7 @@ Configuration SetupAipScannerCore
         {
             SetScript = 
             {
-                Get-NetFirewallRule -DisplayGroup 'Network Discovery' | Set-NetFirewallRule -Profile 'Domain, Private, Public' -Enabled true
+                Get-NetFirewallRule -DisplayGroup 'Network Discovery' | Set-NetFirewallRule -Profile 'Any' -Enabled true
             }
             GetScript = 
             {
@@ -195,7 +223,7 @@ Configuration SetupAipScannerCore
         {
             SetScript = 
             {
-                Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing' | Set-NetFirewallRule -Profile 'Domain, Private' -Enabled true
+                Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing' | Set-NetFirewallRule -Profile 'Any' -Enabled true
             }
             GetScript = 
             {
