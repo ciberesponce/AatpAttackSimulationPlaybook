@@ -364,7 +364,7 @@ Configuration SetupAipScannerCore
         Archive McasDataToP
         {
             Path = 'C:\LabData\McasData.zip'
-            Destination = 'C:\Users\LisaV\Desktop\'
+            Destination = 'C:\Users\LisaV.CONTOSO\Desktop\'
             Ensure = 'Present'
 			DependsOn = @('[Script]DownloadMcasData','[Computer]JoinDomain')
         }

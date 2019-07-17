@@ -56,6 +56,7 @@ Configuration SetupAdminPc
 
     #region AIP stuff
     $AipProductId = "48A06F18-951C-42CA-86F1-3046AF06D15E"
+    #TODO: Not used yet as installing SQLExpress is one thing we need to do manually until we figure this out...
     [PSCredential]$AipDomainAccount = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AipServiceCred.UserName)", $AipServiceCred.Password)
 
     #end region
