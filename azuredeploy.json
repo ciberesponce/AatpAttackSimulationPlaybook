@@ -60,9 +60,9 @@
     },
     "LisaVPassword": {
       "type": "securestring",
-      "defaultValue": "HightImpactUser1!",
+      "defaultValue": "HighImpactUser1!",
       "metadata": {
-        "description": "LisaV's password. By default it is 'HightImpactUser1!'  LisaV has access to High Impact data and will be used in future labs."
+        "description": "LisaV's password. By default it is 'HighImpactUser1!'  LisaV has access to High Impact data and will be used in future labs."
       }
     }
   },

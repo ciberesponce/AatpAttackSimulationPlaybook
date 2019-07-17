@@ -326,6 +326,7 @@ Configuration SetupAipScannerCore
             }
             DependsOn = @('[Registry]DisableSmartScreen', '[Computer]JoinDomain')
         }
+
         Script ExecuteZone3Override
         {
             SetScript = 
@@ -335,7 +336,7 @@ Configuration SetupAipScannerCore
 			GetScript = 
             {
 				# this should be set to 0; if its 3, its default value still
-				if ((Get-ItemPropertyValue -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3' -Name 1200) -eq 0){
+				if ((Get-ItemPropertyValue -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3' -Name 'DisplayName') -eq 'Internet Zone - Modified (@ciberesponce)'){
 					return @{ result = $true }
 				}
 				else{
@@ -344,7 +345,7 @@ Configuration SetupAipScannerCore
             }
             TestScript = 
             {
-				if ((Get-ItemPropertyValue -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3' -Name 1200) -eq 0){
+				if ((Get-ItemPropertyValue -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3' -Name 'DisplayName') -eq 'Internet Zone - Modified (@ciberesponce)'){
 					return $true
 				}
 				else{
@@ -365,6 +366,15 @@ Configuration SetupAipScannerCore
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
                 Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/MCAS/Demo%20files.zip?raw=true' -Outfile 'C:\LabData\McasData.zip'
+            }      
+            GetScript = 
+            {
+                if ((Test-Path -PathType Leaf -LiteralPath 'C:\LabData\McasData.zip') -eq $true){
+                    return @{result = $true} 
+                }
+                else { 
+                    return @{result = $false}
+                }
             }
             TestScript =
             {
@@ -375,24 +385,14 @@ Configuration SetupAipScannerCore
                     return $false
                 }
             }
-            
-            GetScript = 
-            {
-                if ((Test-Path -PathType Leaf -LiteralPath 'C:\LabData\McasData.zip') -eq $true){
-                    return @{result = $true} 
-                }
-                else { 
-                    return @{result = $false}
-                }
-                
-            }
             DependsOn = @('[Computer]JoinDomain','[Script]ExecuteZone3Override')
         }
 
+        # Place on all Users Desktops; can't put in LisaV's else her profile changes since she never logged in yet...
         Archive McasDataToP
         {
             Path = 'C:\LabData\McasData.zip'
-            Destination = 'C:\Users\LisaV.CONTOSO\Desktop\'
+            Destination = 'C:\Users\Public\Desktop'
             Ensure = 'Present'
 			DependsOn = @('[Script]DownloadMcasData','[Computer]JoinDomain')
         }

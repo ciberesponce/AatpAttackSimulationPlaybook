@@ -203,6 +203,7 @@ Configuration SetupAdminPc
             }
             DependsOn = '[Registry]DisableSmartScreen'
         }
+
         Script ExecuteZone3Override
         {
             SetScript = 
@@ -212,7 +213,7 @@ Configuration SetupAdminPc
 			GetScript = 
             {
 				# this should be set to 0; if its 3, its default value still
-				if ((Get-ItemPropertyValue -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3' -Name 1200) -eq 0){
+				if ((Get-ItemPropertyValue -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3' -Name 'DisplayName') -eq 'Internet Zone - Modified (@ciberesponce)'){
 					return @{ result = $true }
 				}
 				else{
@@ -221,7 +222,7 @@ Configuration SetupAdminPc
             }
             TestScript = 
             {
-				if ((Get-ItemPropertyValue -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3' -Name 1200) -eq 0){
+				if ((Get-ItemPropertyValue -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\3' -Name 'DisplayName') -eq 'Internet Zone - Modified (@ciberesponce)'){
 					return $true
 				}
 				else{
