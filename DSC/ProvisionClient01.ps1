@@ -394,7 +394,8 @@ Configuration SetupAipScannerCore
             Path = 'C:\LabData\McasData.zip'
             Destination = 'C:\Users\Public\Desktop'
             Ensure = 'Present'
-			DependsOn = @('[Script]DownloadMcasData','[Computer]JoinDomain')
+            DependsOn = @('[Script]DownloadMcasData','[Computer]JoinDomain')
+            Force = $true
         }
 
         Script DownloadAipMsi
