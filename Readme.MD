@@ -65,9 +65,9 @@ The above chart also shows the Primary owner of the respective lab, as well as t
 ## Phases
 |Phase|Status|Last Updated|
 |-----|------|------------|
-|Phase 0|COMPLETE|---------|
-|Phase 1|COMPLETE|-------|
-|Phase 2|Ongoing|------------|
+|Phase 0|COMPLETE| 7/3/2019 |
+|Phase 1|COMPLETE| 7/3/2019 |
+|Phase 2|Ongoing| 7/17/2019 |
 
 ## Backlog (>v1.0)
 
