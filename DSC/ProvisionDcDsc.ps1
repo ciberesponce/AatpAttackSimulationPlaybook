@@ -49,7 +49,7 @@ Configuration CreateADForest
 
 	[PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCreds.UserName)", $AdminCreds.Password)
 	
-	[string]$AadConnectProductId = '6069C45A-B2D7-488C-AEC6-9364D11D4314'
+	[string]$AadConnectProductId = '{6069C45A-B2D7-488C-AEC6-9364D11D4314}'
 
 	Node localhost
 	{

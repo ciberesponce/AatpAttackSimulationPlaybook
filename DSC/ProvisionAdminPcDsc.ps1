@@ -164,7 +164,7 @@ Configuration SetupAdminPc
             DependsOn = '[Computer]JoinDomain'
         }
 
- #region Modify IE Zone 3 Settings
+        #region Modify IE Zone 3 Settings
         # needed to download files via IE from GitHub and other sources
         # can't just modify regkeys, need to export/import reg
         # ref: https://support.microsoft.com/en-us/help/182569/internet-explorer-security-zones-registry-entries-for-advanced-users
