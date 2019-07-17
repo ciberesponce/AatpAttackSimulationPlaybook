@@ -222,8 +222,7 @@ Configuration SetupVictimPc
         {
             SetScript = 
             {
-                Get-NetFirewallRule -DisplayGroup 'Network Discovery' | Set-NetFirewallRule -Profile 'Domain, Private' -Enabled true
-            }
+                Get-NetFirewallRule -DisplayGroup 'Network Discovery' | Set-NetFirewallRule -Profile 'Domain, Private, Public' -Enabled true            }
             GetScript = 
             {
                 $fwRules = Get-NetFirewallRule -DisplayGroup 'Network Discovery'
