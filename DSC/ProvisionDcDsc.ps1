@@ -283,7 +283,7 @@ Configuration CreateADForest
                 }
                 return $result
             }
-            DependsOn = '[Computer]JoinDomain'
+			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
         }
         
         Script TurnOnFileSharing
@@ -318,7 +318,7 @@ Configuration CreateADForest
                 }
                 return $result
             }
-            DependsOn = '[Computer]JoinDomain'
+			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
         }
 
 		Script DownloadAadMsi
