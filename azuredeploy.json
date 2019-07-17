@@ -212,8 +212,7 @@
           "osDisk": {
             "name": "[concat(variables('GenericStorageAccountName'), 0)]",
             "caching": "ReadWrite",
-            "createOption": "FromImage",
-            "diskSizeGB": 40
+            "createOption": "FromImage"
           }
         },
         "licenseType": "Windows_Server",
@@ -352,8 +351,7 @@
           "osDisk": {
             "name": "[concat(variables('GenericStorageAccountName'), 1)]",
             "caching": "ReadWrite",
-            "createOption": "FromImage",
-            "diskSizeGB": 40
+            "createOption": "FromImage"
           }
         },
         "licenseType": "Windows_Server",
@@ -441,8 +439,7 @@
           "osDisk": {
             "name": "[concat(variables('GenericStorageAccountName'), 2)]",
             "caching": "ReadWrite",
-            "createOption": "FromImage",
-            "diskSizeGB": 40
+            "createOption": "FromImage"
           }
         },
         "licenseType": "Windows_Server",
@@ -534,8 +531,7 @@
           "osDisk": {
             "name": "[concat(variables('GenericStorageAccountName'), 3)]",
             "caching": "ReadWrite",
-            "createOption": "FromImage",
-            "diskSizeGB": 40
+            "createOption": "FromImage"
           }
         },
         "licenseType": "Windows_Server",
