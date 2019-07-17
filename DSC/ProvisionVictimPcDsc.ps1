@@ -534,6 +534,7 @@ Configuration SetupVictimPc
             Path = 'C:\Tools\Mimikatz.zip'
             Destination = 'C:\Tools\Mimikatz'
             Ensure = 'Present'
+            Force = $true
             DependsOn = '[Script]DownloadHackTools'
         }
         Archive UnzipPowerSploit
@@ -541,6 +542,7 @@ Configuration SetupVictimPc
             Path = 'C:\Tools\PowerSploit.zip'
             Destination = 'C:\Tools\PowerSploit'
             Ensure = 'Present'
+            Force = $true
             DependsOn = '[Script]DownloadHackTools'
         }
         Archive UnzipNetSess
@@ -548,6 +550,7 @@ Configuration SetupVictimPc
             Path = 'C:\Tools\NetSess.zip'
             Destination = 'C:\Tools\NetSess'
             Ensure = 'Present'
+            Force = $true
             DependsOn = '[Script]DownloadHackTools'
         }
         #endregion

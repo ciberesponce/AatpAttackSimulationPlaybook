@@ -632,7 +632,8 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
             Path = 'C:\PII\data.zip'
             Destination = 'C:\PII'
             Ensure = 'Present'
-	    DependsOn = @('[Script]DownloadAipData','[Computer]JoinDomain')
+            Force = $true
+            DependsOn = @('[Script]DownloadAipData','[Computer]JoinDomain')
         }
 
         Archive AipDataToPublicDocuments
@@ -640,6 +641,7 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
             Path = 'C:\PII\data.zip'
             Destination = 'C:\Users\Public\Documents'
             Ensure = 'Present'
+            Force = $true
             DependsOn = '[Script]DownloadAipData'
         }
 
@@ -648,7 +650,8 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
             Path = 'C:\Scripts\Scripts.zip'
             Destination = 'C:\Scripts'
             Ensure = 'Present'
-	        DependsOn = @('[Script]DownloadAipScripts','[Computer]JoinDomain')
+            Force = $true
+            DependsOn = @('[Script]DownloadAipScripts','[Computer]JoinDomain')
         }
         #endregion
     }
