@@ -95,10 +95,10 @@
     "AdminPcDscUrl": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionAdminPcDsc.zip?raw=true",
     "AdminPcDscName": "AdminPcDsc",
     "McasVmName": "Client01",
+    "McasDscName": "SetupMcasClient",
     "AipDomainServiceAccount": "AipScanner",
     "AipDomainServiceAccountPassword": "Somepass1",
-    "Client01DscName": "SetupMcasClient",
-    "Client01DscUrl": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionClient01.zip?raw=true"
+    "McasDscUrl": "https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/DSC/ProvisionClient01.zip?raw=true"
   },
   "resources": [
     {
@@ -552,7 +552,7 @@
         {
           "type": "extensions",
           "apiVersion": "2018-10-01",
-          "name": "[variables('Client01DscName')]",
+          "name": "[variables('McasDscName')]",
           "location": "[resourceGroup().location]",
           "dependsOn": [
             "[resourceId('Microsoft.Compute/virtualMachines', variables('McasVmName'))]",
@@ -565,7 +565,7 @@
             "typeHandlerVersion": "2.77",
             "settings": {
               "configuration": {
-                "url": "[variables('Client01DscUrl')]",
+                "url": "[variables('McasDscUrl')]",
                 "script": "ProvisionClient01.ps1",
                 "function": "SetupAipScannerCore"
               },

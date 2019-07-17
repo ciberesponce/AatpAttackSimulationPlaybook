@@ -9,7 +9,7 @@ $vmData = @(
     ('ContosoDc', 'DcPromoDsc'),
     ('AdminPc', 'AdminPcDsc'),
     ('VictimPc', 'VictimDsc'),
-    ('Client01', 'AipDsc')
+    ('Client01', 'SetupMcasClient')
 )
 foreach ($vmSet in $vmData) {
     Remove-AzVMExtension -ResourceGroupName $resourceGroup -VMName $vmset[0] -Name $vmSet[1] -Force
