@@ -406,7 +406,7 @@ Configuration SetupVictimPc
         {
             SetScript = 
             {
-                reg import "C:\LabTools\RegkeyZone3.reg" | Out-Null
+                reg import "C:\LabTools\RegkeyZone3.reg" > $null 2>&1 
             }
 			GetScript = 
             {

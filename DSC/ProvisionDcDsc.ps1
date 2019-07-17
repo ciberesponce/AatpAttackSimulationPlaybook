@@ -145,7 +145,7 @@ Configuration CreateADForest
             Ensure = 'Present'
 			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
 		}
-		        
+
         Registry HideInitialServerManager
         {
             Key = 'HKLM:\SOFTWARE\Microsoft\ServerManager\Oobe'
@@ -507,8 +507,8 @@ Configuration CreateADForest
         {
             SetScript = 
             {
-                reg import "C:\LabTools\RegkeyZone3.reg" | Out-Null
-            }
+                reg import "C:\LabTools\RegkeyZone3.reg" > $null 2>&1 
+			}
 			GetScript = 
             {
 				# this should be set to 0; if its 3, its default value still
