@@ -30,8 +30,6 @@ Configuration SetupVictimPc
     Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity, cChoco, `
         xPendingReboot
 
-    $Interface = Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
-    $InterfaceAlias = $($Interface.Name)
     [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCred.UserName)", $AdminCred.Password)
     #endregion
 

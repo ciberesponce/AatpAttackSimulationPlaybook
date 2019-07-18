@@ -43,9 +43,6 @@ Configuration SetupAdminPc
     Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, `
         xSystemSecurity, SqlServerDsc, cChoco, xSmbShare, xPendingReboot
 
-    $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
-    $InterfaceAlias=$($Interface.Name)
-
     [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCred.UserName)", $AdminCred.Password)
     
     #region ScheduledTask-AATP

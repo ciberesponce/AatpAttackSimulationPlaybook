@@ -25,9 +25,6 @@ Configuration SetupAipScannerCore
     Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity, cChoco,
         xPendingReboot
 
-    $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
-    $InterfaceAlias=$($Interface.Name)
-
     $AipProductId = "48A06F18-951C-42CA-86F1-3046AF06D15E"
 
 	[PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCred.UserName)", $AdminCred.Password)
@@ -41,7 +38,7 @@ Configuration SetupAipScannerCore
             AllowModuleOverwrite = $true
             ActionAfterReboot = 'ContinueConfiguration'
         }
-        
+
         #region COE
         xIEEsc DisableAdminIeEsc
         {
