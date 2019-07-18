@@ -44,13 +44,13 @@ Configuration SetupVictimPc
 
     Node localhost
     {
-        LocalConfigurationManager
-        {
-            ConfigurationMode = 'ApplyOnly'
-            RebootNodeIfNeeded = $true
-            AllowModuleOverwrite = $true
-            ActionAfterReboot = 'ContinueConfiguration'
-        }
+        # LocalConfigurationManager
+        # {
+        #     ConfigurationMode = 'ApplyOnly'
+        #     RebootNodeIfNeeded = $true
+        #     AllowModuleOverwrite = $true
+        #     ActionAfterReboot = 'ContinueConfiguration'
+        # }
 
         #region COE
         Service DisableWindowsUpdate

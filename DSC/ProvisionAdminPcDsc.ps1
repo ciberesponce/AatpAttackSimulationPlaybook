@@ -624,7 +624,7 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
                 }
                 
             }
-            DependsOn = @('[Computer]JoinDomain','[Script]ExecuteZone3Override')
+            DependsOn = @('[Script]ExecuteZone3Override','[Computer]JoinDomain')
         }
 
         Archive AipDataToPii
@@ -633,7 +633,7 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
             Destination = 'C:\PII'
             Ensure = 'Present'
             Force = $true
-            DependsOn = @('[Script]DownloadAipData','[Computer]JoinDomain')
+            DependsOn = @('[Script]DownloadAipData')
         }
 
         Archive AipDataToPublicDocuments
@@ -651,7 +651,7 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
             Destination = 'C:\Scripts'
             Ensure = 'Present'
             Force = $true
-            DependsOn = @('[Script]DownloadAipScripts','[Computer]JoinDomain')
+            DependsOn = @('[Script]DownloadAipScripts')
         }
         #endregion
     }
