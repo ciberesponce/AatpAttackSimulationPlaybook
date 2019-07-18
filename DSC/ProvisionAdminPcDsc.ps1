@@ -41,7 +41,7 @@ Configuration SetupAdminPc
     )
     #region COE
     Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, `
-        xSystemSecurity, SqlServerDsc, cChoco, xSmbShare
+        xSystemSecurity, SqlServerDsc, cChoco, xSmbShare, xPendingReboot
 
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*"|Select-Object -First 1
     $InterfaceAlias=$($Interface.Name)
