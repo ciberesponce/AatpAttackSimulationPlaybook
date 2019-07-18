@@ -34,6 +34,13 @@ Configuration SetupAipScannerCore
 
     Node localhost
     {
+        LocalConfigurationManager
+		{
+            ConfigurationMode = 'ApplyOnly'
+            RebootNodeIfNeeded = $true
+            AllowModuleOverwrite = $true
+            ActionAfterReboot = 'ContinueConfiguration'
+        }
         #region COE
 		DnsServerAddress DnsServerAddress 
 		{
