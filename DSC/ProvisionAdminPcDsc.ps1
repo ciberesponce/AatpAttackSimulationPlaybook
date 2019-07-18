@@ -78,14 +78,6 @@ Configuration SetupAdminPc
             StartupType = 'Disabled'
         }
 
-		DnsServerAddress DnsServerAddress 
-		{
-			Address        = $DnsServer
-			InterfaceAlias = $InterfaceAlias
-            AddressFamily  = 'IPv4'
-            Validate = $true
-        }
-
         Computer JoinDomain
         {
             Name = 'AdminPC'
@@ -262,9 +254,6 @@ Configuration SetupAdminPc
             }
             DependsOn = '[Computer]JoinDomain'
         }
-
-
-
         #endregion
 
         #region AATP
@@ -291,6 +280,41 @@ Configuration SetupAdminPc
             TestScript = 
             {
                 $fwRules = Get-NetFirewallRule -DisplayGroup 'Network Discovery'
+                $result = $true
+                foreach ($rule in $fwRules){
+                    if ($rule.Enabled -eq 'False'){
+                        $result = $false
+                        break
+                    }
+                }
+                return $result
+            }
+            DependsOn = '[Computer]JoinDomain'
+        }
+
+        Script TurnOnFileSharing
+        {
+            SetScript = 
+            {
+                Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing' | Set-NetFirewallRule -Profile 'Domain, Private' -Enabled true
+            }
+            GetScript = 
+            {
+                $fwRules = Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing'
+                $result = $true
+                foreach ($rule in $fwRules){
+                    if ($rule.Enabled -eq 'False'){
+                        $result = $false
+                        break
+                    }
+                }
+                return @{
+                    result = $result
+                }
+            }
+            TestScript = 
+            {
+                $fwRules = Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing'
                 $result = $true
                 foreach ($rule in $fwRules){
                     if ($rule.Enabled -eq 'False'){
@@ -417,41 +441,6 @@ Configuration SetupAdminPc
             }
             DependsOn = @('[Script]DownloadBginfo','[cChocoPackageInstaller]InstallSysInternals')
 		}
-
-        Script TurnOnFileSharing
-        {
-            SetScript = 
-            {
-                Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing' | Set-NetFirewallRule -Profile 'Domain, Private' -Enabled true
-            }
-            GetScript = 
-            {
-                $fwRules = Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing'
-                $result = $true
-                foreach ($rule in $fwRules){
-                    if ($rule.Enabled -eq 'False'){
-                        $result = $false
-                        break
-                    }
-                }
-                return @{
-                    result = $result
-                }
-            }
-            TestScript = 
-            {
-                $fwRules = Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing'
-                $result = $true
-                foreach ($rule in $fwRules){
-                    if ($rule.Enabled -eq 'False'){
-                        $result = $false
-                        break
-                    }
-                }
-                return $result
-            }
-            DependsOn = '[Computer]JoinDomain'
-        }
 
         Registry AuditModeSamr
         {

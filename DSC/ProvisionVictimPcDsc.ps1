@@ -61,14 +61,6 @@ Configuration SetupVictimPc
             StartupType = 'Disabled'
         }
 
-        DnsServerAddress DnsServerAddress 
-        {
-            Address        = $DnsServer
-            InterfaceAlias = $InterfaceAlias
-            AddressFamily  = 'IPv4'
-            Validate = $true
-        }
-
         xIEEsc DisableAdminIeEsc
         {
             UserRole = 'Administrators'

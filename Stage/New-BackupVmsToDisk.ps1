@@ -8,7 +8,7 @@ param(
     # resourceGroupName
     [Parameter(Mandatory=$false)]
     [string]
-    $ResourceGroupName = 'cxe-lab-test2',
+    $ResourceGroupName = 'cxe-lab-test',
 
     # Destination RG; where snapshots/images will be placed
     [Parameter(Mandatory=$false)]
@@ -23,16 +23,20 @@ param(
     # Force stop?
     [Parameter(Mandatory=$false)]
     [bool]
-    $StopVm = $false
+    $StopVm = $true
 )
 $vms = Get-AzVm -ResourceGroupName $ResourceGroupName
 $date = Get-Date -Format yyyyMMdd
 
 # stop VMs
 if ($StopVm){
-    Write-Host "`[ ] Stopping VMs to prepare them to be Snapshotted" -Foreground Yellow
-    $vms | Stop-AzVm -Force
-    Write-Host "`t[+] VMs successfully stopped" -ForegroundColor Green
+    Write-Host "[!] Stopping VMs to prepare them to be Snapshotted" -Foreground Yellow
+    foreach ($vm in $vms){
+        $vm | Stop-AzVm -Force -AsJob -StayProvisioned | Out-Null
+        Write-Host "`t[ ] Starting to stop: $($vm.Name)" -ForegroundColor Cyan
+    }
+    Get-Job | Wait-Job
+    Write-Host "[+] All VMs Stopped... proceeding" -ForegroundColor Green
 }
 else {
     Write-Host "[ ] Continuing to build snapshots without turning off VMs; use -ForceVmStop if want them stopped first" -Foreground Yellow
@@ -60,3 +64,11 @@ foreach ($vm in $vms){
         -ResourceGroupName $DestinationResourceGroupName
     Write-Host "[+] [$($vm.Name)]`t Successfully converted @ $($osDisk.Id)" -ForegroundColor Green
 }
+Write-Host "[!] Starting VMs back up" -ForegroundColor Yellow
+
+foreach ($vm in $vms){
+    $vm | Start-AzVM -AsJob -NoWait | Out-Null
+    Write-Host "`t[ ] Starting VM: $($vm.Name)" -ForegroundColor Cyan
+}
+Get-Job | Wait-Job
+Write-Host "[+] All VMs up and running again in $ResourceGroupName" -ForegroundColor Green

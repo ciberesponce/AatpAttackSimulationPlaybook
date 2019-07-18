@@ -15,43 +15,43 @@
     "DcVmName": "ContosoDc",
     "DcVmType": "Windows",
     "DcPrivateIp": "10.0.24.4",
-    "DcVhdUri": "[concat('https://caiseclabimages.blob.core.windows.net/assets/ContosoDc', variables('StagedDate'), 'd.vhd')]",
+    "DcVhdUri": "[concat('https://caiseclabimages.blob.core.windows.net/assets/ContosoDcd.vhd')]",
     "VictimVmName": "VictimPc",
     "VictimVmType": "Windows",
     "VictimPrivateIp": "10.0.24.10",
-    "VictimVhdUri": "[concat('https://caiseclabimages.blob.core.windows.net/assets/VictimPc', variables('StagedDate'), 'd.vhd')]",
+    "VictimVhdUri": "[concat('https://caiseclabimages.blob.core.windows.net/assets/VictimPcd.vhd')]",
     "AdminPcVmName": "AdminPc",
     "AdminVmType": "Windows",
     "AdminPrivateIp": "10.0.24.11",
-    "McasVhdUri": "[concat('https://caiseclabimages.blob.core.windows.net/assets/AdminPc', variables('StagedDate'), 'd.vhd')]",
+    "AdminVhdUri": "[concat('https://caiseclabimages.blob.core.windows.net/assets/AdminPcd.vhd')]",
     "McasVmName": "Client01",
     "McasVmType": "Windows",
     "McasIpAddress": "10.0.24.12",
-    "AipVhdUri": "[concat('https://caiseclabimages.blob.core.windows.net/assets/Client01', variables('StagedDate'), 'd.vhd')]",
+    "McasVhdUri": "[concat('https://caiseclabimages.blob.core.windows.net/assets/Client01d.vhd')]",
     "RepeatConfigurations": {
       "type": "array",
       "VmName": [
         "[variables('DcVmName')]",
-        "[variables('VictimVmName')]",
         "[variables('AdminPcVmName')]",
+        "[variables('VictimVmName')]",
         "[variables('McasVmName')]"
       ],
       "DiskUris": [
         "[variables('DcVhdUri')]",
+        "[variables('AdminVhdUri')]",
         "[variables('VictimVhdUri')]",
-        "[variables('McasVhdUri')]",
-        "[variables('AipVhdUri')]"
+        "[variables('McasVhdUri')]"
       ],
       "PrivateIp": [
         "[variables('DcPrivateIp')]",
-        "[variables('VictimPrivateIp')]",
         "[variables('AdminPrivateIp')]",
+        "[variables('VictimPrivateIp')]",
         "[variables('McasIpAddress')]"
       ],
       "OsType": [
         "[variables('DcVmType')]",
-        "[variables('VictimVmType')]",
         "[variables('AdminVmType')]",
+        "[variables('VictimVmType')]",
         "[variables('McasVmType')]"
       ]
     }
@@ -229,7 +229,8 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('GenericNicName'), copyIndex('VmLoop', 1)))]",
-        "[resourceId('Microsoft.Compute/disks', concat(variables('GenericDiskName'), copyIndex('VmLoop', 1)))]"
+        "[resourceId('Microsoft.Compute/disks', concat(variables('GenericDiskName'), copyIndex('VmLoop', 1)))]",
+        "[resourceId('Microsoft.Resources/deployments', variables('DeploymentVnetDnsName'))]"
       ],
       "properties": {
         "hardwareProfile": {

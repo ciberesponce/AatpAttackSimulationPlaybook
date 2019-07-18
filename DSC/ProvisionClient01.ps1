@@ -41,15 +41,8 @@ Configuration SetupAipScannerCore
             AllowModuleOverwrite = $true
             ActionAfterReboot = 'ContinueConfiguration'
         }
+        
         #region COE
-		DnsServerAddress DnsServerAddress 
-		{
-			Address        = $DnsServer
-			InterfaceAlias = $InterfaceAlias
-            AddressFamily  = 'IPv4'
-            Validate = $true
-        }
-
         xIEEsc DisableAdminIeEsc
         {
             UserRole = 'Administrators'
