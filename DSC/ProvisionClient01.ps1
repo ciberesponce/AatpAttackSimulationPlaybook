@@ -400,7 +400,7 @@ Configuration SetupAipScannerCore
         Archive McasDataToP
         {
             Path = 'C:\LabData\McasData.zip'
-            Destination = 'C:\Users\Public\Desktop'
+            Destination = 'C:\Users\Public\Desktop\DemoFiles'
             Ensure = 'Present'
             DependsOn = @('[Script]DownloadMcasData','[Computer]JoinDomain')
             Force = $true
