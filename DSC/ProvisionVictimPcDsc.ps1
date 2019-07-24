@@ -440,20 +440,19 @@ Configuration SetupVictimPc
         }
         #endregion
 
-        Script DownloadAipMsi
+        Script DownloadAipUlMsi
 		{
 			SetScript = 
             {
                 if ((Test-Path -PathType Container -LiteralPath 'C:\LabTools\') -ne $true){
 					New-Item -Path 'C:\LabTools\' -ItemType Directory
 				}
-                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                $ProgressPreference = 'SilentlyContinue' # used to speed this up from 30s to 100ms
-                Invoke-WebRequest -Uri 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzInfoProtection_MSI_for_central_deployment.msi?raw=true' -Outfile 'C:\LabTools\aip_installer.msi'
+				[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                Start-BitsTransfer -Source 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzInfoProtection_ul_MSI_for_central_deployment.msi?raw=true' -Destination 'C:\LabTools\aip_ul_installer.msi'
             }
 			GetScript = 
             {
-				if ((Test-Path 'C:\LabTools\aip_installer.msi') -eq $true){
+				if (Test-Path 'C:\LabTools\aip_ul_installer.msi'){
 					return @{
 						result = $true
 					}
@@ -466,25 +465,25 @@ Configuration SetupVictimPc
             }
             TestScript = 
             {
-				if ((Test-Path 'C:\LabTools\aip_installer.msi') -eq $true){
+				if (Test-Path 'C:\LabTools\aip_ul_installer.msi'){
 					return $true
 				}
 				else {
 					return $false
 				}
             }
-            DependsOn = @('[Registry]DisableSmartScreen','[Computer]JoinDomain', '[Script]ExecuteZone3Override')
+            DependsOn = @('[Computer]JoinDomain','[Script]ExecuteZone3Override')
 		}
 
 		Package InstallAipClient
 		{
 			Name = 'Microsoft Azure Information Protection'
 			Ensure = 'Present'
-			Path = 'C:\LabTools\aip_installer.msi'
-			ProductId = $AipProductId
+			Path = 'C:\LabTools\aip_ul_installer.msi'
+			ProductId = '{3C393E78-A1A6-43E8-86C0-E9B22AB83143}'
 			Arguments = '/quiet'
-			DependsOn = @('[Script]DownloadAipMsi','[Computer]JoinDomain')
-        }
+			DependsOn = @('[Script]DownloadAipUlMsi','[Computer]JoinDomain','[Script]ExecuteZone3Override')
+		}
         
         #region HackTools
         Script DownloadHackTools

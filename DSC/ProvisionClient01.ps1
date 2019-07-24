@@ -25,8 +25,6 @@ Configuration SetupAipScannerCore
     Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, xSystemSecurity, cChoco,
         xPendingReboot
 
-    $AipProductId = "48A06F18-951C-42CA-86F1-3046AF06D15E"
-
 	[PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCred.UserName)", $AdminCred.Password)
 
     Node localhost
@@ -407,7 +405,7 @@ Configuration SetupAipScannerCore
             Force = $true
         }
 
-        Script DownloadAipMsi
+        Script DownloadAipUlMsi
 		{
 			SetScript = 
             {
@@ -415,11 +413,11 @@ Configuration SetupAipScannerCore
 					New-Item -Path 'C:\LabTools\' -ItemType Directory
 				}
 				[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                Start-BitsTransfer -Source 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzInfoProtection_MSI_for_central_deployment.msi?raw=true' -Destination 'C:\LabTools\aip_installer.msi'
+                Start-BitsTransfer -Source 'https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/AzInfoProtection_ul_MSI_for_central_deployment.msi?raw=true' -Destination 'C:\LabTools\aip_ul_installer.msi'
             }
 			GetScript = 
             {
-				if (Test-Path 'C:\LabTools\aip_installer.msi'){
+				if (Test-Path 'C:\LabTools\aip_ul_installer.msi'){
 					return @{
 						result = $true
 					}
@@ -432,7 +430,7 @@ Configuration SetupAipScannerCore
             }
             TestScript = 
             {
-				if (Test-Path 'C:\LabTools\aip_installer.msi'){
+				if (Test-Path 'C:\LabTools\aip_ul_installer.msi'){
 					return $true
 				}
 				else {
@@ -446,10 +444,10 @@ Configuration SetupAipScannerCore
 		{
 			Name = 'Microsoft Azure Information Protection'
 			Ensure = 'Present'
-			Path = 'C:\LabTools\aip_installer.msi'
-			ProductId = $AipProductId
+			Path = 'C:\LabTools\aip_ul_installer.msi'
+			ProductId = '{3C393E78-A1A6-43E8-86C0-E9B22AB83143}'
 			Arguments = '/quiet'
-			DependsOn = @('[Script]DownloadAipMsi','[Computer]JoinDomain','[Script]ExecuteZone3Override')
+			DependsOn = @('[Script]DownloadAipUlMsi','[Computer]JoinDomain','[Script]ExecuteZone3Override')
 		}
     }
 }
