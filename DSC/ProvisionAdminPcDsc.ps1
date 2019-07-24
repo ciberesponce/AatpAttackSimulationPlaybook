@@ -292,7 +292,7 @@ Configuration SetupAdminPc
         {
             SetScript = 
             {
-                Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing' | Set-NetFirewallRule -Profile 'Domain, Private' -Enabled true
+                Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing' | Set-NetFirewallRule -Profile 'Any' -Enabled true
             }
             GetScript = 
             {
@@ -545,12 +545,78 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
 			DependsOn = '[Script]DownloadAipMsi'
         }
 
-        xSmbShare SharePublicDocuments
+        # need customer script do to issue with SmbShare
+        Script SharePublicDocuments
         {
-            Name = 'Documents'
-            Path = 'C:\Users\Public\Documents'
-            Ensure = 'Present'
-            FullAccess = @("$NetBiosName\Everyone")
+            SetScript = 
+            {
+                New-SmbShare -Name 'Documents' -Path 'C:\Users\Public\Documents' `
+                    -FullAccess 'Everyone'
+
+                Set-SmbPathAcl -ShareName 'Documents'
+            }
+            GetScript = 
+            {
+                $share = Get-SmbShare -Name 'Documents' -ErrorAction SilentlyContinue
+                if ($null -ne $share) {
+                    # now that share exists, make sure ACL for everyone is set
+                    $acls = Get-Acl -Path C:\Users\Public\Documents 
+                    $acl = $acls.Access | Where-Object {$_.IdentityReference -eq 'Everyone'}
+                    if ($null -eq $acl){
+                        # if no ACL has an 'Everyone' IdentityReference, return false
+                        return @{
+                            result = $false
+                        }
+                    }
+                    else{
+                        if (($acl.AccessControlType -eq 'Allow') -and ($acl.FileSystemRights -eq 'FullControl')) {
+                            return @{
+                                result = $true
+                            } 
+                        }
+                        # if ACL isn't right, return false
+                        else {
+                            return @{
+                                result = $false
+                            }
+                        }
+                    }
+                    
+                }
+                # if not a share, return false
+                else {
+                    return @{
+                        result = $false
+                    }
+                }
+            }
+            TestScript = 
+            {
+                $share = Get-SmbShare -Name 'Documents' -ErrorAction SilentlyContinue
+                if ($null -ne $share) {
+                    # now that share exists, make sure ACL for everyone is set
+                    $acls = Get-Acl -Path C:\Users\Public\Documents 
+                    $acl = $acls.Access | Where-Object {$_.IdentityReference -eq 'Everyone'}
+                    if ($null -eq $acl){
+                        # if no ACL has an 'Everyone' IdentityReference, return false
+                        return $false
+                    }
+                    else{
+                        if (($acl.AccessControlType -eq 'Allow') -and ($acl.FileSystemRights -eq 'FullControl')) {
+                            return $true
+                        }
+                        # if ACL isn't right, return false
+                        else {
+                            return $false
+                        }
+                    }
+                    
+                }
+                # if not a share, return false
+                else {
+                    return $false
+                }
+            }
             DependsOn = '[Computer]JoinDomain'
         }
         
