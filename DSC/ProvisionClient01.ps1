@@ -101,6 +101,19 @@ Configuration SetupAipScannerCore
             DependsOn = '[cChocoInstaller]InstallChoco'
         }
 
+        cChocoPackageInstaller InstallOffice365
+        {
+            Name = 'microsoft-office-deployment'
+            Ensure = 'Present'
+            AutoUpgrade = $false
+            Params = '/Product=O365BusinessRetail'
+            DependsOn = '[cChocoInstaller]InstallChoco'
+        }
+
+        #endregion
+
+
+
         Script DownloadBginfo
         {
             SetScript =
