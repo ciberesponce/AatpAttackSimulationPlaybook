@@ -172,16 +172,7 @@ Configuration CreateADForest
 			AutoUpgrade = $false
             DependsOn = '[cChocoInstaller]InstallChoco'
 		}
-s
-		cChocoPackageInstaller InstallOffice365
-        {
-            Name = 'microsoft-office-deployment'
-            Ensure = 'Present'
-            AutoUpgrade = $false
-            Params = '/Product=O365BusinessRetail'
-            DependsOn = '[cChocoInstaller]InstallChoco'
-		}
-		#endregion
+		#endegion
 	
         Script DownloadBginfo
         {

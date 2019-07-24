@@ -41,7 +41,7 @@ Configuration SetupAdminPc
     )
     #region COE
     Import-DscResource -ModuleName PSDesiredStateConfiguration, xDefender, ComputerManagementDsc, NetworkingDsc, `
-        xSystemSecurity, SqlServerDsc, cChoco, xSmbShare, xPendingReboot
+        xSystemSecurity, SqlServerDsc, cChoco, xPendingReboot, xSmbShare
 
     [PSCredential]$Creds = New-Object System.Management.Automation.PSCredential ("${NetBiosName}\$($AdminCred.UserName)", $AdminCred.Password)
     
@@ -372,7 +372,7 @@ Configuration SetupAdminPc
             Name = 'microsoft-office-deployment'
             Ensure = 'Present'
             AutoUpgrade = $false
-            Params = '/Product=O365BusinessRetail'
+            Params = '/Product=O365ProPlusRetail'
             DependsOn = '[cChocoInstaller]InstallChoco'
         }
         #endregion
@@ -549,6 +549,7 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
         {
             Name = 'Documents'
             Path = 'C:\Users\Public\Documents'
+            Ensure = 'Present'
             FullAccess = "Everyone"
             DependsOn = '[Computer]JoinDomain'
         }

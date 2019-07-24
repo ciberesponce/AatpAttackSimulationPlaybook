@@ -105,10 +105,9 @@ Configuration SetupAipScannerCore
             Name = 'microsoft-office-deployment'
             Ensure = 'Present'
             AutoUpgrade = $false
-            Params = '/Product=O365BusinessRetail'
+            Params = '/Product=O365ProPlusRetail'
             DependsOn = '[cChocoInstaller]InstallChoco'
         }
-
         #endregion
 
 
