@@ -82,7 +82,6 @@ Configuration SetupVictimPc
             Name = 'VictimPC'
             DomainName = $DomainName
             Credential = $Creds
-            DependsOn = "[DnsServerAddress]DnsServerAddress"
         }
 
         Group AddAdmins

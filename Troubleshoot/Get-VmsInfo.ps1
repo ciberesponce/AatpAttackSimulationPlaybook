@@ -4,6 +4,7 @@ param(
     [string]
     $ResourceGroupName = 'cxe-lab-test'
 )
+Write-Host "[!] Getting VM info for the `'$ResourceGroupName`' RG" -ForegroundColor Cyan
 
 $Ips = Get-AzNetworkInterface -ResourceGroupName $ResourceGroupName
 $vmDetails = New-Object "System.Collections.Generic.List[psobject]"

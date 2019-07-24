@@ -64,7 +64,6 @@ Configuration SetupAipScannerCore
             Name = 'Client01'
             DomainName = $DomainName
             Credential = $Creds
-            DependsOn = "[DnsServerAddress]DnsServerAddress"
         }
 
         Group AddAdmins

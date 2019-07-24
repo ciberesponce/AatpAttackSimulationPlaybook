@@ -80,7 +80,6 @@ Configuration SetupAdminPc
             Name = 'AdminPC'
             DomainName = $DomainName
             Credential = $Creds
-            DependsOn = "[DnsServerAddress]DnsServerAddress"
         }
 
         xIEEsc DisableAdminIeEsc

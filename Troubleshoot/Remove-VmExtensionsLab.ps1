@@ -4,6 +4,7 @@ param(
     [string]
     $resourceGroup = 'cxe-lab-test'
 )
+Write-Host "[!] Remove VM Extensions from the `'$resourceGroup`' RG" -ForegroundColor Cyan
 #array showing VMName, DSC name
 $vmData = @(
     ('ContosoDc', 'DcPromoDsc'),
