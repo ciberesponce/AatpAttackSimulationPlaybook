@@ -550,7 +550,7 @@ Get-ChildItem '\\contosodc\c$'; exit(0)
             Name = 'Documents'
             Path = 'C:\Users\Public\Documents'
             Ensure = 'Present'
-            FullAccess = "Everyone"
+            FullAccess = @("$NetBiosName\Everyone")
             DependsOn = '[Computer]JoinDomain'
         }
         
