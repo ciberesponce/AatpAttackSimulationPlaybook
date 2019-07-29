@@ -108,8 +108,6 @@ Configuration SetupAipScannerCore
         }
         #endregion
 
-
-
         Script DownloadBginfo
         {
             SetScript =
