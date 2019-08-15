@@ -64,6 +64,13 @@
       "metadata": {
         "description": "LisaV's password. By default it is 'HighImpactUser1!'  LisaV has access to High Impact data and will be used in future labs."
       }
+    },
+    "AATPServicePassword": {
+      "type": "securestring",
+      "defaultValue": "Password123!@#",
+      "metadata": {
+        "description": "Password for the AATP Service ('AATPService').  This is an unprivileged user-account used for LDAP and SAMR purposes."
+      }
     }
   },
   "variables": {
@@ -264,6 +271,10 @@
                 "AipServiceCreds": {
                   "UserName": "[variables('AipDomainServiceAccount')]",
                   "Password": "[variables('AipDomainServiceAccountPassword')]"
+                },
+                "AatpServiceCreds": {
+                  "UserName": "AATPService",
+                  "Password": "[parameters('AATPServicePassword')]"
                 }
               }
             },

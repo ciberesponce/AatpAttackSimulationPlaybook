@@ -365,6 +365,14 @@ Configuration SetupAdminPc
             DependsOn = '[cChocoInstaller]InstallChoco'
         }
 
+        cChocoPackageInstaller Chrome
+        {
+            Name = 'googlechrome'
+            Ensure = 'Present'
+            AutoUpgrade = $true
+            DependsOn = '[cChocoInstaller]InstallChoco'
+        }
+
         cChocoPackageInstaller InstallOffice365
         {
             Name = 'microsoft-office-deployment'
