@@ -415,13 +415,13 @@ Configuration CreateADForest
 		xADUser AatpService
 		{
 			DomainName = $DomainName
-			UserName = ''
-			Password = $RonHdCreds
+			UserName = $AatpServiceCreds.UserName
+			Password = $AatpServiceCreds
 			Ensure = 'Present'
-			GivenName = 'Ron'
-			Surname = 'HD'
+			GivenName = 'AATP'
+			Surname = 'Service'
 			PasswordNeverExpires = $true
-			DisplayName = 'RonHD'
+			DisplayName = 'AATPService'
 			DependsOn = @("[xADForestProperties]ForestProps", "[xWaitForADDomain]DscForestWait")
 		}
 
