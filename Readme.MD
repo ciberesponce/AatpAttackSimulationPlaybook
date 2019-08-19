@@ -16,6 +16,8 @@ The above chart also shows the Primary owner of the respective lab, as well as t
 Additional attack tools
 * Kekeo
 * TOR Browser
+* Attack scripts now stagged in Downloads > VictimPC
+* MDATP 'eicar' file in Downloads > Eicar.exe
 
 # Phase 0
 
