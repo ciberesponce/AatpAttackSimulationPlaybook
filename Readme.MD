@@ -15,8 +15,7 @@ The above chart also shows the Primary owner of the respective lab, as well as t
 **VictimPC** now includes:
 Additional attack tools
 * Kekeo
-* TOR Browser 
-
+* TOR Browser
 
 # Phase 0
 
@@ -39,9 +38,9 @@ Additional attack tools
 ### AATP
 | Who | What | Status | Helpful Resources |
 |-----|------|--------|-------------------|
-|Andrew|Mimikatz|COMPLETE|               |
-|Andrew|PowerSploit|COMPLETE|            |
-|Andrew|NetSess|COMPLETE|                |
+|Andrew|Mimikatz|COMPLETE|                |
+|Andrew|PowerSploit|COMPLETE|             |
+|Andrew|NetSess|COMPLETE|                 |
 |Andrew|VictimPc Scheduled Task for RonHD Cred|COMPLETE| |
 |Andrew|Add respective DC Users|COMPLETE| |
 |Andrew|VictimPC Admins (RonHD, JeffL) | COMPLETE |
