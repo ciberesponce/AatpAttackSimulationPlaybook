@@ -157,6 +157,14 @@ Configuration SetupVictimPc
             DependsOn = '[cChocoInstaller]InstallChoco'
         }
 
+        cChocoPackageInstaller InstallTorBrowser
+        {
+            Name = 'tor-browser'
+            Ensure = 'Present'
+            AutoUpgrade = $false
+            DependsOn = '[cChocoInstaller]InstallChoco'
+        }
+
         cChocoPackageInstaller Chrome
         {
             Name = 'googlechrome'
@@ -502,33 +510,57 @@ Configuration SetupVictimPc
                 $tools = @(
                     ('https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20190512/mimikatz_trunk.zip', 'C:\Tools\Mimikatz.zip'),
                     ('https://github.com/PowerShellMafia/PowerSploit/archive/master.zip', 'C:\Tools\PowerSploit.zip'),
-                    ('https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/NetSess.zip?raw=true', 'C:\Tools\NetSess.zip')
+                    ('https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/NetSess.zip?raw=true', 'C:\Tools\NetSess.zip'),
+                    ('https://github.com/gentilkiwi/kekeo/releases/download/2.2.0-20190407/kekeo.zip', 'C:\Tools\kekeo.zip'),
+                    ('')
                 )
                 foreach ($tool in $tools){
                     Invoke-WebRequest -Uri $tool[0] -OutFile $tool[1]
                 }
-            }    
+            }
+
             GetScript = 
             {
-                if ((Test-Path 'C:\Tools\NetSess.zip') -and (Test-Path 'C:\Tools\PowerSploit.zip') -and (Test-Path 'C:\Tools\Mimikatz.zip')){
-                    return @{
-                        result = $true
+                #copy of above $tools; needed as these functions aren't aware of each other at runtime
+                $tools = @(
+                    ('https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20190512/mimikatz_trunk.zip', 'C:\Tools\Mimikatz.zip'),
+                    ('https://github.com/PowerShellMafia/PowerSploit/archive/master.zip', 'C:\Tools\PowerSploit.zip'),
+                    ('https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/NetSess.zip?raw=true', 'C:\Tools\NetSess.zip'),
+                    ('https://github.com/gentilkiwi/kekeo/releases/download/2.2.0-20190407/kekeo.zip', 'C:\Tools\kekeo.zip')
+                )
+                $AllToolsThere = $true
+                foreach ($tool in $tools){
+                    if (Test-Path $tool[1]){
+                        continue 
+                    }
+                    else {
+                        $AllToolsThere = $false
+                        break # stop assessing
                     }
                 }
-                else {
-                    return @{
-                        result = $false
-                    }
-                }
+                return @{ result = $AllToolsThere }
             }
+
             TestScript = 
             {
-                if ((Test-Path 'C:\Tools\NetSess.zip') -and (Test-Path 'C:\Tools\PowerSploit.zip') -and (Test-Path 'C:\Tools\Mimikatz.zip')){
-                    return $true
+                #copy of above $tools; needed as these functions aren't aware of each other at runtime
+                $tools = @(
+                    ('https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20190512/mimikatz_trunk.zip', 'C:\Tools\Mimikatz.zip'),
+                    ('https://github.com/PowerShellMafia/PowerSploit/archive/master.zip', 'C:\Tools\PowerSploit.zip'),
+                    ('https://github.com/ciberesponce/AatpAttackSimulationPlaybook/blob/master/Downloads/NetSess.zip?raw=true', 'C:\Tools\NetSess.zip'),
+                    ('https://github.com/gentilkiwi/kekeo/releases/download/2.2.0-20190407/kekeo.zip', 'C:\Tools\kekeo.zip')
+                )
+                $AllToolsThere = $true
+                foreach ($tool in $tools){
+                    if (Test-Path $tool[1]){
+                        continue 
+                    }
+                    else {
+                        $AllToolsThere = $false
+                        break # stop assessing
+                    }
                 }
-                else {
-                    return $false
-                }
+                return $AllToolsThere
             }
             DependsOn = @('[xMpPreference]DefenderSettings', '[Registry]DisableSmartScreen', '[Script]ExecuteZone3Override')
         }
@@ -552,6 +584,14 @@ Configuration SetupVictimPc
         {
             Path = 'C:\Tools\NetSess.zip'
             Destination = 'C:\Tools\NetSess'
+            Ensure = 'Present'
+            Force = $true
+            DependsOn = '[Script]DownloadHackTools'
+        }
+        Archive UnzipKekeo
+        {
+            Path = 'C:\Tools\kekeo.zip'
+            Destination = 'C:\Tools\Kekeo'
             Ensure = 'Present'
             Force = $true
             DependsOn = '[Script]DownloadHackTools'
