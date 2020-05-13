@@ -5,17 +5,7 @@ These Attack Simulation Playbooks are now part of a much larger effort, across M
 
 
 # About
-This is used to build out the lab for C+AI Security products.  These products are the following:
-
-|AOR|Product|Primary|Secondary|
-|---|-------|-------|---------|
-|EMS TP|AATP|Gershon|Brandon|
-|EMS TP|MCAS|Banu|Sebastien|
-|AIP| AIP| Kevin| Nir |
-|Azure Sec| ASC | Chris B| Yuri|
-|Azure Sec | Azure Sentinel|Kara|Andrew|
-
-The above chart also shows the Primary owner of the respective lab, as well as the secondary/backup.
+This is used to build out the lab for C+AI Security products.
 
 ## Whats new?
 **VictimPC** now includes:
