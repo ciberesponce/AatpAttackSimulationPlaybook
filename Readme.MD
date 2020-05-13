@@ -1,3 +1,9 @@
+# THIS PROJECT MOVED
+This project moved to https://aka.ms/DefendTheFlag
+
+These Attack Simulation Playbooks are now part of a much larger effort, across Microsoft properties, to showcase attacks and more importantly, focus on defensive capabliities and investigations as a result of these new learnings.
+
+
 # About
 This is used to build out the lab for C+AI Security products.  These products are the following:
 
